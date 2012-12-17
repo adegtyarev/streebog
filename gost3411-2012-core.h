@@ -13,14 +13,9 @@
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
 
-typedef struct uint512_t
-{
-    uint64_t c[8];
-} uint512_t;
-
 union uint512_u
 {
-    uint64_t word[8];
+    unsigned long long word[8];
     uint8_t byte[64];
 } uint512_u;
 
@@ -43,5 +38,6 @@ typedef struct GOST3411Context
 
 void *memalloc(const size_t size);
 void final(GOST3411Context *CTX);
-void init(const uint32_t digest_size, GOST3411Context *CTX);
+GOST3411Context * init(const uint32_t digest_size);
+void destroy(GOST3411Context *CTX);
 void update(GOST3411Context *CTX, const void *data, size_t len);

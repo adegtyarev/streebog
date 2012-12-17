@@ -26,176 +26,176 @@
     z->word[7] = x->word[7] ^ y->word[0]; \
 }
 
-static const union uint512_u buffer512  = {{ 512, 0, 0, 0, 0, 0, 0, 0 }};
-static const union uint512_u buffer0    = {{ 0, 0, 0, 0, 0, 0, 0, 0 }};
+static const union uint512_u buffer512  = {{ 512ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL }};
+static const union uint512_u buffer0    = {{   0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL }};
 
 static const union uint512_u C[12] = {
     {{    
-          0xb1085bda1ecadae9,
-          0xebcb2f81c0657c1f,
-          0x2f6a76432e45d016,
-          0x714eb88d7585c4fc,
-          0x4b7ce09192676901,
-          0xa2422a08a460d315,
-          0x05767436cc744d23,
-          0xdd806559f2a64507
+          0xb1085bda1ecadae9ULL,
+          0xebcb2f81c0657c1fULL,
+          0x2f6a76432e45d016ULL,
+          0x714eb88d7585c4fcULL,
+          0x4b7ce09192676901ULL,
+          0xa2422a08a460d315ULL,
+          0x05767436cc744d23ULL,
+          0xdd806559f2a64507ULL
     }},
     {{
-          0x6fa3b58aa99d2f1a,
-          0x4fe39d460f70b5d7,
-          0xf3feea720a232b98,
-          0x61d55e0f16b50131,
-          0x9ab5176b12d69958,
-          0x5cb561c2db0aa7ca,
-          0x55dda21bd7cbcd56,
-          0xe679047021b19bb7
+          0x6fa3b58aa99d2f1aULL,
+          0x4fe39d460f70b5d7ULL,
+          0xf3feea720a232b98ULL,
+          0x61d55e0f16b50131ULL,
+          0x9ab5176b12d69958ULL,
+          0x5cb561c2db0aa7caULL,
+          0x55dda21bd7cbcd56ULL,
+          0xe679047021b19bb7ULL
     }},
     {{
-          0xf574dcac2bce2fc7,
-          0x0a39fc286a3d8435,
-          0x06f15e5f529c1f8b,
-          0xf2ea7514b1297b7b,
-          0xd3e20fe490359eb1,
-          0xc1c93a376062db09,
-          0xc2b6f443867adb31,
-          0x991e96f50aba0ab2
+          0xf574dcac2bce2fc7ULL,
+          0x0a39fc286a3d8435ULL,
+          0x06f15e5f529c1f8bULL,
+          0xf2ea7514b1297b7bULL,
+          0xd3e20fe490359eb1ULL,
+          0xc1c93a376062db09ULL,
+          0xc2b6f443867adb31ULL,
+          0x991e96f50aba0ab2ULL
     }},
     {{
-          0xef1fdfb3e81566d2,
-          0xf948e1a05d71e4dd,
-          0x488e857e335c3c7d,
-          0x9d721cad685e353f,
-          0xa9d72c82ed03d675,
-          0xd8b71333935203be,
-          0x3453eaa193e837f1,
-          0x220cbebc84e3d12e
+          0xef1fdfb3e81566d2ULL,
+          0xf948e1a05d71e4ddULL,
+          0x488e857e335c3c7dULL,
+          0x9d721cad685e353fULL,
+          0xa9d72c82ed03d675ULL,
+          0xd8b71333935203beULL,
+          0x3453eaa193e837f1ULL,
+          0x220cbebc84e3d12eULL
     }},
     {{
-          0x4bea6bacad474799,
-          0x9a3f410c6ca92363,
-          0x7f151c1f1686104a,
-          0x359e35d7800fffbd,
-          0xbfcd1747253af5a3,
-          0xdfff00b723271a16,
-          0x7a56a27ea9ea63f5,
-          0x601758fd7c6cfe57
+          0x4bea6bacad474799ULL,
+          0x9a3f410c6ca92363ULL,
+          0x7f151c1f1686104aULL,
+          0x359e35d7800fffbdULL,
+          0xbfcd1747253af5a3ULL,
+          0xdfff00b723271a16ULL,
+          0x7a56a27ea9ea63f5ULL,
+          0x601758fd7c6cfe57ULL
     }},
     {{
-          0xae4faeae1d3ad3d9,
-          0x6fa4c33b7a3039c0,
-          0x2d66c4f95142a46c,
-          0x187f9ab49af08ec6,
-          0xcffaa6b71c9ab7b4,
-          0x0af21f66c2bec6b6,
-          0xbf71c57236904f35,
-          0xfa68407a46647d6e
+          0xae4faeae1d3ad3d9ULL,
+          0x6fa4c33b7a3039c0ULL,
+          0x2d66c4f95142a46cULL,
+          0x187f9ab49af08ec6ULL,
+          0xcffaa6b71c9ab7b4ULL,
+          0x0af21f66c2bec6b6ULL,
+          0xbf71c57236904f35ULL,
+          0xfa68407a46647d6eULL
     }},
     {{
-          0xf4c70e16eeaac5ec,
-          0x51ac86febf240954,
-          0x399ec6c7e6bf87c9,
-          0xd3473e33197a93c9,
-          0x0992abc52d822c37,
-          0x06476983284a0504,
-          0x3517454ca23c4af3,
-          0x8886564d3a14d493
+          0xf4c70e16eeaac5ecULL,
+          0x51ac86febf240954ULL,
+          0x399ec6c7e6bf87c9ULL,
+          0xd3473e33197a93c9ULL,
+          0x0992abc52d822c37ULL,
+          0x06476983284a0504ULL,
+          0x3517454ca23c4af3ULL,
+          0x8886564d3a14d493ULL
     }},
     {{
-          0x9b1f5b424d93c9a7,
-          0x03e7aa020c6e4141,
-          0x4eb7f8719c36de1e,
-          0x89b4443b4ddbc49a,
-          0xf4892bcb929b0690,
-          0x69d18d2bd1a5c42f,
-          0x36acc2355951a8d9,
-          0xa47f0dd4bf02e71e
+          0x9b1f5b424d93c9a7ULL,
+          0x03e7aa020c6e4141ULL,
+          0x4eb7f8719c36de1eULL,
+          0x89b4443b4ddbc49aULL,
+          0xf4892bcb929b0690ULL,
+          0x69d18d2bd1a5c42fULL,
+          0x36acc2355951a8d9ULL,
+          0xa47f0dd4bf02e71eULL
     }},
     {{
-          0x378f5a541631229b,
-          0x944c9ad8ec165fde,
-          0x3a7d3a1b25894224,
-          0x3cd955b7e00d0984,
-          0x800a440bdbb2ceb1,
-          0x7b2b8a9aa6079c54,
-          0x0e38dc92cb1f2a60,
-          0x7261445183235adb
+          0x378f5a541631229bULL,
+          0x944c9ad8ec165fdeULL,
+          0x3a7d3a1b25894224ULL,
+          0x3cd955b7e00d0984ULL,
+          0x800a440bdbb2ceb1ULL,
+          0x7b2b8a9aa6079c54ULL,
+          0x0e38dc92cb1f2a60ULL,
+          0x7261445183235adbULL
     }},
     {{
-          0xabbedea680056f52,
-          0x382ae548b2e4f3f3,
-          0x8941e71cff8a78db,
-          0x1fffe18a1b336103,
-          0x9fe76702af69334b,
-          0x7a1e6c303b7652f4,
-          0x3698fad1153bb6c3,
-          0x74b4c7fb98459ced
+          0xabbedea680056f52ULL,
+          0x382ae548b2e4f3f3ULL,
+          0x8941e71cff8a78dbULL,
+          0x1fffe18a1b336103ULL,
+          0x9fe76702af69334bULL,
+          0x7a1e6c303b7652f4ULL,
+          0x3698fad1153bb6c3ULL,
+          0x74b4c7fb98459cedULL
     }},
     {{
-          0x7bcd9ed0efc889fb,
-          0x3002c6cd635afe94,
-          0xd8fa6bbbebab0761,
-          0x2001802114846679,
-          0x8a1d71efea48b9ca,
-          0xefbacd1d7d476e98,
-          0xdea2594ac06fd85d,
-          0x6bcaa4cd81f32d1b
+          0x7bcd9ed0efc889fbULL,
+          0x3002c6cd635afe94ULL,
+          0xd8fa6bbbebab0761ULL,
+          0x2001802114846679ULL,
+          0x8a1d71efea48b9caULL,
+          0xefbacd1d7d476e98ULL,
+          0xdea2594ac06fd85dULL,
+          0x6bcaa4cd81f32d1bULL
     }},
     {{
-          0x378ee767f11631ba,
-          0xd21380b00449b17a,
-          0xcda43c32bcdf1d77,
-          0xf82012d430219f9b,
-          0x5d80ef9d1891cc86,
-          0xe71da4aa88e12852,
-          0xfaf417d5d9b21b99,
-          0x48bc924af11bd720
+          0x378ee767f11631baULL,
+          0xd21380b00449b17aULL,
+          0xcda43c32bcdf1d77ULL,
+          0xf82012d430219f9bULL,
+          0x5d80ef9d1891cc86ULL,
+          0xe71da4aa88e12852ULL,
+          0xfaf417d5d9b21b99ULL,
+          0x48bc924af11bd720ULL
     }}
 };
 
-static const uint64_t A[129] = { 
-    0x8e20faa72ba0b470, 0x47107ddd9b505a38, 0xad08b0e0c3282d1c,
-    0xd8045870ef14980e, 0x6c022c38f90a4c07, 0x3601161cf205268d,
-    0x1b8e0b0e798c13c8, 0x83478b07b2468764, 0xa011d380818e8f40,
-    0x5086e740ce47c920, 0x2843fd2067adea10, 0x14aff010bdd87508,
-    0x0ad97808d06cb404, 0x05e23c0468365a02, 0x8c711e02341b2d01,
-    0x46b60f011a83988e, 0x90dab52a387ae76f, 0x486dd4151c3dfdb9,
-    0x24b86a840e90f0d2, 0x125c354207487869, 0x092e94218d243cba,
-    0x8a174a9ec8121e5d, 0x4585254f64090fa0, 0xaccc9ca9328a8950,
-    0x9d4df05d5f661451, 0xc0a878a0a1330aa6, 0x60543c50de970553,
-    0x302a1e286fc58ca7, 0x18150f14b9ec46dd, 0x0c84890ad27623e0,
-    0x0642ca05693b9f70, 0x0321658cba93c138, 0x86275df09ce8aaa8,
-    0x439da0784e745554, 0xafc0503c273aa42a, 0xd960281e9d1d5215,
-    0xe230140fc0802984, 0x71180a8960409a42, 0xb60c05ca30204d21,
-    0x5b068c651810a89e, 0x456c34887a3805b9, 0xac361a443d1c8cd2,
-    0x561b0d22900e4669, 0x2b838811480723ba, 0x9bcf4486248d9f5d,
-    0xc3e9224312c8c1a0, 0xeffa11af0964ee50, 0xf97d86d98a327728,
-    0xe4fa2054a80b329c, 0x727d102a548b194e, 0x39b008152acb8227,
-    0x9258048415eb419d, 0x492c024284fbaec0, 0xaa16012142f35760,
-    0x550b8e9e21f7a530, 0xa48b474f9ef5dc18, 0x70a6a56e2440598e,
-    0x3853dc371220a247, 0x1ca76e95091051ad, 0x0edd37c48a08a6d8,
-    0x07e095624504536c, 0x8d70c431ac02a736, 0xc83862965601dd1b,
-    0x641c314b2b8ee083, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00
+static const unsigned long long A[129] = { 
+    0x8e20faa72ba0b470ULL, 0x47107ddd9b505a38ULL, 0xad08b0e0c3282d1cULL,
+    0xd8045870ef14980eULL, 0x6c022c38f90a4c07ULL, 0x3601161cf205268dULL,
+    0x1b8e0b0e798c13c8ULL, 0x83478b07b2468764ULL, 0xa011d380818e8f40ULL,
+    0x5086e740ce47c920ULL, 0x2843fd2067adea10ULL, 0x14aff010bdd87508ULL,
+    0x0ad97808d06cb404ULL, 0x05e23c0468365a02ULL, 0x8c711e02341b2d01ULL,
+    0x46b60f011a83988eULL, 0x90dab52a387ae76fULL, 0x486dd4151c3dfdb9ULL,
+    0x24b86a840e90f0d2ULL, 0x125c354207487869ULL, 0x092e94218d243cbaULL,
+    0x8a174a9ec8121e5dULL, 0x4585254f64090fa0ULL, 0xaccc9ca9328a8950ULL,
+    0x9d4df05d5f661451ULL, 0xc0a878a0a1330aa6ULL, 0x60543c50de970553ULL,
+    0x302a1e286fc58ca7ULL, 0x18150f14b9ec46ddULL, 0x0c84890ad27623e0ULL,
+    0x0642ca05693b9f70ULL, 0x0321658cba93c138ULL, 0x86275df09ce8aaa8ULL,
+    0x439da0784e745554ULL, 0xafc0503c273aa42aULL, 0xd960281e9d1d5215ULL,
+    0xe230140fc0802984ULL, 0x71180a8960409a42ULL, 0xb60c05ca30204d21ULL,
+    0x5b068c651810a89eULL, 0x456c34887a3805b9ULL, 0xac361a443d1c8cd2ULL,
+    0x561b0d22900e4669ULL, 0x2b838811480723baULL, 0x9bcf4486248d9f5dULL,
+    0xc3e9224312c8c1a0ULL, 0xeffa11af0964ee50ULL, 0xf97d86d98a327728ULL,
+    0xe4fa2054a80b329cULL, 0x727d102a548b194eULL, 0x39b008152acb8227ULL,
+    0x9258048415eb419dULL, 0x492c024284fbaec0ULL, 0xaa16012142f35760ULL,
+    0x550b8e9e21f7a530ULL, 0xa48b474f9ef5dc18ULL, 0x70a6a56e2440598eULL,
+    0x3853dc371220a247ULL, 0x1ca76e95091051adULL, 0x0edd37c48a08a6d8ULL,
+    0x07e095624504536cULL, 0x8d70c431ac02a736ULL, 0xc83862965601dd1bULL,
+    0x641c314b2b8ee083ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+    0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
 };
 
 static const Ai_t Ai[16] = {
@@ -217,7 +217,7 @@ static const Ai_t Ai[16] = {
     {{  3,  2,  1,  0}}
 };
 
-static uint64_t Ax[8][256];
+static unsigned long long Ax[8][256];
 
 static const uint8_t Tau[64] = {
     0,   8,  16,  24,  32,  40,  48,  56, 
@@ -230,7 +230,7 @@ static const uint8_t Tau[64] = {
     7,  15,  23,  31,  39,  47,  55,  63
 };
 
-static const uint64_t Pi[256] = {
+static const uint8_t Pi[256] = {
     252, 238, 221,  17, 207, 110,  49,  22, 
     251, 196, 250, 218,  35, 197,   4,  77, 
     233, 119, 240, 219, 147,  46, 153, 186, 
@@ -281,12 +281,27 @@ memalloc(const size_t size)
     return p;
 }
 
-void 
-init(const uint32_t digest_size, GOST3411Context *CTX)
+void
+destroy(GOST3411Context *CTX)
+{
+    free(CTX->N);
+    free(CTX->h);
+    free(CTX->hash);
+    free(CTX->Sigma);
+    free(CTX->buffer);
+    free(CTX->hexdigest);
+    free(CTX);
+}
+
+GOST3411Context *
+init(const uint32_t digest_size)
 {
     uint8_t i, j;
     uint16_t b;
     Ai_t idx1, idx2;
+    GOST3411Context *CTX;
+
+    CTX = malloc(sizeof (GOST3411Context));
 
     CTX->N = memalloc(sizeof uint512_u);
     CTX->h = memalloc(sizeof uint512_u);
@@ -294,21 +309,22 @@ init(const uint32_t digest_size, GOST3411Context *CTX)
     CTX->Sigma = memalloc(sizeof uint512_u);
     CTX->buffer = memalloc(sizeof uint512_u);
     CTX->hexdigest = memalloc(129);
+    CTX->bufsize = 0;
 
-    *(CTX->N) = buffer0;
-    *(CTX->h) = buffer0;
-    *(CTX->hash) = buffer0;
-    *(CTX->Sigma) = buffer0;
-    *(CTX->buffer) = buffer0;
+    memcpy(CTX->N, &buffer0, sizeof buffer0);
+    memcpy(CTX->h, &buffer0, sizeof buffer0);
+    memcpy(CTX->hash, &buffer0, sizeof buffer0);
+    memcpy(CTX->Sigma, &buffer0, sizeof buffer0);
+    memcpy(CTX->buffer, &buffer0, sizeof buffer0);
     CTX->digest_size = digest_size;
     memset(CTX->hexdigest, 0, 1);
 
     for (i = 0; i < 8; i++)
     {
         if (digest_size == 256)
-            CTX->h->word[i] = 0x0101010101010101UL;
+            CTX->h->word[i] = 0x0101010101010101ULL;
         else
-            CTX->h->word[i] = 0UL;
+            CTX->h->word[i] = 0ULL;
     }
 
     for (i = 0; i < 8; i++)
@@ -324,6 +340,8 @@ init(const uint32_t digest_size, GOST3411Context *CTX)
                        A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
         }
     }
+
+    return CTX;
 }
 
 static void
@@ -358,7 +376,7 @@ pad(union uint512_u *data)
 static inline void 
 LPS(union uint512_u *data)
 {
-    uint8_t i, j, k;
+    uint64_t i, j;
     union uint512_u buf;
 
     /* Substitution */
@@ -369,25 +387,25 @@ LPS(union uint512_u *data)
     for (i = 0; i < 64; i++)
         buf.byte[i] = data->byte[Tau[i]];
 
-    (*data) = buf;
-
-    buf = buffer0;
-
     /* Linear transformation */
     for (i = 0; i < 8; i++)
     {
         j = i << 3;
-        for (k = 0; k < 8; k++)
-            buf.word[i] ^= Ax[k][data->byte[j + k]];
+        data->word[i]  = Ax[0][buf.byte[j++]];
+        data->word[i] ^= Ax[1][buf.byte[j++]];
+        data->word[i] ^= Ax[2][buf.byte[j++]];
+        data->word[i] ^= Ax[3][buf.byte[j++]];
+        data->word[i] ^= Ax[4][buf.byte[j++]];
+        data->word[i] ^= Ax[5][buf.byte[j++]];
+        data->word[i] ^= Ax[6][buf.byte[j++]];
+        data->word[i] ^= Ax[7][buf.byte[j++]];
     }
-
-    (*data) = buf;
 }
 
 static inline void
 K(const uint8_t i, union uint512_u *Ki)
 {
-    XR(Ki, (&C[i - 2]), Ki);
+    XR(Ki, (&C[i]), Ki);
     LPS(Ki);
 }
 
@@ -400,14 +418,15 @@ E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
     Ki = (*Key);
     X((&Ki), m, data);
     LPS(data);
-    for (i = 2; i < 13; i++)
+
+    for (i = 0; i < 11; i++)
     {
         K(i, &Ki);
         X((&Ki), data, data);
         LPS(data);
     }
 
-    K(13, &Ki);
+    K(11, &Ki);
     X((&Ki), data, data);
 }
 
@@ -446,12 +465,12 @@ g(const union uint512_u *N, const union uint512_u *h, const union uint512_u *m,
     X(data, m, data);
 }
 
-static void
+static inline void
 round2(GOST3411Context *CTX)
 {
     g(CTX->N, CTX->h, CTX->buffer, CTX->hash);
 
-    (*CTX->h) = (*CTX->hash);
+    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
 
     add512(CTX->N, &buffer512, CTX->N);
     add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
@@ -464,7 +483,7 @@ round3(GOST3411Context *CTX)
 
     buf = buffer0;
     memcpy(&buf, CTX->buffer, CTX->bufsize);
-    (*CTX->buffer) = buf;
+    memcpy(CTX->buffer, &buf, sizeof uint512_u);
 
     buf = buffer0;
     buf.word[0] = CTX->bufsize * 8;
@@ -472,13 +491,14 @@ round3(GOST3411Context *CTX)
     pad(CTX->buffer);
 
     g(CTX->N, CTX->h, CTX->buffer, CTX->hash);
-    (*CTX->h) = (*CTX->hash);
+    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
 
     add512(CTX->N, &buf, CTX->N);
     add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
         
     g(&buffer0, CTX->h, CTX->N, CTX->hash); 
-    (*CTX->h) = (*CTX->hash);
+    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
+
     g(&buffer0, CTX->h, CTX->Sigma, CTX->hash);
 }
 
@@ -526,7 +546,7 @@ final(GOST3411Context *CTX)
     i = 7;
     while (i >= j)
     {
-        snprintf(buf, 17, "%.16lx", CTX->hash->word[i]);
+        snprintf(buf, 17, "%.16llx", CTX->hash->word[i]);
         strncat(CTX->hexdigest, buf, 16);
         i--;
     }

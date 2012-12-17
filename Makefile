@@ -17,6 +17,8 @@ all: gost3411
 gost3411: $(SOURCES)
 	$(COMPILE) -o gost3411 gost3411-2012-core.c gost3411-2012.c
 
+remake: clean all
+
 clean:
 	-rm gost3411 *.core 2>/dev/null
 

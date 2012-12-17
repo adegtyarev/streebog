@@ -26,12 +26,12 @@ static void usage()
 }
 
 static void
-onfile(GOST3411Context *CTX, FILE *file)
+onfile(FILE *file)
 {
     uint8_t *buffer;
     size_t len;
 
-    init(digest_size, CTX);
+    CTX = init(digest_size);
 
     buffer = memalloc(READ_BUFFER_SIZE + 7);
 
@@ -47,9 +47,9 @@ onfile(GOST3411Context *CTX, FILE *file)
 }
 
 static void
-onstring(GOST3411Context *CTX, const char *string)
+onstring(const char *string)
 {
-    init(digest_size, CTX);
+    CTX = init(digest_size);
 
     update(CTX, string, strlen(string));
 
@@ -58,36 +58,37 @@ onstring(GOST3411Context *CTX, const char *string)
 
 const union uint512_u GOSTTestInput = {
     {
-        0x3736353433323130,
-        0x3534333231303938,
-        0x3332313039383736,
-        0x3130393837363534,
-        0x3938373635343332,
-        0x3736353433323130,
-        0x3534333231303938,
-        0x0032313039383736,
+        0x3736353433323130ULL,
+        0x3534333231303938ULL,
+        0x3332313039383736ULL,
+        0x3130393837363534ULL,
+        0x3938373635343332ULL,
+        0x3736353433323130ULL,
+        0x3534333231303938ULL,
+        0x0032313039383736ULL
     }
 };
 
 static void
-testing(GOST3411Context *CTX)
+testing(void)
 {
-    init(512, CTX);
+    CTX = init(512);
 
-    (*CTX->buffer) = GOSTTestInput;
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
-    printf("M1: 0x%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx\n",
+    printf("M1: 0x%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx\n",
             CTX->buffer->word[7], CTX->buffer->word[6], CTX->buffer->word[5],
             CTX->buffer->word[4], CTX->buffer->word[3], CTX->buffer->word[2],
             CTX->buffer->word[1], CTX->buffer->word[0]);
 
     final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
+    destroy(CTX);
 
-    init(256, CTX);
+    CTX = init(256);
 
-    (*CTX->buffer) = GOSTTestInput;
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
     final(CTX);
@@ -97,7 +98,7 @@ testing(GOST3411Context *CTX)
 }
 
 static void
-benchmark(GOST3411Context *CTX)
+benchmark(void)
 {
 	struct rusage before, after;
 	struct timeval total;
@@ -115,7 +116,7 @@ benchmark(GOST3411Context *CTX)
 
 	getrusage(RUSAGE_SELF, &before);
 
-	init(512, CTX);
+	CTX = init(512);
 	for (i = 0; i < TEST_BLOCK_COUNT; i++)
 		update(CTX, block, TEST_BLOCK_LEN);
 	final(CTX);
@@ -132,6 +133,11 @@ benchmark(GOST3411Context *CTX)
     exit(EXIT_SUCCESS);
 }
 
+void shutdown(void)
+{
+    destroy(CTX);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -140,18 +146,18 @@ main(int argc, char *argv[])
     FILE *f;
 
     excode = EXIT_SUCCESS;
+    atexit(shutdown);
+
     qflag = 0;
     rflag = 0;
     uflag = 0;
-
-    CTX = memalloc(sizeof(GOST3411Context));
 
     while ((ch = getopt(argc, argv, "25bhqrs:t")) != -1)
     {
         switch (ch)
         {
             case 'b':
-                benchmark(CTX);
+                benchmark();
                 break;
             case '2':
                 digest_size = 256;
@@ -163,7 +169,7 @@ main(int argc, char *argv[])
                 qflag = 1;
                 break;
             case 's':
-                onstring(CTX, optarg);
+                onstring(optarg);
                 if (qflag)
                     printf("%s\n", CTX->hexdigest);
                 else if (rflag)
@@ -177,7 +183,7 @@ main(int argc, char *argv[])
                 rflag = 1;
                 break;
             case 't':
-                testing(CTX);
+                testing();
                 break;
             case 'h':
             default:
@@ -198,7 +204,7 @@ main(int argc, char *argv[])
                 excode = EX_OSFILE;
                 continue;
             }
-            onfile(CTX, f);
+            onfile(f);
             fclose(f);
             uflag = 1;
             if (qflag)
@@ -212,7 +218,7 @@ main(int argc, char *argv[])
     }
     else if (!uflag)
     {
-        onfile(CTX, stdin);
+        onfile(stdin);
         printf("%s\n", CTX->hexdigest);
         uflag = 1;
     }
