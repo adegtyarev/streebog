@@ -4,18 +4,20 @@
  * $Id$
  */
 
-#include <gost3411-2012.h>
+#include <gost3411-2012-core.h>
 
 /* For benchmarking */
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
+#define READ_BUFFER_SIZE 65536
+
 #define TEST_BLOCK_LEN 10000
 #define TEST_BLOCK_COUNT 10000
 
 GOST3411Context *CTX;
-uint32_t digest_size;
+uint32_t digest_size = DEFAULT_DIGEST_SIZE;
 
 static void usage()
 {
@@ -35,6 +37,11 @@ onfile(GOST3411Context *CTX, FILE *file)
 
     while ((len = fread(buffer, 1, READ_BUFFER_SIZE, file)))
         update(CTX, buffer, len);
+
+    if (ferror(file))
+        err(EX_IOERR, NULL);
+
+    free(buffer);
 
     final(CTX);
 }
@@ -70,12 +77,13 @@ testing(GOST3411Context *CTX)
     (*CTX->buffer) = GOSTTestInput;
     CTX->bufsize = 63;
 
-    printf("M1: 0x%0lx%0lx%0lx%0lx%0lx%0lx\n",
+    printf("M1: 0x%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx%.16lx\n",
             CTX->buffer->word[7], CTX->buffer->word[6], CTX->buffer->word[5],
-            CTX->buffer->word[4], CTX->buffer->word[3], CTX->buffer->word[2]);
+            CTX->buffer->word[4], CTX->buffer->word[3], CTX->buffer->word[2],
+            CTX->buffer->word[1], CTX->buffer->word[0]);
 
     final(CTX);
-    printf("%s 512 bit digest (M1): %s\n", ALGNAME, CTX->hexdigest);
+    printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
 
     init(256, CTX);
 
@@ -83,13 +91,13 @@ testing(GOST3411Context *CTX)
     CTX->bufsize = 63;
 
     final(CTX);
-    printf("%s 256 bit digest (M1): %s\n", ALGNAME, CTX->hexdigest);
+    printf("%s 256 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
 
     exit(EXIT_SUCCESS);
 }
 
 static void
-benchmark()
+benchmark(GOST3411Context *CTX)
 {
 	struct rusage before, after;
 	struct timeval total;
@@ -129,16 +137,15 @@ int
 main(int argc, char *argv[])
 {
     int8_t ch; 
-    uint8_t uflag, qflag, rflag, sflag, excode;
+    uint8_t uflag, qflag, rflag, excode;
     FILE *f;
 
     excode = EXIT_SUCCESS;
     qflag = 0;
     rflag = 0;
-    sflag = 0;
     uflag = 0;
 
-    CTX = memalloc(sizeof CTX);
+    CTX = memalloc(sizeof(GOST3411Context));
 
     while ((ch = getopt(argc, argv, "25bhqrs:t")) != -1)
     {
@@ -157,7 +164,6 @@ main(int argc, char *argv[])
                 qflag = 1;
                 break;
             case 's':
-                sflag = 1;
                 onstring(CTX, optarg);
                 if (qflag)
                     printf("%s\n", CTX->hexdigest);

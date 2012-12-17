@@ -2,17 +2,7 @@
  * $Id$
  */
 
-#include <err.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sysexits.h>
-#include <unistd.h>
-
-#define DEFAULT_DIGEST_SIZE 512
-#define READ_BUFFER_SIZE 65536
-#define ALGNAME "GOST R 34.11-2012"
+#include <gost3411-2012-core.h>
 
 #define X(x, y, z) { \
     z->word[0] = x->word[0] ^ y->word[0]; \
@@ -36,38 +26,10 @@
     z->word[7] = x->word[7] ^ y->word[0]; \
 }
 
-typedef struct uint512_t
-{
-    uint64_t c[8];
-} uint512_t;
+static const union uint512_u buffer512  = {{ 512, 0, 0, 0, 0, 0, 0, 0 }};
+static const union uint512_u buffer0    = {{ 0, 0, 0, 0, 0, 0, 0, 0 }};
 
-union uint512_u
-{
-    uint64_t word[8];
-    uint8_t byte[64];
-} uint512_u;
-
-typedef struct Ai_t
-{
-    uint8_t i[4];
-} Ai_t;
-
-typedef struct GOST3411Context
-{
-    union uint512_u *buffer;
-    union uint512_u *hash;
-    union uint512_u *h;
-    union uint512_u *N;
-    union uint512_u *Sigma;
-    size_t bufsize;
-    uint32_t digest_size;
-    char *hexdigest;
-} GOST3411Context;
-
-static union uint512_u buffer512  = {{ 512, 0, 0, 0, 0, 0, 0, 0 }};
-static union uint512_u buffer0    = {{ 0, 0, 0, 0, 0, 0, 0, 0 }};
-
-static union uint512_u C[12] = {
+static const union uint512_u C[12] = {
     {{    
           0xb1085bda1ecadae9,
           0xebcb2f81c0657c1f,
@@ -300,8 +262,7 @@ static const uint64_t Pi[256] = {
      89, 166, 116, 210, 230, 244, 180, 192, 
     209, 102, 175, 194,  57,  75,  99, 182
 };
-
-static void *
+void *
 memalloc(const size_t size)
 {
     void *p;
@@ -317,23 +278,23 @@ memalloc(const size_t size)
     return p;
 }
 
-static void 
+void 
 init(const uint32_t digest_size, GOST3411Context *CTX)
 {
     uint8_t i;
 
-    CTX->N = memalloc(sizeof (*CTX->N));
-    CTX->h = memalloc(sizeof (*CTX->h));
-    CTX->hash = memalloc(sizeof (*CTX->hash));
-    CTX->Sigma = memalloc(sizeof (*CTX->Sigma));
-    CTX->buffer = memalloc(sizeof (*CTX->buffer));
-    CTX->hexdigest = memalloc(64);
+    CTX->N = memalloc(sizeof uint512_u);
+    CTX->h = memalloc(sizeof uint512_u);
+    CTX->hash = memalloc(sizeof uint512_u);
+    CTX->Sigma = memalloc(sizeof uint512_u);
+    CTX->buffer = memalloc(sizeof uint512_u);
+    CTX->hexdigest = memalloc(129);
 
-    (*CTX->N) = buffer0;
-    (*CTX->h) = buffer0;
-    (*CTX->hash) = buffer0;
-    (*CTX->Sigma) = buffer0;
-    (*CTX->buffer) = buffer0;
+    *(CTX->N) = buffer0;
+    *(CTX->h) = buffer0;
+    *(CTX->hash) = buffer0;
+    *(CTX->Sigma) = buffer0;
+    *(CTX->buffer) = buffer0;
     CTX->digest_size = digest_size;
     memset(CTX->hexdigest, 0, 1);
 
@@ -553,20 +514,20 @@ final(GOST3411Context *CTX)
     round3(CTX);
     CTX->bufsize = 0;
 
-    buf = memalloc(17 * sizeof(char));
+    buf = memalloc(17);
 
     if (CTX->digest_size == 256)
-        j = 5;
+        j = 4;
     else
         j = 0;
 
     i = 7;
-    do
+    while (i >= j)
     {
-        snprintf(buf, 17, "%0lx", CTX->hash->word[i]);
-        strncat(CTX->hexdigest, buf, 17);
+        snprintf(buf, 17, "%.16lx", CTX->hash->word[i]);
+        strncat(CTX->hexdigest, buf, 16);
+        i--;
     }
-    while (i-- >= j);
 
     free(buf);
 }
