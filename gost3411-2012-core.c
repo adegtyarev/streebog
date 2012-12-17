@@ -217,6 +217,8 @@ static const Ai_t Ai[16] = {
     {{  3,  2,  1,  0}}
 };
 
+static uint64_t Ax[8][256];
+
 static const uint8_t Tau[64] = {
     0,   8,  16,  24,  32,  40,  48,  56, 
     1,   9,  17,  25,  33,  41,  49,  57, 
@@ -262,6 +264,7 @@ static const uint64_t Pi[256] = {
      89, 166, 116, 210, 230, 244, 180, 192, 
     209, 102, 175, 194,  57,  75,  99, 182
 };
+
 void *
 memalloc(const size_t size)
 {
@@ -281,7 +284,9 @@ memalloc(const size_t size)
 void 
 init(const uint32_t digest_size, GOST3411Context *CTX)
 {
-    uint8_t i;
+    uint8_t i, j;
+    uint16_t b;
+    Ai_t idx1, idx2;
 
     CTX->N = memalloc(sizeof uint512_u);
     CTX->h = memalloc(sizeof uint512_u);
@@ -304,6 +309,20 @@ init(const uint32_t digest_size, GOST3411Context *CTX)
             CTX->h->word[i] = 0x0101010101010101UL;
         else
             CTX->h->word[i] = 0UL;
+    }
+
+    for (i = 0; i < 8; i++)
+    {
+        for (b = 0; b < 256; b++)
+        {
+            j = 64 - (i << 3) - 8;
+            idx1 = Ai[b & 0x0F];
+            idx2 = Ai[(b & 0xF0) >> 4];
+            Ax[i][b] = A[j + 4 + idx1.i[0]] ^ A[j + idx2.i[0]] ^
+                       A[j + 4 + idx1.i[1]] ^ A[j + idx2.i[1]] ^
+                       A[j + 4 + idx1.i[2]] ^ A[j + idx2.i[2]] ^
+                       A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
+        }
     }
 }
 
@@ -339,47 +358,30 @@ pad(union uint512_u *data)
 static inline void 
 LPS(union uint512_u *data)
 {
-    uint8_t i, j, k, b;
+    uint8_t i, j, k;
     union uint512_u buf;
-    uint64_t bufword;
-    Ai_t idx;
 
-    /* S */
+    /* Substitution */
     for (i = 0; i < 64; i++)
         data->byte[i] = Pi[data->byte[i]];
 
-    /* P */
+    /* Permutaion */
     for (i = 0; i < 64; i++)
         buf.byte[i] = data->byte[Tau[i]];
 
     (*data) = buf;
 
-    /* L */
+    buf = buffer0;
+
+    /* Linear transformation */
     for (i = 0; i < 8; i++)
     {
-        bufword = 0;
-
+        j = i << 3;
         for (k = 0; k < 8; k++)
-        {
-            j = 64 - (k << 3) - 4;
-            b = data->byte[i * 8 + k];
-
-            idx = Ai[b & 0x0F];
-            bufword ^= A[j + idx.i[0]] ^
-                       A[j + idx.i[1]] ^
-                       A[j + idx.i[2]] ^
-                       A[j + idx.i[3]];
-
-            j -= 4;
-            idx = Ai[(b & 0xF0) >> 4];
-            bufword ^= A[j + idx.i[0]] ^
-                       A[j + idx.i[1]] ^
-                       A[j + idx.i[2]] ^
-                       A[j + idx.i[3]];
-        }
-
-        data->word[i] = bufword;
+            buf.word[i] ^= Ax[k][data->byte[j + k]];
     }
+
+    (*data) = buf;
 }
 
 static inline void
@@ -481,21 +483,21 @@ round3(GOST3411Context *CTX)
 }
 
 void
-update(GOST3411Context *CTX, const void *data, uint32_t len)
+update(GOST3411Context *CTX, const void *data, size_t len)
 {
-    uint8_t chunk;
+    size_t chunksize;
 
     while (len)
     {
-        chunk = 64 - CTX->bufsize;
-        if (chunk > len)
-            chunk = len;
+        chunksize = 64 - CTX->bufsize;
+        if (chunksize > len)
+            chunksize = len;
 
-        memcpy(CTX->buffer, data, chunk);
+        memcpy(CTX->buffer, data, chunksize);
 
-        CTX->bufsize += chunk;
-        data += chunk;
-        len -= chunk;
+        CTX->bufsize += chunksize;
+        data += chunksize;
+        len -= chunksize;
 
         while (CTX->bufsize == 64)
         {

@@ -124,7 +124,6 @@ benchmark(GOST3411Context *CTX)
 	timersub(&after.ru_utime, &before.ru_utime, &total);
 	seconds = total.tv_sec + (float) total.tv_usec / 1000000;
 
-	printf(" done\n");
 	printf("Digest = %s", CTX->hexdigest);
 	printf("\nTime = %f seconds\n", seconds);
 	printf("Speed = %.2f bytes/second\n",

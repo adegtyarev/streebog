@@ -44,4 +44,4 @@ typedef struct GOST3411Context
 void *memalloc(const size_t size);
 void final(GOST3411Context *CTX);
 void init(const uint32_t digest_size, GOST3411Context *CTX);
-void update(GOST3411Context *CTX, const void *data, uint32_t len);
+void update(GOST3411Context *CTX, const void *data, size_t len);
