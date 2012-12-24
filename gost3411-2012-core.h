@@ -40,4 +40,4 @@ void *memalloc(const size_t size);
 void final(GOST3411Context *CTX);
 GOST3411Context * init(const uint32_t digest_size);
 void destroy(GOST3411Context *CTX);
-void update(GOST3411Context *CTX, const void *data, size_t len);
+void update(GOST3411Context *CTX, const char *data, size_t len);

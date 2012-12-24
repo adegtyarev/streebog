@@ -1,4 +1,9 @@
-# $Id$
+Changes with version 0.05                                           24 Dec 2012
+
+    * Feature: issue all the warnings demanded by strict ISO C.
+
+    * Feature: performance optimization in LPS: execute substitution and
+      permutation within single loop.
 
 Changes with version 0.04                                           17 Dec 2012
 
@@ -15,7 +20,6 @@ Changes with version 0.03                                           16 Dec 2012
 
     * Bugfix: algorithm optimization in linear transformation L.
 
-
 Changes with version 0.02                                           15 Dec 2012
 
     * Feature: Makefile improvements.
@@ -25,7 +29,6 @@ Changes with version 0.02                                           15 Dec 2012
     * Bugfix: layout modification: isolate core from main program.
 
     * Bugfix: handle read errors with ferror().
-
 
 Initial version 0.01                                                14 Dec 2012
 

@@ -19,7 +19,7 @@
 GOST3411Context *CTX;
 uint32_t digest_size = DEFAULT_DIGEST_SIZE;
 
-static void usage()
+static void usage(void)
 {
 	fprintf(stderr, "usage: [-25bhqrt] [-s string] [files ...]\n");
 	exit(1);
@@ -28,14 +28,14 @@ static void usage()
 static void
 onfile(FILE *file)
 {
-    uint8_t *buffer;
+    char *buffer;
     size_t len;
 
     CTX = init(digest_size);
 
-    buffer = memalloc(READ_BUFFER_SIZE + 7);
+    buffer = memalloc((size_t) READ_BUFFER_SIZE + 7);
 
-    while ((len = fread(buffer, 1, READ_BUFFER_SIZE, file)))
+    while ((len = fread(buffer, (size_t) 1, (size_t) READ_BUFFER_SIZE, file)))
         update(CTX, buffer, len);
 
     if (ferror(file))
@@ -103,7 +103,7 @@ benchmark(void)
 	struct rusage before, after;
 	struct timeval total;
 	float seconds;
-	unsigned char block[TEST_BLOCK_LEN];
+	char block[TEST_BLOCK_LEN];
 	unsigned int i;
 
 	printf("%s timing benchmark.\n", ALGNAME);
@@ -112,18 +112,18 @@ benchmark(void)
 	fflush(stdout);
 
 	for (i = 0; i < TEST_BLOCK_LEN; i++)
-		block[i] = (unsigned char) (i & 0xff);
+		block[i] = (char) (i & 0xff);
 
 	getrusage(RUSAGE_SELF, &before);
 
 	CTX = init(512);
 	for (i = 0; i < TEST_BLOCK_COUNT; i++)
-		update(CTX, block, TEST_BLOCK_LEN);
+		update(CTX, block, (size_t) TEST_BLOCK_LEN);
 	final(CTX);
 
 	getrusage(RUSAGE_SELF, &after);
 	timersub(&after.ru_utime, &before.ru_utime, &total);
-	seconds = total.tv_sec + (float) total.tv_usec / 1000000;
+	seconds = (float) total.tv_sec + (float) total.tv_usec / 1000000;
 
 	printf("Digest = %s", CTX->hexdigest);
 	printf("\nTime = %f seconds\n", seconds);
@@ -133,7 +133,8 @@ benchmark(void)
     exit(EXIT_SUCCESS);
 }
 
-void shutdown(void)
+static void 
+shutdown(void)
 {
     destroy(CTX);
 }
@@ -141,7 +142,7 @@ void shutdown(void)
 int
 main(int argc, char *argv[])
 {
-    int8_t ch; 
+    int ch; 
     uint8_t uflag, qflag, rflag, excode;
     FILE *f;
 

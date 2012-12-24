@@ -268,7 +268,7 @@ static const uint8_t Pi[256] = {
 void *
 memalloc(const size_t size)
 {
-    void *p;
+    char *p;
     long offset;
 
     if ((p = malloc(size)) == NULL)
@@ -296,19 +296,18 @@ destroy(GOST3411Context *CTX)
 GOST3411Context *
 init(const uint32_t digest_size)
 {
-    uint8_t i, j;
-    uint16_t b;
+    uint64_t i, j, b;
     Ai_t idx1, idx2;
     GOST3411Context *CTX;
 
-    CTX = malloc(sizeof (GOST3411Context));
+    CTX = memalloc(sizeof (GOST3411Context));
 
     CTX->N = memalloc(sizeof uint512_u);
     CTX->h = memalloc(sizeof uint512_u);
     CTX->hash = memalloc(sizeof uint512_u);
     CTX->Sigma = memalloc(sizeof uint512_u);
     CTX->buffer = memalloc(sizeof uint512_u);
-    CTX->hexdigest = memalloc(129);
+    CTX->hexdigest = memalloc((size_t) 129);
     CTX->bufsize = 0;
 
     memcpy(CTX->N, &buffer0, sizeof buffer0);
@@ -317,7 +316,7 @@ init(const uint32_t digest_size)
     memcpy(CTX->Sigma, &buffer0, sizeof buffer0);
     memcpy(CTX->buffer, &buffer0, sizeof buffer0);
     CTX->digest_size = digest_size;
-    memset(CTX->hexdigest, 0, 1);
+    memset(CTX->hexdigest, 0, (size_t) 1);
 
     for (i = 0; i < 8; i++)
     {
@@ -361,7 +360,7 @@ pad(union uint512_u *data)
                 break;
             }
 
-            i = (i >> 3) * 8;
+            i = (uint8_t) ((i >> 3) << 3);
             continue;
         }
         if (data->byte[i])
@@ -379,13 +378,9 @@ LPS(union uint512_u *data)
     uint64_t i, j;
     union uint512_u buf;
 
-    /* Substitution */
+    /* Substitution and permutation */
     for (i = 0; i < 64; i++)
-        data->byte[i] = Pi[data->byte[i]];
-
-    /* Permutaion */
-    for (i = 0; i < 64; i++)
-        buf.byte[i] = data->byte[Tau[i]];
+        buf.byte[Tau[i]] = Pi[data->byte[i]];
 
     /* Linear transformation */
     for (i = 0; i < 8; i++)
@@ -403,7 +398,7 @@ LPS(union uint512_u *data)
 }
 
 static inline void
-K(const uint8_t i, union uint512_u *Ki)
+K(const int i, union uint512_u *Ki)
 {
     XR(Ki, (&C[i]), Ki);
     LPS(Ki);
@@ -412,7 +407,7 @@ K(const uint8_t i, union uint512_u *Ki)
 static inline void
 E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
 {
-    uint8_t i;
+    int i;
     union uint512_u Ki;
 
     Ki = (*Key);
@@ -476,7 +471,7 @@ round2(GOST3411Context *CTX)
     add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
 }
 
-static void
+static inline void
 round3(GOST3411Context *CTX)
 {
     union uint512_u buf;
@@ -503,7 +498,7 @@ round3(GOST3411Context *CTX)
 }
 
 void
-update(GOST3411Context *CTX, const void *data, size_t len)
+update(GOST3411Context *CTX, const char *data, size_t len)
 {
     size_t chunksize;
 
@@ -536,7 +531,7 @@ final(GOST3411Context *CTX)
     round3(CTX);
     CTX->bufsize = 0;
 
-    buf = memalloc(17);
+    buf = memalloc((size_t)17);
 
     if (CTX->digest_size == 256)
         j = 4;
@@ -546,8 +541,8 @@ final(GOST3411Context *CTX)
     i = 7;
     while (i >= j)
     {
-        snprintf(buf, 17, "%.16llx", CTX->hash->word[i]);
-        strncat(CTX->hexdigest, buf, 16);
+        snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->word[i]);
+        strncat(CTX->hexdigest, buf, (size_t) 16);
         i--;
     }
 
