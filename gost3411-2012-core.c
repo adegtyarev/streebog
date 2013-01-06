@@ -26,8 +26,152 @@
     z->word[7] = x->word[7] ^ y->word[0]; \
 }
 
-static const union uint512_u buffer512  = {{ 512ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL }};
-static const union uint512_u buffer0    = {{   0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL, 0ULL }};
+/*
+ * Substitution and permutation loop unrolled:
+ *
+ *  for (i = 0; i < 64; i++)
+ *      buf.byte[Tau[i]] = Pi[data->byte[i]];
+ */
+
+#define PS(buf, data) { \
+    buf->byte[Tau[ 0]] = Pi[data->byte[ 0]]; \
+    buf->byte[Tau[ 1]] = Pi[data->byte[ 1]]; \
+    buf->byte[Tau[ 2]] = Pi[data->byte[ 2]]; \
+    buf->byte[Tau[ 3]] = Pi[data->byte[ 3]]; \
+    buf->byte[Tau[ 4]] = Pi[data->byte[ 4]]; \
+    buf->byte[Tau[ 5]] = Pi[data->byte[ 5]]; \
+    buf->byte[Tau[ 6]] = Pi[data->byte[ 6]]; \
+    buf->byte[Tau[ 7]] = Pi[data->byte[ 7]]; \
+    buf->byte[Tau[ 8]] = Pi[data->byte[ 8]]; \
+    buf->byte[Tau[ 9]] = Pi[data->byte[ 9]]; \
+    buf->byte[Tau[10]] = Pi[data->byte[10]]; \
+    buf->byte[Tau[11]] = Pi[data->byte[11]]; \
+    buf->byte[Tau[12]] = Pi[data->byte[12]]; \
+    buf->byte[Tau[13]] = Pi[data->byte[13]]; \
+    buf->byte[Tau[14]] = Pi[data->byte[14]]; \
+    buf->byte[Tau[15]] = Pi[data->byte[15]]; \
+    buf->byte[Tau[16]] = Pi[data->byte[16]]; \
+    buf->byte[Tau[17]] = Pi[data->byte[17]]; \
+    buf->byte[Tau[18]] = Pi[data->byte[18]]; \
+    buf->byte[Tau[19]] = Pi[data->byte[19]]; \
+    buf->byte[Tau[20]] = Pi[data->byte[20]]; \
+    buf->byte[Tau[21]] = Pi[data->byte[21]]; \
+    buf->byte[Tau[22]] = Pi[data->byte[22]]; \
+    buf->byte[Tau[23]] = Pi[data->byte[23]]; \
+    buf->byte[Tau[24]] = Pi[data->byte[24]]; \
+    buf->byte[Tau[25]] = Pi[data->byte[25]]; \
+    buf->byte[Tau[26]] = Pi[data->byte[26]]; \
+    buf->byte[Tau[27]] = Pi[data->byte[27]]; \
+    buf->byte[Tau[28]] = Pi[data->byte[28]]; \
+    buf->byte[Tau[29]] = Pi[data->byte[29]]; \
+    buf->byte[Tau[30]] = Pi[data->byte[30]]; \
+    buf->byte[Tau[31]] = Pi[data->byte[31]]; \
+    buf->byte[Tau[32]] = Pi[data->byte[32]]; \
+    buf->byte[Tau[33]] = Pi[data->byte[33]]; \
+    buf->byte[Tau[34]] = Pi[data->byte[34]]; \
+    buf->byte[Tau[35]] = Pi[data->byte[35]]; \
+    buf->byte[Tau[36]] = Pi[data->byte[36]]; \
+    buf->byte[Tau[37]] = Pi[data->byte[37]]; \
+    buf->byte[Tau[38]] = Pi[data->byte[38]]; \
+    buf->byte[Tau[39]] = Pi[data->byte[39]]; \
+    buf->byte[Tau[40]] = Pi[data->byte[40]]; \
+    buf->byte[Tau[41]] = Pi[data->byte[41]]; \
+    buf->byte[Tau[42]] = Pi[data->byte[42]]; \
+    buf->byte[Tau[43]] = Pi[data->byte[43]]; \
+    buf->byte[Tau[44]] = Pi[data->byte[44]]; \
+    buf->byte[Tau[45]] = Pi[data->byte[45]]; \
+    buf->byte[Tau[46]] = Pi[data->byte[46]]; \
+    buf->byte[Tau[47]] = Pi[data->byte[47]]; \
+    buf->byte[Tau[48]] = Pi[data->byte[48]]; \
+    buf->byte[Tau[49]] = Pi[data->byte[49]]; \
+    buf->byte[Tau[50]] = Pi[data->byte[50]]; \
+    buf->byte[Tau[51]] = Pi[data->byte[51]]; \
+    buf->byte[Tau[52]] = Pi[data->byte[52]]; \
+    buf->byte[Tau[53]] = Pi[data->byte[53]]; \
+    buf->byte[Tau[54]] = Pi[data->byte[54]]; \
+    buf->byte[Tau[55]] = Pi[data->byte[55]]; \
+    buf->byte[Tau[56]] = Pi[data->byte[56]]; \
+    buf->byte[Tau[57]] = Pi[data->byte[57]]; \
+    buf->byte[Tau[58]] = Pi[data->byte[58]]; \
+    buf->byte[Tau[59]] = Pi[data->byte[59]]; \
+    buf->byte[Tau[60]] = Pi[data->byte[60]]; \
+    buf->byte[Tau[61]] = Pi[data->byte[61]]; \
+    buf->byte[Tau[62]] = Pi[data->byte[62]]; \
+    buf->byte[Tau[63]] = Pi[data->byte[63]]; \
+}
+
+#define L(buf, data) { \
+    data->word[0]  = Ax[0][buf->byte[0]]; \
+    data->word[0] ^= Ax[1][buf->byte[1]]; \
+    data->word[0] ^= Ax[2][buf->byte[2]]; \
+    data->word[0] ^= Ax[3][buf->byte[3]]; \
+    data->word[0] ^= Ax[4][buf->byte[4]]; \
+    data->word[0] ^= Ax[5][buf->byte[5]]; \
+    data->word[0] ^= Ax[6][buf->byte[6]]; \
+    data->word[0] ^= Ax[7][buf->byte[7]]; \
+    data->word[1]  = Ax[0][buf->byte[8]]; \
+    data->word[1] ^= Ax[1][buf->byte[9]]; \
+    data->word[1] ^= Ax[2][buf->byte[10]]; \
+    data->word[1] ^= Ax[3][buf->byte[11]]; \
+    data->word[1] ^= Ax[4][buf->byte[12]]; \
+    data->word[1] ^= Ax[5][buf->byte[13]]; \
+    data->word[1] ^= Ax[6][buf->byte[14]]; \
+    data->word[1] ^= Ax[7][buf->byte[15]]; \
+    data->word[2]  = Ax[0][buf->byte[16]]; \
+    data->word[2] ^= Ax[1][buf->byte[17]]; \
+    data->word[2] ^= Ax[2][buf->byte[18]]; \
+    data->word[2] ^= Ax[3][buf->byte[19]]; \
+    data->word[2] ^= Ax[4][buf->byte[20]]; \
+    data->word[2] ^= Ax[5][buf->byte[21]]; \
+    data->word[2] ^= Ax[6][buf->byte[22]]; \
+    data->word[2] ^= Ax[7][buf->byte[23]]; \
+    data->word[3]  = Ax[0][buf->byte[24]]; \
+    data->word[3] ^= Ax[1][buf->byte[25]]; \
+    data->word[3] ^= Ax[2][buf->byte[26]]; \
+    data->word[3] ^= Ax[3][buf->byte[27]]; \
+    data->word[3] ^= Ax[4][buf->byte[28]]; \
+    data->word[3] ^= Ax[5][buf->byte[29]]; \
+    data->word[3] ^= Ax[6][buf->byte[30]]; \
+    data->word[3] ^= Ax[7][buf->byte[31]]; \
+    data->word[4]  = Ax[0][buf->byte[32]]; \
+    data->word[4] ^= Ax[1][buf->byte[33]]; \
+    data->word[4] ^= Ax[2][buf->byte[34]]; \
+    data->word[4] ^= Ax[3][buf->byte[35]]; \
+    data->word[4] ^= Ax[4][buf->byte[36]]; \
+    data->word[4] ^= Ax[5][buf->byte[37]]; \
+    data->word[4] ^= Ax[6][buf->byte[38]]; \
+    data->word[4] ^= Ax[7][buf->byte[39]]; \
+    data->word[5]  = Ax[0][buf->byte[40]]; \
+    data->word[5] ^= Ax[1][buf->byte[41]]; \
+    data->word[5] ^= Ax[2][buf->byte[42]]; \
+    data->word[5] ^= Ax[3][buf->byte[43]]; \
+    data->word[5] ^= Ax[4][buf->byte[44]]; \
+    data->word[5] ^= Ax[5][buf->byte[45]]; \
+    data->word[5] ^= Ax[6][buf->byte[46]]; \
+    data->word[5] ^= Ax[7][buf->byte[47]]; \
+    data->word[6]  = Ax[0][buf->byte[48]]; \
+    data->word[6] ^= Ax[1][buf->byte[49]]; \
+    data->word[6] ^= Ax[2][buf->byte[50]]; \
+    data->word[6] ^= Ax[3][buf->byte[51]]; \
+    data->word[6] ^= Ax[4][buf->byte[52]]; \
+    data->word[6] ^= Ax[5][buf->byte[53]]; \
+    data->word[6] ^= Ax[6][buf->byte[54]]; \
+    data->word[6] ^= Ax[7][buf->byte[55]]; \
+    data->word[7]  = Ax[0][buf->byte[56]]; \
+    data->word[7] ^= Ax[1][buf->byte[57]]; \
+    data->word[7] ^= Ax[2][buf->byte[58]]; \
+    data->word[7] ^= Ax[3][buf->byte[59]]; \
+    data->word[7] ^= Ax[4][buf->byte[60]]; \
+    data->word[7] ^= Ax[5][buf->byte[61]]; \
+    data->word[7] ^= Ax[6][buf->byte[62]]; \
+    data->word[7] ^= Ax[7][buf->byte[63]]; \
+}
+
+static const union uint512_u buffer512  = {{ 512ULL, 0ULL, 0ULL, 0ULL, 0ULL,
+    0ULL, 0ULL, 0ULL }};
+
+static const union uint512_u buffer0    = {{   0ULL, 0ULL, 0ULL, 0ULL, 0ULL,
+    0ULL, 0ULL, 0ULL }};
 
 static const union uint512_u C[12] = {
     {{    
@@ -375,14 +519,14 @@ pad(union uint512_u *data)
 static inline void 
 LPS(union uint512_u *data)
 {
+    /*
     uint64_t i, j;
+    */
     union uint512_u buf;
 
     /* Substitution and permutation */
-    for (i = 0; i < 64; i++)
-        buf.byte[Tau[i]] = Pi[data->byte[i]];
-
     /* Linear transformation */
+    /*
     for (i = 0; i < 8; i++)
     {
         j = i << 3;
@@ -395,6 +539,9 @@ LPS(union uint512_u *data)
         data->word[i] ^= Ax[6][buf.byte[j++]];
         data->word[i] ^= Ax[7][buf.byte[j++]];
     }
+    */
+    PS((&buf), data);
+    L((&buf), data);
 }
 
 static inline void
@@ -449,9 +596,9 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
     }
 }
 
-static inline void
-g(const union uint512_u *N, const union uint512_u *h, const union uint512_u *m, 
-        union uint512_u *data)
+static void
+g(const union uint512_u *N, const union uint512_u *h, 
+        const union uint512_u *m, union uint512_u *data)
 {
     X(h, N, data);
     LPS(data);
