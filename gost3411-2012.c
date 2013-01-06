@@ -84,7 +84,6 @@ testing(void)
 
     final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
-    destroy(CTX);
 
     CTX = init(256);
 
@@ -136,7 +135,8 @@ benchmark(void)
 static void 
 shutdown(void)
 {
-    destroy(CTX);
+    if (CTX != NULL)
+        destroy(CTX);
 }
 
 int
