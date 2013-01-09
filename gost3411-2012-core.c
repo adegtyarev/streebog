@@ -5,166 +5,63 @@
 #include <gost3411-2012-core.h>
 
 #define X(x, y, z) { \
-    z->word[0] = x->word[0] ^ y->word[0]; \
-    z->word[1] = x->word[1] ^ y->word[1]; \
-    z->word[2] = x->word[2] ^ y->word[2]; \
-    z->word[3] = x->word[3] ^ y->word[3]; \
-    z->word[4] = x->word[4] ^ y->word[4]; \
-    z->word[5] = x->word[5] ^ y->word[5]; \
-    z->word[6] = x->word[6] ^ y->word[6]; \
-    z->word[7] = x->word[7] ^ y->word[7]; \
+    z->QWORD[0] = x->QWORD[0] ^ y->QWORD[0]; \
+    z->QWORD[1] = x->QWORD[1] ^ y->QWORD[1]; \
+    z->QWORD[2] = x->QWORD[2] ^ y->QWORD[2]; \
+    z->QWORD[3] = x->QWORD[3] ^ y->QWORD[3]; \
+    z->QWORD[4] = x->QWORD[4] ^ y->QWORD[4]; \
+    z->QWORD[5] = x->QWORD[5] ^ y->QWORD[5]; \
+    z->QWORD[6] = x->QWORD[6] ^ y->QWORD[6]; \
+    z->QWORD[7] = x->QWORD[7] ^ y->QWORD[7]; \
 }
 
-#define XR(x, y, z) { \
-    z->word[0] = x->word[0] ^ y->word[7]; \
-    z->word[1] = x->word[1] ^ y->word[6]; \
-    z->word[2] = x->word[2] ^ y->word[5]; \
-    z->word[3] = x->word[3] ^ y->word[4]; \
-    z->word[4] = x->word[4] ^ y->word[3]; \
-    z->word[5] = x->word[5] ^ y->word[2]; \
-    z->word[6] = x->word[6] ^ y->word[1]; \
-    z->word[7] = x->word[7] ^ y->word[0]; \
+#define XLPS(x, y, data) { \
+    register uint64_t r0, r1, r2, r3, r4, r5, r6, r7; \
+    int i; \
+    \
+    r0 = x->QWORD[0] ^ y->QWORD[0]; \
+    r1 = x->QWORD[1] ^ y->QWORD[1]; \
+    r2 = x->QWORD[2] ^ y->QWORD[2]; \
+    r3 = x->QWORD[3] ^ y->QWORD[3]; \
+    r4 = x->QWORD[4] ^ y->QWORD[4]; \
+    r5 = x->QWORD[5] ^ y->QWORD[5]; \
+    r6 = x->QWORD[6] ^ y->QWORD[6]; \
+    r7 = x->QWORD[7] ^ y->QWORD[7]; \
+    \
+    data->QWORD[0]  = Ax[0][Pi[r0 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[1][Pi[r1 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[2][Pi[r2 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[3][Pi[r3 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[4][Pi[r4 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[5][Pi[r5 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[6][Pi[r6 & 0xFF]]; \
+    data->QWORD[0] ^= Ax[7][Pi[r7 & 0xFF]]; \
+    \
+    for (i = 1; i < 8; i++) \
+    {\
+        r0 >>= 0x8; \
+        r1 >>= 0x8; \
+        r2 >>= 0x8; \
+        r3 >>= 0x8; \
+        r4 >>= 0x8; \
+        r5 >>= 0x8; \
+        r6 >>= 0x8; \
+        r7 >>= 0x8; \
+        \
+        data->QWORD[i]  = Ax[0][Pi[r0 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[1][Pi[r1 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[2][Pi[r2 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[3][Pi[r3 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[4][Pi[r4 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[5][Pi[r5 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[6][Pi[r6 & 0xFF]]; \
+        data->QWORD[i] ^= Ax[7][Pi[r7 & 0xFF]]; \
+    }\
 }
 
-/*
- * Substitution and permutation loop unrolled:
- *
- *  for (i = 0; i < 64; i++)
- *      buf.byte[Tau[i]] = Pi[data->byte[i]];
- */
-
-#define PS(buf, data) { \
-    buf->byte[Tau[ 0]] = Pi[data->byte[ 0]]; \
-    buf->byte[Tau[ 1]] = Pi[data->byte[ 1]]; \
-    buf->byte[Tau[ 2]] = Pi[data->byte[ 2]]; \
-    buf->byte[Tau[ 3]] = Pi[data->byte[ 3]]; \
-    buf->byte[Tau[ 4]] = Pi[data->byte[ 4]]; \
-    buf->byte[Tau[ 5]] = Pi[data->byte[ 5]]; \
-    buf->byte[Tau[ 6]] = Pi[data->byte[ 6]]; \
-    buf->byte[Tau[ 7]] = Pi[data->byte[ 7]]; \
-    buf->byte[Tau[ 8]] = Pi[data->byte[ 8]]; \
-    buf->byte[Tau[ 9]] = Pi[data->byte[ 9]]; \
-    buf->byte[Tau[10]] = Pi[data->byte[10]]; \
-    buf->byte[Tau[11]] = Pi[data->byte[11]]; \
-    buf->byte[Tau[12]] = Pi[data->byte[12]]; \
-    buf->byte[Tau[13]] = Pi[data->byte[13]]; \
-    buf->byte[Tau[14]] = Pi[data->byte[14]]; \
-    buf->byte[Tau[15]] = Pi[data->byte[15]]; \
-    buf->byte[Tau[16]] = Pi[data->byte[16]]; \
-    buf->byte[Tau[17]] = Pi[data->byte[17]]; \
-    buf->byte[Tau[18]] = Pi[data->byte[18]]; \
-    buf->byte[Tau[19]] = Pi[data->byte[19]]; \
-    buf->byte[Tau[20]] = Pi[data->byte[20]]; \
-    buf->byte[Tau[21]] = Pi[data->byte[21]]; \
-    buf->byte[Tau[22]] = Pi[data->byte[22]]; \
-    buf->byte[Tau[23]] = Pi[data->byte[23]]; \
-    buf->byte[Tau[24]] = Pi[data->byte[24]]; \
-    buf->byte[Tau[25]] = Pi[data->byte[25]]; \
-    buf->byte[Tau[26]] = Pi[data->byte[26]]; \
-    buf->byte[Tau[27]] = Pi[data->byte[27]]; \
-    buf->byte[Tau[28]] = Pi[data->byte[28]]; \
-    buf->byte[Tau[29]] = Pi[data->byte[29]]; \
-    buf->byte[Tau[30]] = Pi[data->byte[30]]; \
-    buf->byte[Tau[31]] = Pi[data->byte[31]]; \
-    buf->byte[Tau[32]] = Pi[data->byte[32]]; \
-    buf->byte[Tau[33]] = Pi[data->byte[33]]; \
-    buf->byte[Tau[34]] = Pi[data->byte[34]]; \
-    buf->byte[Tau[35]] = Pi[data->byte[35]]; \
-    buf->byte[Tau[36]] = Pi[data->byte[36]]; \
-    buf->byte[Tau[37]] = Pi[data->byte[37]]; \
-    buf->byte[Tau[38]] = Pi[data->byte[38]]; \
-    buf->byte[Tau[39]] = Pi[data->byte[39]]; \
-    buf->byte[Tau[40]] = Pi[data->byte[40]]; \
-    buf->byte[Tau[41]] = Pi[data->byte[41]]; \
-    buf->byte[Tau[42]] = Pi[data->byte[42]]; \
-    buf->byte[Tau[43]] = Pi[data->byte[43]]; \
-    buf->byte[Tau[44]] = Pi[data->byte[44]]; \
-    buf->byte[Tau[45]] = Pi[data->byte[45]]; \
-    buf->byte[Tau[46]] = Pi[data->byte[46]]; \
-    buf->byte[Tau[47]] = Pi[data->byte[47]]; \
-    buf->byte[Tau[48]] = Pi[data->byte[48]]; \
-    buf->byte[Tau[49]] = Pi[data->byte[49]]; \
-    buf->byte[Tau[50]] = Pi[data->byte[50]]; \
-    buf->byte[Tau[51]] = Pi[data->byte[51]]; \
-    buf->byte[Tau[52]] = Pi[data->byte[52]]; \
-    buf->byte[Tau[53]] = Pi[data->byte[53]]; \
-    buf->byte[Tau[54]] = Pi[data->byte[54]]; \
-    buf->byte[Tau[55]] = Pi[data->byte[55]]; \
-    buf->byte[Tau[56]] = Pi[data->byte[56]]; \
-    buf->byte[Tau[57]] = Pi[data->byte[57]]; \
-    buf->byte[Tau[58]] = Pi[data->byte[58]]; \
-    buf->byte[Tau[59]] = Pi[data->byte[59]]; \
-    buf->byte[Tau[60]] = Pi[data->byte[60]]; \
-    buf->byte[Tau[61]] = Pi[data->byte[61]]; \
-    buf->byte[Tau[62]] = Pi[data->byte[62]]; \
-    buf->byte[Tau[63]] = Pi[data->byte[63]]; \
-}
-
-#define L(buf, data) { \
-    data->word[0]  = Ax[0][buf->byte[0]]; \
-    data->word[0] ^= Ax[1][buf->byte[1]]; \
-    data->word[0] ^= Ax[2][buf->byte[2]]; \
-    data->word[0] ^= Ax[3][buf->byte[3]]; \
-    data->word[0] ^= Ax[4][buf->byte[4]]; \
-    data->word[0] ^= Ax[5][buf->byte[5]]; \
-    data->word[0] ^= Ax[6][buf->byte[6]]; \
-    data->word[0] ^= Ax[7][buf->byte[7]]; \
-    data->word[1]  = Ax[0][buf->byte[8]]; \
-    data->word[1] ^= Ax[1][buf->byte[9]]; \
-    data->word[1] ^= Ax[2][buf->byte[10]]; \
-    data->word[1] ^= Ax[3][buf->byte[11]]; \
-    data->word[1] ^= Ax[4][buf->byte[12]]; \
-    data->word[1] ^= Ax[5][buf->byte[13]]; \
-    data->word[1] ^= Ax[6][buf->byte[14]]; \
-    data->word[1] ^= Ax[7][buf->byte[15]]; \
-    data->word[2]  = Ax[0][buf->byte[16]]; \
-    data->word[2] ^= Ax[1][buf->byte[17]]; \
-    data->word[2] ^= Ax[2][buf->byte[18]]; \
-    data->word[2] ^= Ax[3][buf->byte[19]]; \
-    data->word[2] ^= Ax[4][buf->byte[20]]; \
-    data->word[2] ^= Ax[5][buf->byte[21]]; \
-    data->word[2] ^= Ax[6][buf->byte[22]]; \
-    data->word[2] ^= Ax[7][buf->byte[23]]; \
-    data->word[3]  = Ax[0][buf->byte[24]]; \
-    data->word[3] ^= Ax[1][buf->byte[25]]; \
-    data->word[3] ^= Ax[2][buf->byte[26]]; \
-    data->word[3] ^= Ax[3][buf->byte[27]]; \
-    data->word[3] ^= Ax[4][buf->byte[28]]; \
-    data->word[3] ^= Ax[5][buf->byte[29]]; \
-    data->word[3] ^= Ax[6][buf->byte[30]]; \
-    data->word[3] ^= Ax[7][buf->byte[31]]; \
-    data->word[4]  = Ax[0][buf->byte[32]]; \
-    data->word[4] ^= Ax[1][buf->byte[33]]; \
-    data->word[4] ^= Ax[2][buf->byte[34]]; \
-    data->word[4] ^= Ax[3][buf->byte[35]]; \
-    data->word[4] ^= Ax[4][buf->byte[36]]; \
-    data->word[4] ^= Ax[5][buf->byte[37]]; \
-    data->word[4] ^= Ax[6][buf->byte[38]]; \
-    data->word[4] ^= Ax[7][buf->byte[39]]; \
-    data->word[5]  = Ax[0][buf->byte[40]]; \
-    data->word[5] ^= Ax[1][buf->byte[41]]; \
-    data->word[5] ^= Ax[2][buf->byte[42]]; \
-    data->word[5] ^= Ax[3][buf->byte[43]]; \
-    data->word[5] ^= Ax[4][buf->byte[44]]; \
-    data->word[5] ^= Ax[5][buf->byte[45]]; \
-    data->word[5] ^= Ax[6][buf->byte[46]]; \
-    data->word[5] ^= Ax[7][buf->byte[47]]; \
-    data->word[6]  = Ax[0][buf->byte[48]]; \
-    data->word[6] ^= Ax[1][buf->byte[49]]; \
-    data->word[6] ^= Ax[2][buf->byte[50]]; \
-    data->word[6] ^= Ax[3][buf->byte[51]]; \
-    data->word[6] ^= Ax[4][buf->byte[52]]; \
-    data->word[6] ^= Ax[5][buf->byte[53]]; \
-    data->word[6] ^= Ax[6][buf->byte[54]]; \
-    data->word[6] ^= Ax[7][buf->byte[55]]; \
-    data->word[7]  = Ax[0][buf->byte[56]]; \
-    data->word[7] ^= Ax[1][buf->byte[57]]; \
-    data->word[7] ^= Ax[2][buf->byte[58]]; \
-    data->word[7] ^= Ax[3][buf->byte[59]]; \
-    data->word[7] ^= Ax[4][buf->byte[60]]; \
-    data->word[7] ^= Ax[5][buf->byte[61]]; \
-    data->word[7] ^= Ax[6][buf->byte[62]]; \
-    data->word[7] ^= Ax[7][buf->byte[63]]; \
+#define ROUND(i, Ki, data) { \
+    K(i, Ki); \
+    XLPS(Ki, data, data); \
 }
 
 static const union uint512_u buffer512  = {{ 512ULL, 0ULL, 0ULL, 0ULL, 0ULL,
@@ -174,125 +71,125 @@ static const union uint512_u buffer0    = {{   0ULL, 0ULL, 0ULL, 0ULL, 0ULL,
     0ULL, 0ULL, 0ULL }};
 
 static const union uint512_u C[12] = {
-    {{    
-          0xb1085bda1ecadae9ULL,
-          0xebcb2f81c0657c1fULL,
-          0x2f6a76432e45d016ULL,
-          0x714eb88d7585c4fcULL,
-          0x4b7ce09192676901ULL,
-          0xa2422a08a460d315ULL,
+    {{
+          0xdd806559f2a64507ULL,
           0x05767436cc744d23ULL,
-          0xdd806559f2a64507ULL
+          0xa2422a08a460d315ULL,
+          0x4b7ce09192676901ULL,
+          0x714eb88d7585c4fcULL,
+          0x2f6a76432e45d016ULL,
+          0xebcb2f81c0657c1fULL,
+          0xb1085bda1ecadae9ULL
     }},
     {{
-          0x6fa3b58aa99d2f1aULL,
-          0x4fe39d460f70b5d7ULL,
-          0xf3feea720a232b98ULL,
-          0x61d55e0f16b50131ULL,
-          0x9ab5176b12d69958ULL,
-          0x5cb561c2db0aa7caULL,
+          0xe679047021b19bb7ULL,
           0x55dda21bd7cbcd56ULL,
-          0xe679047021b19bb7ULL
+          0x5cb561c2db0aa7caULL,
+          0x9ab5176b12d69958ULL,
+          0x61d55e0f16b50131ULL,
+          0xf3feea720a232b98ULL,
+          0x4fe39d460f70b5d7ULL,
+          0x6fa3b58aa99d2f1aULL
     }},
     {{
-          0xf574dcac2bce2fc7ULL,
-          0x0a39fc286a3d8435ULL,
-          0x06f15e5f529c1f8bULL,
-          0xf2ea7514b1297b7bULL,
-          0xd3e20fe490359eb1ULL,
-          0xc1c93a376062db09ULL,
+          0x991e96f50aba0ab2ULL,
           0xc2b6f443867adb31ULL,
-          0x991e96f50aba0ab2ULL
+          0xc1c93a376062db09ULL,
+          0xd3e20fe490359eb1ULL,
+          0xf2ea7514b1297b7bULL,
+          0x06f15e5f529c1f8bULL,
+          0x0a39fc286a3d8435ULL,
+          0xf574dcac2bce2fc7ULL
     }},
     {{
-          0xef1fdfb3e81566d2ULL,
-          0xf948e1a05d71e4ddULL,
-          0x488e857e335c3c7dULL,
-          0x9d721cad685e353fULL,
-          0xa9d72c82ed03d675ULL,
-          0xd8b71333935203beULL,
+          0x220cbebc84e3d12eULL,
           0x3453eaa193e837f1ULL,
-          0x220cbebc84e3d12eULL
+          0xd8b71333935203beULL,
+          0xa9d72c82ed03d675ULL,
+          0x9d721cad685e353fULL,
+          0x488e857e335c3c7dULL,
+          0xf948e1a05d71e4ddULL,
+          0xef1fdfb3e81566d2ULL
     }},
     {{
-          0x4bea6bacad474799ULL,
-          0x9a3f410c6ca92363ULL,
-          0x7f151c1f1686104aULL,
-          0x359e35d7800fffbdULL,
-          0xbfcd1747253af5a3ULL,
-          0xdfff00b723271a16ULL,
+          0x601758fd7c6cfe57ULL,
           0x7a56a27ea9ea63f5ULL,
-          0x601758fd7c6cfe57ULL
+          0xdfff00b723271a16ULL,
+          0xbfcd1747253af5a3ULL,
+          0x359e35d7800fffbdULL,
+          0x7f151c1f1686104aULL,
+          0x9a3f410c6ca92363ULL,
+          0x4bea6bacad474799ULL
     }},
     {{
-          0xae4faeae1d3ad3d9ULL,
-          0x6fa4c33b7a3039c0ULL,
-          0x2d66c4f95142a46cULL,
-          0x187f9ab49af08ec6ULL,
-          0xcffaa6b71c9ab7b4ULL,
-          0x0af21f66c2bec6b6ULL,
+          0xfa68407a46647d6eULL,
           0xbf71c57236904f35ULL,
-          0xfa68407a46647d6eULL
+          0x0af21f66c2bec6b6ULL,
+          0xcffaa6b71c9ab7b4ULL,
+          0x187f9ab49af08ec6ULL,
+          0x2d66c4f95142a46cULL,
+          0x6fa4c33b7a3039c0ULL,
+          0xae4faeae1d3ad3d9ULL
     }},
     {{
-          0xf4c70e16eeaac5ecULL,
-          0x51ac86febf240954ULL,
-          0x399ec6c7e6bf87c9ULL,
-          0xd3473e33197a93c9ULL,
-          0x0992abc52d822c37ULL,
-          0x06476983284a0504ULL,
+          0x8886564d3a14d493ULL,
           0x3517454ca23c4af3ULL,
-          0x8886564d3a14d493ULL
+          0x06476983284a0504ULL,
+          0x0992abc52d822c37ULL,
+          0xd3473e33197a93c9ULL,
+          0x399ec6c7e6bf87c9ULL,
+          0x51ac86febf240954ULL,
+          0xf4c70e16eeaac5ecULL
     }},
     {{
-          0x9b1f5b424d93c9a7ULL,
-          0x03e7aa020c6e4141ULL,
-          0x4eb7f8719c36de1eULL,
-          0x89b4443b4ddbc49aULL,
-          0xf4892bcb929b0690ULL,
-          0x69d18d2bd1a5c42fULL,
+          0xa47f0dd4bf02e71eULL,
           0x36acc2355951a8d9ULL,
-          0xa47f0dd4bf02e71eULL
+          0x69d18d2bd1a5c42fULL,
+          0xf4892bcb929b0690ULL,
+          0x89b4443b4ddbc49aULL,
+          0x4eb7f8719c36de1eULL,
+          0x03e7aa020c6e4141ULL,
+          0x9b1f5b424d93c9a7ULL
     }},
     {{
-          0x378f5a541631229bULL,
-          0x944c9ad8ec165fdeULL,
-          0x3a7d3a1b25894224ULL,
-          0x3cd955b7e00d0984ULL,
-          0x800a440bdbb2ceb1ULL,
-          0x7b2b8a9aa6079c54ULL,
+          0x7261445183235adbULL,
           0x0e38dc92cb1f2a60ULL,
-          0x7261445183235adbULL
+          0x7b2b8a9aa6079c54ULL,
+          0x800a440bdbb2ceb1ULL,
+          0x3cd955b7e00d0984ULL,
+          0x3a7d3a1b25894224ULL,
+          0x944c9ad8ec165fdeULL,
+          0x378f5a541631229bULL
     }},
     {{
-          0xabbedea680056f52ULL,
-          0x382ae548b2e4f3f3ULL,
-          0x8941e71cff8a78dbULL,
-          0x1fffe18a1b336103ULL,
-          0x9fe76702af69334bULL,
-          0x7a1e6c303b7652f4ULL,
+          0x74b4c7fb98459cedULL,
           0x3698fad1153bb6c3ULL,
-          0x74b4c7fb98459cedULL
+          0x7a1e6c303b7652f4ULL,
+          0x9fe76702af69334bULL,
+          0x1fffe18a1b336103ULL,
+          0x8941e71cff8a78dbULL,
+          0x382ae548b2e4f3f3ULL,
+          0xabbedea680056f52ULL
     }},
     {{
-          0x7bcd9ed0efc889fbULL,
-          0x3002c6cd635afe94ULL,
-          0xd8fa6bbbebab0761ULL,
-          0x2001802114846679ULL,
-          0x8a1d71efea48b9caULL,
-          0xefbacd1d7d476e98ULL,
+          0x6bcaa4cd81f32d1bULL,
           0xdea2594ac06fd85dULL,
-          0x6bcaa4cd81f32d1bULL
+          0xefbacd1d7d476e98ULL,
+          0x8a1d71efea48b9caULL,
+          0x2001802114846679ULL,
+          0xd8fa6bbbebab0761ULL,
+          0x3002c6cd635afe94ULL,
+          0x7bcd9ed0efc889fbULL
     }},
     {{
-          0x378ee767f11631baULL,
-          0xd21380b00449b17aULL,
-          0xcda43c32bcdf1d77ULL,
-          0xf82012d430219f9bULL,
-          0x5d80ef9d1891cc86ULL,
-          0xe71da4aa88e12852ULL,
+          0x48bc924af11bd720ULL,
           0xfaf417d5d9b21b99ULL,
-          0x48bc924af11bd720ULL
+          0xe71da4aa88e12852ULL,
+          0x5d80ef9d1891cc86ULL,
+          0xf82012d430219f9bULL,
+          0xcda43c32bcdf1d77ULL,
+          0xd21380b00449b17aULL,
+          0x378ee767f11631baULL
     }}
 };
 
@@ -465,9 +362,9 @@ init(const uint32_t digest_size)
     for (i = 0; i < 8; i++)
     {
         if (digest_size == 256)
-            CTX->h->word[i] = 0x0101010101010101ULL;
+            CTX->h->QWORD[i] = 0x0101010101010101ULL;
         else
-            CTX->h->word[i] = 0ULL;
+            CTX->h->QWORD[i] = 0ULL;
     }
 
     for (i = 0; i < 8; i++)
@@ -496,79 +393,55 @@ pad(union uint512_u *data)
     do
     {
         i--;
-        if (data->word[i >> 3] == 0)
+        if (data->QWORD[i >> 3] == 0)
         {
             if (i >> 3 == 0)
             {
-                data->byte[0] = 0x01;
+                data->BYTE[0] = 0x01;
                 break;
             }
 
             i = (uint8_t) ((i >> 3) << 3);
             continue;
         }
-        if (data->byte[i])
+        if (data->BYTE[i])
         {
-            data->byte[++i] = 0x01;
+            data->BYTE[++i] = 0x01;
             break;
         }
     }
     while (i > 0);
 }
 
-static inline void 
-LPS(union uint512_u *data)
-{
-    /*
-    uint64_t i, j;
-    */
-    union uint512_u buf;
-
-    /* Substitution and permutation */
-    /* Linear transformation */
-    /*
-    for (i = 0; i < 8; i++)
-    {
-        j = i << 3;
-        data->word[i]  = Ax[0][buf.byte[j++]];
-        data->word[i] ^= Ax[1][buf.byte[j++]];
-        data->word[i] ^= Ax[2][buf.byte[j++]];
-        data->word[i] ^= Ax[3][buf.byte[j++]];
-        data->word[i] ^= Ax[4][buf.byte[j++]];
-        data->word[i] ^= Ax[5][buf.byte[j++]];
-        data->word[i] ^= Ax[6][buf.byte[j++]];
-        data->word[i] ^= Ax[7][buf.byte[j++]];
-    }
-    */
-    PS((&buf), data);
-    L((&buf), data);
-}
-
 static inline void
-K(const int i, union uint512_u *Ki)
+K(const int k, union uint512_u *Ki)
 {
-    XR(Ki, (&C[i]), Ki);
-    LPS(Ki);
+    XLPS(Ki, (&C[k]), Ki);
 }
 
 static inline void
 E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
 {
-    int i;
     union uint512_u Ki;
 
     Ki = (*Key);
-    X((&Ki), m, data);
-    LPS(data);
 
-    for (i = 0; i < 11; i++)
-    {
-        K(i, &Ki);
-        X((&Ki), data, data);
-        LPS(data);
-    }
+    XLPS((&Ki), m, data);
+
+    ROUND( 0, (&Ki), data);
+    ROUND( 1, (&Ki), data);
+    ROUND( 2, (&Ki), data);
+    ROUND( 3, (&Ki), data);
+    ROUND( 4, (&Ki), data);
+    ROUND( 5, (&Ki), data);
+    ROUND( 6, (&Ki), data);
+    ROUND( 7, (&Ki), data);
+    ROUND( 8, (&Ki), data);
+    ROUND( 9, (&Ki), data);
+    ROUND(10, (&Ki), data);
 
     K(11, &Ki);
+
     X((&Ki), data, data);
 }
 
@@ -581,15 +454,15 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
     CF = 0;
     for (i = 0; i < 8; i++)
     {
-        r->word[i] = x->word[i] + y->word[i] + CF;
+        r->QWORD[i] = x->QWORD[i] + y->QWORD[i] + CF;
         /* Actually it is sufficient to compare *r with ANY argument. However,
          * one argument of add512() call MAY point to *r at the same time.
          * Consider add512(x, y, x) or ad512(x, y, y). We avoid confusion by
          * comparing *r with both arguments. Instead of *y, assume that *x
          * probably points to *r, so *y goes first.
          */
-        if ( (r->word[i] < y->word[i]) || 
-             (r->word[i] < x->word[i]) )
+        if ( (r->QWORD[i] < y->QWORD[i]) || 
+             (r->QWORD[i] < x->QWORD[i]) )
             CF = 1;
         else
             CF = 0;
@@ -597,11 +470,10 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 }
 
 static void
-g(const union uint512_u *N, const union uint512_u *h, 
+g(const union uint512_u *N, const union uint512_u *h,
         const union uint512_u *m, union uint512_u *data)
 {
-    X(h, N, data);
-    LPS(data);
+    XLPS(h, N, data);
     E(data, m, data);
     X(data, h, data);
     X(data, m, data);
@@ -628,7 +500,7 @@ round3(GOST3411Context *CTX)
     memcpy(CTX->buffer, &buf, sizeof uint512_u);
 
     buf = buffer0;
-    buf.word[0] = CTX->bufsize * 8;
+    buf.QWORD[0] = CTX->bufsize * 8;
 
     pad(CTX->buffer);
 
@@ -688,7 +560,7 @@ final(GOST3411Context *CTX)
     i = 7;
     while (i >= j)
     {
-        snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->word[i]);
+        snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->QWORD[i]);
         strncat(CTX->hexdigest, buf, (size_t) 16);
         i--;
     }

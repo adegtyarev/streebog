@@ -78,9 +78,9 @@ testing(void)
     CTX->bufsize = 63;
 
     printf("M1: 0x%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx\n",
-            CTX->buffer->word[7], CTX->buffer->word[6], CTX->buffer->word[5],
-            CTX->buffer->word[4], CTX->buffer->word[3], CTX->buffer->word[2],
-            CTX->buffer->word[1], CTX->buffer->word[0]);
+            CTX->buffer->QWORD[7], CTX->buffer->QWORD[6], CTX->buffer->QWORD[5],
+            CTX->buffer->QWORD[4], CTX->buffer->QWORD[3], CTX->buffer->QWORD[2],
+            CTX->buffer->QWORD[1], CTX->buffer->QWORD[0]);
 
     final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);

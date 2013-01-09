@@ -15,8 +15,8 @@
 
 union uint512_u
 {
-    unsigned long long word[8];
-    uint8_t byte[64];
+    unsigned long long QWORD[8];
+    uint8_t BYTE[64];
 } uint512_u;
 
 typedef struct Ai_t
