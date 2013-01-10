@@ -139,6 +139,21 @@ shutdown(void)
         destroy(CTX);
 }
 
+#if defined(SUPERCOP)
+int
+crypto_hash(unsigned char *out, unsigned char *in, unsigned long long inlen)
+{
+    CTX = init(512);
+
+    update(CTX, in, (size_t) inlen);
+    final(CTX);
+
+    memcpy(out, CTX->hexdigest, 64);
+
+    return 0;
+}
+#endif
+
 int
 main(int argc, char *argv[])
 {
