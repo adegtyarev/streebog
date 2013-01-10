@@ -16,7 +16,7 @@
 }
 
 #define XLPS(x, y, data) { \
-    register uint64_t r0, r1, r2, r3, r4, r5, r6, r7; \
+    unsigned long long r0, r1, r2, r3, r4, r5, r6, r7; \
     int i; \
     \
     r0 = x->QWORD[0] ^ y->QWORD[0]; \
@@ -260,7 +260,7 @@ static const Ai_t Ai[16] = {
 
 static unsigned long long Ax[8][256];
 
-static const uint8_t Tau[64] = {
+static const unsigned int Tau[64] = {
     0,   8,  16,  24,  32,  40,  48,  56, 
     1,   9,  17,  25,  33,  41,  49,  57, 
     2,  10,  18,  26,  34,  42,  50,  58, 
@@ -271,7 +271,7 @@ static const uint8_t Tau[64] = {
     7,  15,  23,  31,  39,  47,  55,  63
 };
 
-static const uint8_t Pi[256] = {
+static const unsigned int Pi[256] = {
     252, 238, 221,  17, 207, 110,  49,  22, 
     251, 196, 250, 218,  35, 197,   4,  77, 
     233, 119, 240, 219, 147,  46, 153, 186, 
@@ -335,9 +335,9 @@ destroy(GOST3411Context *CTX)
 }
 
 GOST3411Context *
-init(const uint32_t digest_size)
+init(const unsigned int digest_size)
 {
-    uint64_t i, j, b;
+    int i, j, b;
     Ai_t idx1, idx2;
     GOST3411Context *CTX;
 
@@ -387,7 +387,7 @@ init(const uint32_t digest_size)
 static void
 pad(union uint512_u *data)
 {
-    uint8_t i;
+    int i;
 
     i = 64;
     do
@@ -401,7 +401,7 @@ pad(union uint512_u *data)
                 break;
             }
 
-            i = (uint8_t) ((i >> 3) << 3);
+            i = (int) ((i >> 3) << 3);
             continue;
         }
         if (data->BYTE[i])
@@ -448,8 +448,8 @@ E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
 static inline void
 add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
-    uint64_t CF;
-    int8_t i;
+    int i;
+    unsigned long long CF;
 
     CF = 0;
     for (i = 0; i < 8; i++)
@@ -544,7 +544,7 @@ update(GOST3411Context *CTX, const char *data, size_t len)
 void
 final(GOST3411Context *CTX)
 {
-    int8_t i, j;
+    int i, j;
     char *buf;
 
     round3(CTX);
