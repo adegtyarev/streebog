@@ -1,6 +1,20 @@
-Changes with version 0.07                                           
+Changes with version 0.07											17 Jan 2013
 
-	* Bugfix: cosmetic code fixes in integer type declaration.
+	* Feature: boost performance on 32-bit systems by using SSE2.
+
+	* Bugfix: padding function rewritten to less complex.
+
+	* Bugfix: key generation function K replaced with XLPS macros to avoid
+	  inlining issues when max inline instruction limit reached.
+	
+	* Bugfix: encryption function E inlined to comression g to avoid
+	  compile-time inlining issues when max inline instruction limit reached.
+	
+	* Bugfix: use unsigned integers where possible.
+
+	* Bugfix: fix typo in update() when comparing bufsize.
+
+	* Bugfix: memory allocator rewritten to use posix_memalign().
 
 Changes with version 0.06                                           09 Jan 2013
 	

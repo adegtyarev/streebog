@@ -19,18 +19,6 @@
 GOST3411Context *CTX;
 uint32_t digest_size = DEFAULT_DIGEST_SIZE;
 
-const union uint512_u GOSTTestInput = {{
-        0x3736353433323130ULL,
-        0x3534333231303938ULL,
-        0x3332313039383736ULL,
-        0x3130393837363534ULL,
-        0x3938373635343332ULL,
-        0x3736353433323130ULL,
-        0x3534333231303938ULL,
-        0x0032313039383736ULL
-    }
-};
-
 static void usage(void)
 {
 	fprintf(stderr, "usage: [-25bhqrt] [-s string] [files ...]\n");
@@ -68,12 +56,25 @@ onstring(const char *string)
     final(CTX);
 }
 
+const union uint512_u GOSTTestInput = {
+    {
+        0x3736353433323130ULL,
+        0x3534333231303938ULL,
+        0x3332313039383736ULL,
+        0x3130393837363534ULL,
+        0x3938373635343332ULL,
+        0x3736353433323130ULL,
+        0x3534333231303938ULL,
+        0x0032313039383736ULL
+    }
+};
+
 static void
 testing(void)
 {
     CTX = init(512);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof (uint512_u));
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
     printf("M1: 0x%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx\n",
@@ -88,13 +89,15 @@ testing(void)
 
     CTX = init(256);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof (uint512_u));
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
     final(CTX);
     printf("%s 256 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
 
+    /* This guy causes double free on Linux :-? 
     destroy(CTX);
+    */
 
     exit(EXIT_SUCCESS);
 }
@@ -108,11 +111,7 @@ benchmark(void)
 	char block[TEST_BLOCK_LEN];
 	unsigned int i;
 
-#if defined(__SSE2__)
-	printf("%s (SSE2) timing benchmark.\n", ALGNAME);
-#else
 	printf("%s timing benchmark.\n", ALGNAME);
-#endif
     printf("Digesting %d %d-byte blocks with 512 bits digest...\n",
 	    TEST_BLOCK_COUNT, TEST_BLOCK_LEN);
 	fflush(stdout);
@@ -145,21 +144,6 @@ shutdown(void)
     if (CTX != NULL)
         destroy(CTX);
 }
-
-#if defined(SUPERCOP)
-int
-crypto_hash(unsigned char *out, unsigned char *in, unsigned long long inlen)
-{
-    CTX = init(512);
-
-    update(CTX, in, (size_t) inlen);
-    final(CTX);
-
-    memcpy(out, CTX->hexdigest, 64);
-
-    return 0;
-}
-#endif
 
 int
 main(int argc, char *argv[])
