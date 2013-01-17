@@ -13,11 +13,17 @@
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
 
+#if defined(__SSE2__)
+#include "emmintrin.h"
+#endif
+
 union uint512_u
 {
     unsigned long long QWORD[8];
-    uint8_t BYTE[64];
-} uint512_u;
+#if defined(__SSE2__)
+    __m128i m128i[4];
+#endif
+} uint512_u __attribute__((aligned(16)));
 
 typedef struct Ai_t
 {
@@ -26,11 +32,11 @@ typedef struct Ai_t
 
 typedef struct GOST3411Context
 {
-    union uint512_u *buffer;
-    union uint512_u *hash;
-    union uint512_u *h;
-    union uint512_u *N;
-    union uint512_u *Sigma;
+    union uint512_u *buffer __attribute__((aligned(16)));
+    union uint512_u *hash   __attribute__((aligned(16)));
+    union uint512_u *h      __attribute__((aligned(16)));
+    union uint512_u *N      __attribute__((aligned(16)));
+    union uint512_u *Sigma  __attribute__((aligned(16)));
     size_t bufsize;
     uint32_t digest_size;
     char *hexdigest;

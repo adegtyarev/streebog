@@ -1,3 +1,7 @@
+Changes with version 0.07                                           
+
+	* Bugfix: cosmetic code fixes in integer type declaration.
+
 Changes with version 0.06                                           09 Jan 2013
 	
 	* Feature: performance optimization in LPS: hint compiler to use eight

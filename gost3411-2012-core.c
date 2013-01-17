@@ -4,7 +4,25 @@
 
 #include <gost3411-2012-core.h>
 
-#define X(x, y, z) { \
+/*
+static void print512(char *s, char *data)
+{
+    unsigned long long *p = (unsigned long long *) &data[0];
+    int i;
+    for (i = 0; i < 8; i++)
+        printf("%s: data[%d]: %016llx\n", s, i, p[i]);
+}
+*/
+
+#if defined(__SSE2__)
+#define X(x, y, z) X128(x, y, z)
+#define XLPS(x, y, z) XLPS64(x, y, z)
+#else
+#define X(x, y, z) X64(x, y, z)
+#define XLPS(x, y, z) XLPS64(x, y, z)
+#endif
+
+#define X64(x, y, z) { \
     z->QWORD[0] = x->QWORD[0] ^ y->QWORD[0]; \
     z->QWORD[1] = x->QWORD[1] ^ y->QWORD[1]; \
     z->QWORD[2] = x->QWORD[2] ^ y->QWORD[2]; \
@@ -15,48 +33,49 @@
     z->QWORD[7] = x->QWORD[7] ^ y->QWORD[7]; \
 }
 
-#define XLPS(x, y, data) { \
-    unsigned long long r0, r1, r2, r3, r4, r5, r6, r7; \
-    int i; \
+#define X128(x, y, z) { \
+    __m128i *p1, *p2, *p3; \
+    p1 = (__m128i *) &x[0]; \
+    p2 = (__m128i *) &y[0]; \
+    p3 = (__m128i *) &z[0]; \
+    _mm_store_si128(&p3[0], _mm_xor_si128(p1[0], p2[0])); \
+    _mm_store_si128(&p3[1], _mm_xor_si128(p1[1], p2[1])); \
+    _mm_store_si128(&p3[2], _mm_xor_si128(p1[2], p2[2])); \
+    _mm_store_si128(&p3[3], _mm_xor_si128(p1[3], p2[3])); \
     \
-    r0 = x->QWORD[0] ^ y->QWORD[0]; \
-    r1 = x->QWORD[1] ^ y->QWORD[1]; \
-    r2 = x->QWORD[2] ^ y->QWORD[2]; \
-    r3 = x->QWORD[3] ^ y->QWORD[3]; \
-    r4 = x->QWORD[4] ^ y->QWORD[4]; \
-    r5 = x->QWORD[5] ^ y->QWORD[5]; \
-    r6 = x->QWORD[6] ^ y->QWORD[6]; \
-    r7 = x->QWORD[7] ^ y->QWORD[7]; \
+}
+
+#define XLPS128(x, y, z) { \
     \
-    data->QWORD[0]  = Ax[0][Pi[r0 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[1][Pi[r1 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[2][Pi[r2 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[3][Pi[r3 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[4][Pi[r4 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[5][Pi[r5 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[6][Pi[r6 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[7][Pi[r7 & 0xFF]]; \
+    __m128i *p1, *p2, *p3; \
+    uint8_t *p; \
+    unsigned long long r; \
+    p1 = (__m128i *) &x[0]; \
+    p2 = (__m128i *) &y[0]; \
+    p3 = (__m128i *) &z[0]; \
     \
-    for (i = 1; i < 8; i++) \
-    {\
-        r0 >>= 0x8; \
-        r1 >>= 0x8; \
-        r2 >>= 0x8; \
-        r3 >>= 0x8; \
-        r4 >>= 0x8; \
-        r5 >>= 0x8; \
-        r6 >>= 0x8; \
-        r7 >>= 0x8; \
-        \
-        data->QWORD[i]  = Ax[0][Pi[r0 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[1][Pi[r1 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[2][Pi[r2 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[3][Pi[r3 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[4][Pi[r4 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[5][Pi[r5 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[6][Pi[r6 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[7][Pi[r7 & 0xFF]]; \
-    }\
+    _mm_store_si128(&p3[0], _mm_xor_si128(p1[0], p2[0])); \
+    _mm_store_si128(&p3[1], _mm_xor_si128(p1[1], p2[1])); \
+    _mm_store_si128(&p3[2], _mm_xor_si128(p1[2], p2[2])); \
+    _mm_store_si128(&p3[3], _mm_xor_si128(p1[3], p2[3])); \
+    \
+}
+
+#define XLPS64(x, y, data) { \
+    \
+    data->QWORD[0] = x->QWORD[0] ^ y->QWORD[0]; \
+    data->QWORD[1] = x->QWORD[1] ^ y->QWORD[1]; \
+    data->QWORD[2] = x->QWORD[2] ^ y->QWORD[2]; \
+    data->QWORD[3] = x->QWORD[3] ^ y->QWORD[3]; \
+    data->QWORD[4] = x->QWORD[4] ^ y->QWORD[4]; \
+    data->QWORD[5] = x->QWORD[5] ^ y->QWORD[5]; \
+    data->QWORD[6] = x->QWORD[6] ^ y->QWORD[6]; \
+    data->QWORD[7] = x->QWORD[7] ^ y->QWORD[7]; \
+    \
+}
+
+#define K(k, Ki) { \
+    XLPS(Ki, (&C[k]), Ki); \
 }
 
 #define ROUND(i, Ki, data) { \
@@ -271,6 +290,8 @@ static const unsigned int Tau[64] = {
     7,  15,  23,  31,  39,  47,  55,  63
 };
 
+static unsigned int Pix[256][256];
+
 static const unsigned int Pi[256] = {
     252, 238, 221,  17, 207, 110,  49,  22, 
     251, 196, 250, 218,  35, 197,   4,  77, 
@@ -337,17 +358,17 @@ destroy(GOST3411Context *CTX)
 GOST3411Context *
 init(const unsigned int digest_size)
 {
-    int i, j, b;
+    unsigned int i, j, b;
     Ai_t idx1, idx2;
-    GOST3411Context *CTX;
+    GOST3411Context *CTX __attribute__((aligned(64)));
 
     CTX = memalloc(sizeof (GOST3411Context));
 
-    CTX->N = memalloc(sizeof uint512_u);
-    CTX->h = memalloc(sizeof uint512_u);
-    CTX->hash = memalloc(sizeof uint512_u);
-    CTX->Sigma = memalloc(sizeof uint512_u);
-    CTX->buffer = memalloc(sizeof uint512_u);
+    CTX->N = memalloc(sizeof (uint512_u));
+    CTX->h = memalloc(sizeof (uint512_u));
+    CTX->hash = memalloc(sizeof (uint512_u));
+    CTX->Sigma = memalloc(sizeof (uint512_u));
+    CTX->buffer = memalloc(sizeof (uint512_u));
     CTX->hexdigest = memalloc((size_t) 129);
     CTX->bufsize = 0;
 
@@ -381,74 +402,17 @@ init(const unsigned int digest_size)
         }
     }
 
+    for (i = 0; i < 256; i++)
+        for (j = 0; j < 256; j++)
+            Pix[i][j] = Pi[i] << 8 | Pi[j];
+
     return CTX;
-}
-
-static void
-pad(union uint512_u *data)
-{
-    int i;
-
-    i = 64;
-    do
-    {
-        i--;
-        if (data->QWORD[i >> 3] == 0)
-        {
-            if (i >> 3 == 0)
-            {
-                data->BYTE[0] = 0x01;
-                break;
-            }
-
-            i = (int) ((i >> 3) << 3);
-            continue;
-        }
-        if (data->BYTE[i])
-        {
-            data->BYTE[++i] = 0x01;
-            break;
-        }
-    }
-    while (i > 0);
-}
-
-static inline void
-K(const int k, union uint512_u *Ki)
-{
-    XLPS(Ki, (&C[k]), Ki);
-}
-
-static inline void
-E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
-{
-    union uint512_u Ki;
-
-    Ki = (*Key);
-
-    XLPS((&Ki), m, data);
-
-    ROUND( 0, (&Ki), data);
-    ROUND( 1, (&Ki), data);
-    ROUND( 2, (&Ki), data);
-    ROUND( 3, (&Ki), data);
-    ROUND( 4, (&Ki), data);
-    ROUND( 5, (&Ki), data);
-    ROUND( 6, (&Ki), data);
-    ROUND( 7, (&Ki), data);
-    ROUND( 8, (&Ki), data);
-    ROUND( 9, (&Ki), data);
-    ROUND(10, (&Ki), data);
-
-    K(11, &Ki);
-
-    X((&Ki), data, data);
 }
 
 static inline void
 add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
-    int i;
+    unsigned int i;
     unsigned long long CF;
 
     CF = 0;
@@ -470,11 +434,206 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 }
 
 static void
+pad(GOST3411Context *CTX)
+{
+    unsigned char buf[64];
+
+    if (CTX->bufsize > 63)
+        return;
+
+    memset(&buf, 0x00, 64);
+    memcpy(&buf, CTX->buffer, CTX->bufsize);
+
+    buf[CTX->bufsize] = 0x01;
+    memcpy(CTX->buffer, &buf, 64);
+}
+
+#define _mm_transpose_si128(xmm0, xmm1, xmm2, xmm3) {\
+    __m128i txm0, txm1, txm2, txm3; \
+    txm0 = _mm_unpacklo_epi8(xmm0, xmm1); \
+    txm1 = _mm_unpackhi_epi8(xmm0, xmm1); \
+    txm2 = _mm_unpacklo_epi8(xmm2, xmm3); \
+    txm3 = _mm_unpackhi_epi8(xmm2, xmm3); \
+    \
+    xmm0 = _mm_unpacklo_epi8(txm0, txm1); \
+    xmm1 = _mm_unpackhi_epi8(txm0, txm1); \
+    xmm2 = _mm_unpacklo_epi8(txm2, txm3); \
+    xmm3 = _mm_unpackhi_epi8(txm2, txm3); \
+    \
+    txm1 = _mm_unpackhi_epi32(xmm0, xmm2); \
+    xmm0 = _mm_unpacklo_epi32(xmm0, xmm2); \
+    xmm2 = _mm_unpacklo_epi32(xmm1, xmm3); \
+    xmm3 = _mm_unpackhi_epi32(xmm1, xmm3); \
+    xmm1 = txm1; \
+}
+
+uint64_t membuf[8] __attribute__((aligned(16)));
+uint64_t memreg[8] __attribute__((aligned(16)));
+
+typedef struct uint512_t
+{
+    unsigned long long QWORD[8];
+} uint512_t __attribute__((aligned(16)));
+
+#define LOAD(P, xmm0, xmm1, xmm2, xmm3) { \
+    __m128i *__m128p = (__m128i *) &P[0]; \
+    xmm0 = _mm_load_si128(&__m128p[0]); \
+    xmm1 = _mm_load_si128(&__m128p[1]); \
+    xmm2 = _mm_load_si128(&__m128p[2]); \
+    xmm3 = _mm_load_si128(&__m128p[3]); \
+}
+
+#define XUNLOAD(P) { \
+    __m128i *__m128p = (__m128i *) &P[0]; \
+    _mm_store_si128(&__m128p[0], _mm_xor_si128(xmm0a, xmm1a)); \
+    _mm_store_si128(&__m128p[1], _mm_xor_si128(xmm0b, xmm1b)); \
+    _mm_store_si128(&__m128p[2], _mm_xor_si128(xmm0c, xmm1c)); \
+    _mm_store_si128(&__m128p[3], _mm_xor_si128(xmm0d, xmm1d)); \
+}
+
+#define UNLOAD(P, xmm0, xmm1, xmm2, xmm3) { \
+    __m128i *__m128p = (__m128i *) &P[0]; \
+    _mm_store_si128(&__m128p[0], xmm0); \
+    _mm_store_si128(&__m128p[1], xmm1); \
+    _mm_store_si128(&__m128p[2], xmm2); \
+    _mm_store_si128(&__m128p[3], xmm3); \
+}
+
+#define _LS128_EPILOG(xmmr) {\
+    __m128p = (__m128i *) &membuf[0]; \
+    xmm0 = _mm_load_si128(&__m128p[0]); \
+    xmm1 = _mm_load_si128(&__m128p[1]); \
+    xmm2 = _mm_load_si128(&__m128p[2]); \
+    xmm3 = _mm_load_si128(&__m128p[3]); \
+    xmm0 = _mm_xor_si128(xmm0, xmm1); \
+    xmm2 = _mm_xor_si128(xmm2, xmm3); \
+    xmm0 = _mm_xor_si128(xmm0, xmm2); \
+    xmm1 = _mm_shuffle_epi32(xmm0, _MM_SHUFFLE(1, 0, 3, 2)); \
+    xmmr = _mm_xor_si128(xmm0, xmm1); \
+}
+
+#define LS128(N, xmmr) {\
+    __m128i *__m128p; \
+    \
+    membuf[0] = Ax[0][Pi[pi[N + 0]]]; \
+    membuf[1] = Ax[1][Pi[pi[N + 1]]]; \
+    membuf[2] = Ax[2][Pi[pi[N + 2]]]; \
+    membuf[3] = Ax[3][Pi[pi[N + 3]]]; \
+    membuf[4] = Ax[4][Pi[pi[N + 4]]]; \
+    membuf[5] = Ax[5][Pi[pi[N + 5]]]; \
+    membuf[6] = Ax[6][Pi[pi[N + 6]]]; \
+    membuf[7] = Ax[7][Pi[pi[N + 7]]]; \
+    \
+    _LS128_EPILOG(xmmr); \
+}
+
+#define XLPS128R() { \
+    uint8_t *pi = &pibuf[0]; \
+    xmm1a =_mm_xor_si128(xmm0a, xmm1a); \
+    xmm1b =_mm_xor_si128(xmm0b, xmm1b); \
+    xmm1c =_mm_xor_si128(xmm0c, xmm1c); \
+    xmm1d =_mm_xor_si128(xmm0d, xmm1d); \
+    _mm_transpose_si128(xmm1a, xmm1b, xmm1c, xmm1d); \
+    UNLOAD(pi, xmm1a, xmm1b, xmm1c, xmm1d); \
+    LS128(0, xmm1a); \
+    LS128(8, xmm1b); \
+    xmm1a = _mm_unpacklo_epi64(xmm1a, xmm1b); \
+    LS128(16, xmm1b); \
+    LS128(24, xmm1c); \
+    xmm1b = _mm_unpacklo_epi64(xmm1b, xmm1c); \
+    LS128(32, xmm1c); \
+    LS128(40, xmm1d); \
+    xmm1c = _mm_unpacklo_epi64(xmm1c, xmm1d); \
+    LS128(48, xmm1d); \
+    LS128(56, xmmt); \
+    xmm1d = _mm_unpacklo_epi64(xmm1d, xmmt); \
+}
+
+#define XLPS128M(P) {\
+    uint8_t *pi = &pibuf[0]; \
+    LOAD(P, xmm0, xmm1, xmm2, xmm3); \
+    xmm0a =_mm_xor_si128(xmm0a, xmm0); \
+    xmm0b =_mm_xor_si128(xmm0b, xmm1); \
+    xmm0c =_mm_xor_si128(xmm0c, xmm2); \
+    xmm0d =_mm_xor_si128(xmm0d, xmm3); \
+    _mm_transpose_si128(xmm0a, xmm0b, xmm0c, xmm0d); \
+    UNLOAD(pi, xmm0a, xmm0b, xmm0c, xmm0d); \
+    LS128(0, xmm0a); \
+    LS128(8, xmm0b); \
+    xmm0a = _mm_unpacklo_epi64(xmm0a, xmm0b); \
+    LS128(16, xmm0b); \
+    LS128(24, xmm0c); \
+    xmm0b = _mm_unpacklo_epi64(xmm0b, xmm0c); \
+    LS128(32, xmm0c); \
+    LS128(40, xmm0d); \
+    xmm0c = _mm_unpacklo_epi64(xmm0c, xmm0d); \
+    LS128(48, xmm0d); \
+    LS128(56, xmmt); \
+    xmm0d = _mm_unpacklo_epi64(xmm0d, xmmt); \
+}
+
+#define ROUND128(i) { \
+    XLPS128M((&C[i])); \
+    XLPS128R(); \
+}
+
+/*
+static void
+E(const union uint512_u *Key, const union uint512_u *m, union uint512_u *data)
+{
+    LOAD(m, Key);
+    XLPS128R();
+
+    ROUND128( 0);
+    ROUND128( 1);
+    ROUND128( 2);
+    ROUND128( 3);
+    ROUND128( 4);
+    ROUND128( 5);
+    ROUND128( 6);
+    ROUND128( 7);
+    ROUND128( 8);
+    ROUND128( 9);
+    ROUND128(10);
+
+    XLPS128M((&C[11]));
+    XUNLOAD(data);
+}
+*/
+
+static void
 g(const union uint512_u *N, const union uint512_u *h,
         const union uint512_u *m, union uint512_u *data)
 {
-    XLPS(h, N, data);
-    E(data, m, data);
+    uint8_t pibuf[64] __attribute__((aligned(64)));
+
+    __m128i xmm0a, xmm0b, xmm0c, xmm0d;
+    __m128i xmm1a, xmm1b, xmm1c, xmm1d;
+
+    /* buffers */
+    __m128i xmmt, xmm0, xmm1, xmm2, xmm3;
+
+    LOAD(N, xmm0a, xmm0b, xmm0c, xmm0d);
+    XLPS128M(h);
+
+    LOAD(m, xmm1a, xmm1b, xmm1c, xmm1d);
+    XLPS128R();
+
+    ROUND128( 0);
+    ROUND128( 1);
+    ROUND128( 2);
+    ROUND128( 3);
+    ROUND128( 4);
+    ROUND128( 5);
+    ROUND128( 6);
+    ROUND128( 7);
+    ROUND128( 8);
+    ROUND128( 9);
+    ROUND128(10);
+
+    XLPS128M((&C[11]));
+    XUNLOAD(data);
+
     X(data, h, data);
     X(data, m, data);
 }
@@ -484,34 +643,34 @@ round2(GOST3411Context *CTX)
 {
     g(CTX->N, CTX->h, CTX->buffer, CTX->hash);
 
-    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
+    memcpy(CTX->h, CTX->hash, sizeof (uint512_u));
 
     add512(CTX->N, &buffer512, CTX->N);
     add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
 }
 
-static inline void
+static void
 round3(GOST3411Context *CTX)
 {
     union uint512_u buf;
 
-    buf = buffer0;
+    memset(&buf, 0x00, 64);
     memcpy(&buf, CTX->buffer, CTX->bufsize);
-    memcpy(CTX->buffer, &buf, sizeof uint512_u);
+    memcpy(CTX->buffer, &buf, 64);
 
-    buf = buffer0;
+    memset(&buf, 0x00, 64);
     buf.QWORD[0] = CTX->bufsize * 8;
 
-    pad(CTX->buffer);
+    pad(CTX);
 
     g(CTX->N, CTX->h, CTX->buffer, CTX->hash);
-    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
+    memcpy(CTX->h, CTX->hash, sizeof (uint512_u));
 
     add512(CTX->N, &buf, CTX->N);
     add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
         
     g(&buffer0, CTX->h, CTX->N, CTX->hash); 
-    memcpy(CTX->h, CTX->hash, sizeof uint512_u);
+    memcpy(CTX->h, CTX->hash, sizeof (uint512_u));
 
     g(&buffer0, CTX->h, CTX->Sigma, CTX->hash);
 }
@@ -533,7 +692,7 @@ update(GOST3411Context *CTX, const char *data, size_t len)
         data += chunksize;
         len -= chunksize;
 
-        while (CTX->bufsize == 64)
+        if (CTX->bufsize == 64)
         {
             round2(CTX);
             CTX->bufsize = 0;
