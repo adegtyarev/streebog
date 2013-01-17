@@ -1,3 +1,7 @@
+/*
+ * $Id$
+ */
+
 #include <xmmintrin.h>
 #include <emmintrin.h>
 
