@@ -19,10 +19,11 @@
 GOST3411Context *CTX;
 uint32_t digest_size = DEFAULT_DIGEST_SIZE;
 
-static void usage(void)
+static void
+usage(void)
 {
-	fprintf(stderr, "usage: [-25bhqrt] [-s string] [files ...]\n");
-	exit(1);
+    fprintf(stderr, "usage: [-25bhqrt] [-s string] [files ...]\n");
+    exit(1);
 }
 
 static void
@@ -78,9 +79,9 @@ testing(void)
     CTX->bufsize = 63;
 
     printf("M1: 0x%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx\n",
-            CTX->buffer->QWORD[7], CTX->buffer->QWORD[6], CTX->buffer->QWORD[5],
-            CTX->buffer->QWORD[4], CTX->buffer->QWORD[3], CTX->buffer->QWORD[2],
-            CTX->buffer->QWORD[1], CTX->buffer->QWORD[0]);
+           CTX->buffer->QWORD[7], CTX->buffer->QWORD[6], CTX->buffer->QWORD[5],
+           CTX->buffer->QWORD[4], CTX->buffer->QWORD[3], CTX->buffer->QWORD[2],
+           CTX->buffer->QWORD[1], CTX->buffer->QWORD[0]);
 
     final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
@@ -105,35 +106,35 @@ testing(void)
 static void
 benchmark(void)
 {
-	struct rusage before, after;
-	struct timeval total;
-	float seconds;
-	char block[TEST_BLOCK_LEN];
-	unsigned int i;
+    struct rusage before, after;
+    struct timeval total;
+    float seconds;
+    char block[TEST_BLOCK_LEN];
+    unsigned int i;
 
-	printf("%s timing benchmark.\n", ALGNAME);
+    printf("%s timing benchmark.\n", ALGNAME);
     printf("Digesting %d %d-byte blocks with 512 bits digest...\n",
-	    TEST_BLOCK_COUNT, TEST_BLOCK_LEN);
-	fflush(stdout);
+        TEST_BLOCK_COUNT, TEST_BLOCK_LEN);
+    fflush(stdout);
 
-	for (i = 0; i < TEST_BLOCK_LEN; i++)
-		block[i] = (char) (i & 0xff);
+    for (i = 0; i < TEST_BLOCK_LEN; i++)
+        block[i] = (char) (i & 0xff);
 
-	getrusage(RUSAGE_SELF, &before);
+    getrusage(RUSAGE_SELF, &before);
 
-	CTX = init(512);
-	for (i = 0; i < TEST_BLOCK_COUNT; i++)
-		update(CTX, block, (size_t) TEST_BLOCK_LEN);
-	final(CTX);
+    CTX = init(512);
+    for (i = 0; i < TEST_BLOCK_COUNT; i++)
+        update(CTX, block, (size_t) TEST_BLOCK_LEN);
+    final(CTX);
 
-	getrusage(RUSAGE_SELF, &after);
-	timersub(&after.ru_utime, &before.ru_utime, &total);
-	seconds = (float) total.tv_sec + (float) total.tv_usec / 1000000;
+    getrusage(RUSAGE_SELF, &after);
+    timersub(&after.ru_utime, &before.ru_utime, &total);
+    seconds = (float) total.tv_sec + (float) total.tv_usec / 1000000;
 
-	printf("Digest = %s", CTX->hexdigest);
-	printf("\nTime = %f seconds\n", seconds);
-	printf("Speed = %.2f bytes/second\n",
-	    (float) TEST_BLOCK_LEN * (float) TEST_BLOCK_COUNT / seconds);
+    printf("Digest = %s", CTX->hexdigest);
+    printf("\nTime = %f seconds\n", seconds);
+    printf("Speed = %.2f bytes/second\n",
+        (float) TEST_BLOCK_LEN * (float) TEST_BLOCK_COUNT / seconds);
 
     exit(EXIT_SUCCESS);
 }
@@ -198,10 +199,10 @@ main(int argc, char *argv[])
         }
     }
 
-	argc -= optind;
-	argv += optind;
+    argc -= optind;
+    argv += optind;
 
-	if (*argv)
+    if (*argv)
     {
         do
         {
