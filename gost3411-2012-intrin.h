@@ -4,17 +4,6 @@
 
 #include <emmintrin.h>
 
-#define X64(x, y, z) { \
-    z->QWORD[0] = x->QWORD[0] ^ y->QWORD[0]; \
-    z->QWORD[1] = x->QWORD[1] ^ y->QWORD[1]; \
-    z->QWORD[2] = x->QWORD[2] ^ y->QWORD[2]; \
-    z->QWORD[3] = x->QWORD[3] ^ y->QWORD[3]; \
-    z->QWORD[4] = x->QWORD[4] ^ y->QWORD[4]; \
-    z->QWORD[5] = x->QWORD[5] ^ y->QWORD[5]; \
-    z->QWORD[6] = x->QWORD[6] ^ y->QWORD[6]; \
-    z->QWORD[7] = x->QWORD[7] ^ y->QWORD[7]; \
-}
-
 #define XLOAD(x, y, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *px = (const __m128i *) &x[0]; \
     const __m128i *py = (const __m128i *) &y[0]; \
@@ -58,7 +47,7 @@
     UNLOAD(z, xmm0, xmm1, xmm2, xmm3); \
 }
 
-#define X32(x, y, z) { \
+#define X128(x, y, z) { \
     __m128i xmm0, xmm1, xmm2, xmm3; \
     XLOAD(x, y, xmm0, xmm1, xmm2, xmm3); \
     UNLOAD(  z, xmm0, xmm1, xmm2, xmm3); \

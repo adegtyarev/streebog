@@ -5,10 +5,10 @@
 #include <gost3411-2012-core.h>
 
 #ifdef __i386__
-#define X(x, y, z) X32(x, y, z)
+#define X(x, y, z) X128(x, y, z)
 #define XLPS(x, y, z) XLPS32(x, y, z)
 #else
-#define X(x, y, z) X64(x, y, z)
+#define X(x, y, z) X128(x, y, z)
 #define XLPS(x, y, z) XLPS64(x, y, z)
 #endif
 
