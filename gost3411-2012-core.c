@@ -211,7 +211,7 @@ static const Ai_t Ai[16] = {
     {{  3,  2,  1,  0}}
 };
 
-static unsigned long long Ax[8][256];
+static unsigned long long __attribute__((aligned(8))) Ax[8][256];
 
 static const uint8_t Tau[64] = {
     0,   8,  16,  24,  32,  40,  48,  56, 

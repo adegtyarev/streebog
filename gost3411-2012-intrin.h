@@ -3,6 +3,7 @@
  */
 
 #include <emmintrin.h>
+#include <mmintrin.h>
 
 #define XLOAD(x, y, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *px = (const __m128i *) &x[0]; \
@@ -53,22 +54,27 @@
     UNLOAD(  z, xmm0, xmm1, xmm2, xmm3); \
 }
 
+#define _mm_cvtsi64_m64(v) (__m64) v
+#define _mm_xor_64(mm0, mm1) _mm_xor_si64(mm0, _mm_cvtsi64_m64(mm1))
+
 #define XLPS32(x, y, data) { \
     unsigned int xi; \
     uint8_t *p; \
     union uint512_u buf  __attribute__((aligned(16))); \
+    __m64 mm0; \
     XTRANSPOSE(x, y, (&buf)); \
     p = (uint8_t *) &buf; \
     for (xi = 0; xi < 8; xi++) \
     { \
-        data->QWORD[xi]  = Ax[0][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[1][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[2][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[3][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[4][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[5][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[6][Pi[*(p++)]]; \
-        data->QWORD[xi] ^= Ax[7][Pi[*(p++)]]; \
+        mm0 = _mm_cvtsi64_m64(Ax[0][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[1][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[2][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[3][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[4][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[5][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[6][Pi[*(p++)]]); \
+        mm0 = _mm_xor_64(mm0, Ax[7][Pi[*(p++)]]); \
+        data->QWORD[xi] = (unsigned long long) mm0; \
     } \
 }
 

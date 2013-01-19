@@ -9,7 +9,7 @@ SOURCES=gost3411-2012.c gost3411-2012-core.h gost3411-2012-intrin.h gost3411-201
 
 CC?=cc
 WARN?=-pedantic -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion -Wno-long-long -Wextra -Wpointer-arith -Wcast-qual -Winline
-OPTIMIZE?=-O2 -msse2 # -mmmx -msse -msse3 -msse4 -msse4.1 -msse4.2 
+OPTIMIZE?=-O2 -msse2 -mmmx #-msse -msse3 -msse4 -msse4.1 -msse4.2 
 CFLAGS+=-g $(OPTIMIZE) $(WARN)
 DEFAULT_INCLUDES=-I.
 COMPILE=$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CFLAGS) 
