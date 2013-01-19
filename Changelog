@@ -1,3 +1,12 @@
+Changes with version 0.08                                           19 Jan 2013
+
+	* Feature: boost performance on 32-bit systems by using 64-bit MMX XOR
+	  instructions in XLPS.
+
+	* Feature: Use 128-bit SSE2 for X on both 32-bit and 64-bit systems. For
+	  latter this will decrease number of instructions in about two times when
+	  XORing 512-bit block.
+
 Changes with version 0.07											17 Jan 2013
 
 	* Feature: boost performance on 32-bit systems by using SSE2.
