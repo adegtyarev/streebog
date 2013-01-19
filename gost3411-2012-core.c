@@ -211,6 +211,8 @@ static const Ai_t Ai[16] = {
     {{  3,  2,  1,  0}}
 };
 
+/* 64-bit alignment required on 32-bit systems to produce optimized pxor
+ * sequence in XLPS */
 static unsigned long long __attribute__((aligned(8))) Ax[8][256];
 
 static const uint8_t Tau[64] = {
