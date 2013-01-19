@@ -23,7 +23,7 @@ static const union uint512_u buffer512  = {{ 512ULL, 0ULL, 0ULL, 0ULL, 0ULL,
 static const union uint512_u buffer0    = {{   0ULL, 0ULL, 0ULL, 0ULL, 0ULL,
     0ULL, 0ULL, 0ULL }};
 
-static const union uint512_u C[12] = {
+static const union uint512_u C[12] __attribute__((aligned(16))) = {
     {{
           0xdd806559f2a64507ULL,
           0x05767436cc744d23ULL,
