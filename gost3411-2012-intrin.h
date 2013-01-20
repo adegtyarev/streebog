@@ -54,7 +54,10 @@
     UNLOAD(  z, xmm0, xmm1, xmm2, xmm3); \
 }
 
+#ifndef __ICC
 #define _mm_cvtsi64_m64(v) (__m64) v
+#define _mm_cvtm64_si64(v) (long long) v
+#endif
 #define _mm_xor_64(mm0, mm1) _mm_xor_si64(mm0, _mm_cvtsi64_m64(mm1))
 
 #define XLPS32(x, y, data) { \
@@ -74,7 +77,7 @@
         mm0 = _mm_xor_64(mm0, Ax[5][Pi[*(p++)]]); \
         mm0 = _mm_xor_64(mm0, Ax[6][Pi[*(p++)]]); \
         mm0 = _mm_xor_64(mm0, Ax[7][Pi[*(p++)]]); \
-        data->QWORD[xi] = (unsigned long long) mm0; \
+        data->QWORD[xi] = (unsigned) _mm_cvtm64_si64(mm0); \
     } \
 }
 

@@ -400,6 +400,9 @@ g(const union uint512_u *N, const union uint512_u *h,
 
     X(data, h, data);
     X(data, m, data);
+
+    /* Restore the Floating-point status on the CPU */
+    _mm_empty();
 }
 
 static inline void
