@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sysexits.h>
 #include <unistd.h>
+
 #include <gost3411-2012-intrin.h>
 
 #define DEFAULT_DIGEST_SIZE 512
@@ -20,10 +21,7 @@ union uint512_u
     uint8_t BYTE[64];
 } uint512_u;
 
-typedef struct Ai_t
-{
-    uint8_t i[4];
-} Ai_t ;
+#include <gost3411-2012-const.h>
 
 typedef struct GOST3411Context
 {

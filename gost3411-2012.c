@@ -13,11 +13,12 @@
 
 #define READ_BUFFER_SIZE 65536
 
-#define TEST_BLOCK_LEN 10000
+#define TEST_BLOCK_LEN 8192
 #define TEST_BLOCK_COUNT 10000
 
 GOST3411Context *CTX;
-uint32_t digest_size = DEFAULT_DIGEST_SIZE;
+
+unsigned int digest_size = DEFAULT_DIGEST_SIZE;
 
 static void
 usage(void)
@@ -146,11 +147,25 @@ shutdown(void)
         destroy(CTX);
 }
 
+#if defined(SUPERCOP)
+int
+crypto_hash(unsigned char *out, unsigned char *in, unsigned long long inlen)
+{
+    CTX = init(512);
+
+    update(CTX, in, (size_t) inlen);
+    final(CTX);
+
+    memcpy(out, CTX->hexdigest, 64);
+
+    return 0;
+}
+#else
 int
 main(int argc, char *argv[])
 {
     int ch; 
-    uint8_t uflag, qflag, rflag, excode;
+    char uflag, qflag, rflag, excode;
     FILE *f;
 
     excode = EXIT_SUCCESS;
@@ -236,3 +251,4 @@ main(int argc, char *argv[])
 
     return excode;
 }
+#endif

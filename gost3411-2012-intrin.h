@@ -5,6 +5,23 @@
 #include <emmintrin.h>
 #include <mmintrin.h>
 
+#define LO(v) ((unsigned char) (v))
+#define HI(v) ((unsigned char) (((unsigned int) (v)) >> 8))
+
+#ifdef __i386__
+#define EXTRACT EXTRACT32
+#else
+#define EXTRACT EXTRACT64
+#endif
+
+#define LOAD(P, xmm0, xmm1, xmm2, xmm3) { \
+    const __m128i *__m128p = (const __m128i *) &P[0]; \
+    xmm0 = _mm_load_si128(&__m128p[0]); \
+    xmm1 = _mm_load_si128(&__m128p[1]); \
+    xmm2 = _mm_load_si128(&__m128p[2]); \
+    xmm3 = _mm_load_si128(&__m128p[3]); \
+}
+
 #define XLOAD(x, y, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *px = (const __m128i *) &x[0]; \
     const __m128i *py = (const __m128i *) &y[0]; \
@@ -22,105 +39,146 @@
     _mm_store_si128(&__m128p[3], xmm3); \
 }
 
-#define TRANSPOSE(xmm0, xmm1, xmm2, xmm3) { \
-    __m128i txm0, txm1, txm2, txm3; \
-    txm0 = _mm_unpacklo_epi8(xmm0, xmm1); \
-    txm1 = _mm_unpackhi_epi8(xmm0, xmm1); \
-    txm2 = _mm_unpacklo_epi8(xmm2, xmm3); \
-    txm3 = _mm_unpackhi_epi8(xmm2, xmm3); \
-    \
-    xmm0 = _mm_unpacklo_epi8(txm0, txm1); \
-    xmm1 = _mm_unpackhi_epi8(txm0, txm1); \
-    xmm2 = _mm_unpacklo_epi8(txm2, txm3); \
-    xmm3 = _mm_unpackhi_epi8(txm2, txm3); \
-    \
-    txm1 = _mm_unpackhi_epi32(xmm0, xmm2); \
-    xmm0 = _mm_unpacklo_epi32(xmm0, xmm2); \
-    xmm2 = _mm_unpacklo_epi32(xmm1, xmm3); \
-    xmm3 = _mm_unpackhi_epi32(xmm1, xmm3); \
-    xmm1 = txm1; \
-}
-
-#define XTRANSPOSE(x, y, z) { \
-    __m128i xmm0, xmm1, xmm2, xmm3; \
-    XLOAD(x, y, xmm0, xmm1, xmm2, xmm3); \
-    TRANSPOSE(xmm0, xmm1, xmm2, xmm3); \
-    UNLOAD(z, xmm0, xmm1, xmm2, xmm3); \
-}
-
 #define X128(x, y, z) { \
     __m128i xmm0, xmm1, xmm2, xmm3; \
     XLOAD(x, y, xmm0, xmm1, xmm2, xmm3); \
     UNLOAD(  z, xmm0, xmm1, xmm2, xmm3); \
 }
 
+#define X128R(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7) { \
+    xmm0 = _mm_xor_si128(xmm0, xmm4); \
+    xmm1 = _mm_xor_si128(xmm1, xmm5); \
+    xmm2 = _mm_xor_si128(xmm2, xmm6); \
+    xmm3 = _mm_xor_si128(xmm3, xmm7); \
+}
+
+#define X128M(P, xmm0, xmm1, xmm2, xmm3) { \
+    const __m128i *__m128p = (const __m128i *) &P[0]; \
+    xmm0 = _mm_xor_si128(xmm0, _mm_load_si128(&__m128p[0])); \
+    xmm1 = _mm_xor_si128(xmm1, _mm_load_si128(&__m128p[1])); \
+    xmm2 = _mm_xor_si128(xmm2, _mm_load_si128(&__m128p[2])); \
+    xmm3 = _mm_xor_si128(xmm3, _mm_load_si128(&__m128p[3])); \
+}
+
 #ifndef __ICC
 #define _mm_cvtsi64_m64(v) (__m64) v
 #define _mm_cvtm64_si64(v) (long long) v
 #endif
+
 #define _mm_xor_64(mm0, mm1) _mm_xor_si64(mm0, _mm_cvtsi64_m64(mm1))
 
-#define XLPS32(x, y, data) { \
-    unsigned int xi; \
-    uint8_t *p; \
-    union uint512_u buf  __attribute__((aligned(16))); \
-    __m64 mm0; \
-    XTRANSPOSE(x, y, (&buf)); \
-    p = (uint8_t *) &buf; \
-    for (xi = 0; xi < 8; xi++) \
-    { \
-        mm0 = _mm_cvtsi64_m64(Ax[0][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[1][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[2][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[3][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[4][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[5][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[6][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[7][Pi[*(p++)]]); \
-        data->QWORD[xi] = (unsigned) _mm_cvtm64_si64(mm0); \
-    } \
+#define EXTRACT32(row, xmm0, xmm1, xmm2, xmm3, xmm4) {\
+    register unsigned short ax; \
+    __m64 mm0, mm1; \
+     \
+    ax = (unsigned short) _mm_extract_epi16(xmm0, row + 0); \
+    mm0  = _mm_cvtsi64_m64(Ax[0][Pi[LO(ax)]]); \
+    mm1  = _mm_cvtsi64_m64(Ax[0][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm0, row + 4); \
+    mm0 = _mm_xor_64(mm0, Ax[1][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[1][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm1, row + 0); \
+    mm0 = _mm_xor_64(mm0, Ax[2][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[2][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm1, row + 4); \
+    mm0 = _mm_xor_64(mm0, Ax[3][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[3][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm2, row + 0); \
+    mm0 = _mm_xor_64(mm0, Ax[4][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[4][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm2, row + 4); \
+    mm0 = _mm_xor_64(mm0, Ax[5][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[5][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm3, row + 0); \
+    mm0 = _mm_xor_64(mm0, Ax[6][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[6][Pi[HI(ax)]]); \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm3, row + 4); \
+    mm0 = _mm_xor_64(mm0, Ax[7][Pi[LO(ax)]]); \
+    mm1 = _mm_xor_64(mm1, Ax[7][Pi[HI(ax)]]); \
+    \
+    xmm4 = _mm_set_epi64(mm1, mm0); \
 }
 
-#define XLPS64(x, y, data) { \
-    register unsigned long long r0, r1, r2, r3, r4, r5, r6, r7; \
-    uint8_t i; \
+#define EXTRACT64(row, xmm0, xmm1, xmm2, xmm3, xmm4) {\
+    __m128i tmm4; \
+    register unsigned short ax; \
+    register unsigned long long r0, r1; \
+     \
+    ax = (unsigned short) _mm_extract_epi16(xmm0, row + 0); \
+    r0  = Ax[0][Pi[LO(ax)]]; \
+    r1  = Ax[0][Pi[HI(ax)]]; \
     \
-    r0 = x->QWORD[0] ^ y->QWORD[0]; \
-    r1 = x->QWORD[1] ^ y->QWORD[1]; \
-    r2 = x->QWORD[2] ^ y->QWORD[2]; \
-    r3 = x->QWORD[3] ^ y->QWORD[3]; \
-    r4 = x->QWORD[4] ^ y->QWORD[4]; \
-    r5 = x->QWORD[5] ^ y->QWORD[5]; \
-    r6 = x->QWORD[6] ^ y->QWORD[6]; \
-    r7 = x->QWORD[7] ^ y->QWORD[7]; \
+    ax = (unsigned short) _mm_extract_epi16(xmm0, row + 4); \
+    r0 ^= Ax[1][Pi[LO(ax)]]; \
+    r1 ^= Ax[1][Pi[HI(ax)]]; \
     \
-    data->QWORD[0]  = Ax[0][Pi[r0 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[1][Pi[r1 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[2][Pi[r2 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[3][Pi[r3 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[4][Pi[r4 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[5][Pi[r5 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[6][Pi[r6 & 0xFF]]; \
-    data->QWORD[0] ^= Ax[7][Pi[r7 & 0xFF]]; \
+    ax = (unsigned short) _mm_extract_epi16(xmm1, row + 0); \
+    r0 ^= Ax[2][Pi[LO(ax)]]; \
+    r1 ^= Ax[2][Pi[HI(ax)]]; \
     \
-    for (i = 1; i < 8; i++) \
-    {\
-        r0 >>= 0x8; \
-        r1 >>= 0x8; \
-        r2 >>= 0x8; \
-        r3 >>= 0x8; \
-        r4 >>= 0x8; \
-        r5 >>= 0x8; \
-        r6 >>= 0x8; \
-        r7 >>= 0x8; \
-        \
-        data->QWORD[i]  = Ax[0][Pi[r0 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[1][Pi[r1 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[2][Pi[r2 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[3][Pi[r3 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[4][Pi[r4 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[5][Pi[r5 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[6][Pi[r6 & 0xFF]]; \
-        data->QWORD[i] ^= Ax[7][Pi[r7 & 0xFF]]; \
-    }\
+    ax = (unsigned short) _mm_extract_epi16(xmm1, row + 4); \
+    r0 ^= Ax[3][Pi[LO(ax)]]; \
+    r1 ^= Ax[3][Pi[HI(ax)]]; \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm2, row + 0); \
+    r0 ^= Ax[4][Pi[LO(ax)]]; \
+    r1 ^= Ax[4][Pi[HI(ax)]]; \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm2, row + 4); \
+    r0 ^= Ax[5][Pi[LO(ax)]]; \
+    r1 ^= Ax[5][Pi[HI(ax)]]; \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm3, row + 0); \
+    r0 ^= Ax[6][Pi[LO(ax)]]; \
+    r1 ^= Ax[6][Pi[HI(ax)]]; \
+    \
+    ax = (unsigned short) _mm_extract_epi16(xmm3, row + 4); \
+    r0 ^= Ax[7][Pi[LO(ax)]]; \
+    r1 ^= Ax[7][Pi[HI(ax)]]; \
+    \
+    xmm4 = _mm_cvtsi64_si128((long long) r0); \
+    tmm4 = _mm_cvtsi64_si128((long long) r1); \
+    xmm4 = _mm_unpacklo_epi64(xmm4, tmm4); \
+}
+
+#define XLPS128M(P, xmm0, xmm1, xmm2, xmm3) { \
+    __m128i tmm0, tmm1, tmm2, tmm3; \
+    X128M(P, xmm0, xmm1, xmm2, xmm3); \
+    \
+    EXTRACT(0, xmm0, xmm1, xmm2, xmm3, tmm0); \
+    EXTRACT(1, xmm0, xmm1, xmm2, xmm3, tmm1); \
+    EXTRACT(2, xmm0, xmm1, xmm2, xmm3, tmm2); \
+    EXTRACT(3, xmm0, xmm1, xmm2, xmm3, tmm3); \
+    \
+    xmm0 = tmm0; \
+    xmm1 = tmm1; \
+    xmm2 = tmm2; \
+    xmm3 = tmm3; \
+}
+
+#define XLPS128R(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7) { \
+    __m128i tmm0, tmm1, tmm2, tmm3; \
+    X128R(xmm4, xmm5, xmm6, xmm7, xmm0, xmm1, xmm2, xmm3); \
+    \
+    EXTRACT(0, xmm4, xmm5, xmm6, xmm7, tmm0); \
+    EXTRACT(1, xmm4, xmm5, xmm6, xmm7, tmm1); \
+    EXTRACT(2, xmm4, xmm5, xmm6, xmm7, tmm2); \
+    EXTRACT(3, xmm4, xmm5, xmm6, xmm7, tmm3); \
+    \
+    xmm4 = tmm0; \
+    xmm5 = tmm1; \
+    xmm6 = tmm2; \
+    xmm7 = tmm3; \
+}
+
+#define ROUND128(i, xmm0, xmm2, xmm4, xmm6, xmm1, xmm3, xmm5, xmm7) {\
+    XLPS128M((&C[i]), xmm0, xmm2, xmm4, xmm6); \
+    XLPS128R(xmm0, xmm2, xmm4, xmm6, xmm1, xmm3, xmm5, xmm7); \
 }

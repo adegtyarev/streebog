@@ -1,3 +1,20 @@
+Changes with version 0.09                                           22 Jan 2013
+
+	* Feature: internal data flow and representation rewritten so that whole
+	  internal state of compression function g() is hold in two XMM-register
+	  quadruples. This avoid copying of temporary key and internal state
+	  between rounds in g(), thus reduce instructions count per plaintext
+	  block.
+	
+	* Feature: with code optimization above, performance on 32-bit systems
+	  greatly improved and is now about as fast as with 64-bit systems.
+	
+	* Bugfix: in function g(): unload function's output directly to it's
+	  internal state, thus avoid one extra memcpy() call per plaintext block.
+
+	* Bugfix: move iteration constants definition from file with core
+	  functions to extra header.
+
 Changes with version 0.08                                           19 Jan 2013
 
 	* Feature: boost performance on 32-bit systems by using 64-bit MMX XOR
