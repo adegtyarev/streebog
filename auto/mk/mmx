@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Detect MMX capability in processor and compiler.
+#
+# $Id$
+
+TMPFILE=`mktemp -t gost3411-autotest.XXX` || exit 1
+trap "rm -f ${TMPFILE} 2>/dev/null" EXIT
+
+cat <<EOF > ${TMPFILE}.c
+#include <mmintrin.h>
+
+int main()
+{
+    __m64 mm0, mm1;
+    long long r0;
+    mm0 = _mm_cvtsi64_m64((long long) 0x12345678LL);
+    mm1 = _mm_cvtsi64_m64((long long) 0x87654321LL);
+    mm0 = _mm_xor_si64(mm0, mm1);
+    r0  = _mm_cvtm64_si64(mm0);
+    if (r0 == 0x95511559LL) return 0;
+    return 1;
+}
+EOF
+
+${CC} ${CFLAGS_AUTO} -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
+
+if [ ! -x ${TMPFILE} ]; then
+    exit 0
+fi
+
+${TMPFILE}
+
+if [ $? -eq 0 ]
+then
+
+    cat << EOF
+CFLAGS+=-mmmx
+EOF
+
+fi
+
+exit 0

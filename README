@@ -1,0 +1,62 @@
+GOST R 34.11-2012 hash function with 512/256 bit digest
+=======================================================
+
+About
+-----
+This is portable implementation of the GOST R 34.11-2012 hash function. The
+standard developed by the Center for Information Protection and Special
+Communications of the Federal Security Service of the Russian Federation with
+participation of the Open joint-stock company "Information Technologies and
+Communication Systems" (InfoTeCS JSC).
+
+Requirements
+------------
+
+Compile and install
+-------------------
+For most cases it is sufficient just to type make in top of source directory:
+
+# make
+gcc46 -g -O2 [other compile options..]
+
+This will produce binary program file named 'gost3411'.
+
+Usage instructions
+------------------
+
+# ./gost3411 -h
+usage: [-25bhqrt] [-s string] [files ...]
+
+Flags:
+ -2 - 256-bit digest.
+ -5 - 512-bit digest (default).
+ -t - Testing mode to produce hash for example messages defined in standard.
+ -b - Benchmark mode (to see how fast or slow this implementation works).
+ -s - Print a checksum of the given string.
+ -r - Reverses the format of the output. This helps with visual diffs.
+ -q - Quiet mode - only the checksum is printed out.
+
+Each file listed on the command line is processed and hash is printed for each
+one. Stdin is read as input when executed without arguments.
+
+API
+---
+...
+
+Compile-time options
+--------------------
+...
+
+Portability notes
+-----------------
+...
+
+Platforms tested
+----------------
+FreeBSD x86/x86_64
+Linux   x86/x86_64
+Linux   powerpc
+
+Author
+------
+Alexey V. Degtyarev <alexey@renatasystems.org>

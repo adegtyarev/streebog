@@ -9,11 +9,15 @@ Changes with version 0.09                                           22 Jan 2013
 	* Feature: with code optimization above, performance on 32-bit systems
 	  greatly improved and is now about as fast as with 64-bit systems.
 	
+	* Feature: detect MMX and SSE2 capabilities on compile time and use faster
+	  code when possible. From this version onward there are at least two
+	  versions of implementation: portable (not using any extenstions like MMX
+	  or SSE) and optimized one.
+
+	* Feature: big-endian systems compatibility.
+
 	* Bugfix: in function g(): unload function's output directly to it's
 	  internal state, thus avoid one extra memcpy() call per plaintext block.
-
-	* Bugfix: move iteration constants definition from file with core
-	  functions to extra header.
 
 Changes with version 0.08                                           19 Jan 2013
 
@@ -24,7 +28,7 @@ Changes with version 0.08                                           19 Jan 2013
 	  latter this will decrease number of instructions in about two times when
 	  XORing 512-bit block.
 
-Changes with version 0.07											17 Jan 2013
+Changes with version 0.07                                           17 Jan 2013
 
 	* Feature: boost performance on 32-bit systems by using SSE2.
 

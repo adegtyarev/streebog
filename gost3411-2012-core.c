@@ -4,7 +4,17 @@
  * $Id$
  */
 
-#include <gost3411-2012-core.h>
+#include "gost3411-2012-core.h"
+
+#define BSWAP64(x) \
+    ((((x) & 0xFF00000000000000ULL) >> 56) | \
+     (((x) & 0x00FF000000000000ULL) >> 40) | \
+     (((x) & 0x0000FF0000000000ULL) >> 24) | \
+     (((x) & 0x000000FF00000000ULL) >>  8) | \
+     (((x) & 0x00000000FF000000ULL) <<  8) | \
+     (((x) & 0x0000000000FF0000ULL) << 24) | \
+     (((x) & 0x000000000000FF00ULL) << 40) | \
+     (((x) & 0x00000000000000FFULL) << 56))
 
 /* 64-bit alignment required on 32-bit systems to produce optimized pxor
  * sequence in XLPS */
@@ -12,7 +22,7 @@ static unsigned long long __attribute__((aligned(8))) Ax[8][256];
 
 typedef struct Ai_t
 {
-    uint8_t i[4];
+    unsigned char i[4];
 } Ai_t;
 
 static const Ai_t Ai[16] = {
@@ -126,6 +136,7 @@ pad(GOST3411Context *CTX)
 static inline void
 add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
+#ifdef __GOST3411_LITTLE_ENDIAN__
     unsigned int CF;
     unsigned int i;
 
@@ -133,23 +144,35 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
     for (i = 0; i < 8; i++)
     {
         r->QWORD[i] = x->QWORD[i] + y->QWORD[i] + CF;
-        /* Actually it is sufficient to compare *r with ANY argument. However,
-         * one argument of add512() call MAY point to *r at the same time.
-         * Consider add512(x, y, x) or ad512(x, y, y). We avoid confusion by
-         * comparing *r with both arguments. Instead of *y, assume that *x
-         * probably points to *r, so *y goes first.
-         */
         if ( (r->QWORD[i] < y->QWORD[i]) || 
              (r->QWORD[i] < x->QWORD[i]) )
             CF = 1;
         else
             CF = 0;
     }
+#else
+    const unsigned char *xp, *yp;
+    unsigned char *rp;
+    unsigned int i;
+    int buf;
+
+    xp = (const unsigned char *) &x[0];
+    yp = (const unsigned char *) &y[0];
+    rp = (unsigned char *) &r[0];
+
+    buf = 0;
+    for (i = 0; i < 64; i++)
+    {
+        buf = xp[i] + yp[i] + (buf >> 8);
+        rp[i] = (unsigned char) buf & 0xFF;
+    }
+#endif
 }
 
 static void
 g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
 {
+#ifdef __GOST3411_HAS_SSE2__
     __m128i xmm0, xmm2, xmm4, xmm6; /* XMMR0-quadruple */
     __m128i xmm1, xmm3, xmm5, xmm7; /* XMMR1-quadruple */
     unsigned int i;
@@ -173,6 +196,26 @@ g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
 
     /* Restore the Floating-point status on the CPU */
     _mm_empty();
+#else
+    union uint512_u Ki, data;
+    unsigned int i;
+
+    XLPS(h, N, (&data));
+
+    /* Starting E() */
+    Ki = data;
+    XLPS((&Ki), m, (&data));
+
+    for (i = 0; i < 11; i++)
+        ROUND(i, (&Ki), (&data));
+
+    XLPS((&Ki), (&C[11]), (&Ki));
+    X((&Ki), (&data), (&data));
+    /* E() done */
+
+    X((&data), h, (&data));
+    X((&data), m, h);
+#endif
 }
 
 static inline void
@@ -194,7 +237,11 @@ round3(GOST3411Context *CTX)
     memcpy(CTX->buffer, &buf, sizeof uint512_u);
 
     memset(&buf, 0x00, sizeof buf);
+#ifdef __GOST3411_LITTLE_ENDIAN__
     buf.QWORD[0] = CTX->bufsize << 3;
+#else
+    buf.QWORD[0] = BSWAP64(CTX->bufsize << 3);
+#endif
 
     pad(CTX);
 
@@ -253,7 +300,11 @@ final(GOST3411Context *CTX)
     i = 7;
     while (i >= j)
     {
+#ifdef __GOST3411_LITTLE_ENDIAN__
         snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->QWORD[i]);
+#else
+        snprintf(buf, (size_t) 17, "%.16llx", BSWAP64(CTX->hash->QWORD[i]));
+#endif
         strncat(CTX->hexdigest, buf, (size_t) 16);
         i--;
     }

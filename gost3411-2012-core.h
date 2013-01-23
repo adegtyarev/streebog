@@ -10,7 +10,15 @@
 #include <sysexits.h>
 #include <unistd.h>
 
-#include <gost3411-2012-intrin.h>
+#include "config.h"
+
+#if defined   __GOST3411_HAS_SSE2__
+#include "gost3411-2012-sse2.h"
+#elif defined __GOST3411_HAS_MMX__ 
+#include "gost3411-2012-mmx.h"
+#else
+#include "gost3411-2012-ref.h"
+#endif
 
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
@@ -21,7 +29,7 @@ union uint512_u
     uint8_t BYTE[64];
 } uint512_u;
 
-#include <gost3411-2012-const.h>
+#include "gost3411-2012-const.h"
 
 typedef struct GOST3411Context
 {

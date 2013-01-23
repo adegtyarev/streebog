@@ -2,6 +2,10 @@
  * $Id$
  */
 
+#ifndef __GOST3411_HAS_SSE2__
+#error "SSE2 not enabled in config.h"
+#endif
+
 #include <emmintrin.h>
 #include <mmintrin.h>
 
@@ -14,6 +18,11 @@
 #define EXTRACT EXTRACT64
 #endif
 
+#ifndef __ICC
+#define _mm_cvtsi64_m64(v) (__m64) v
+#define _mm_cvtm64_si64(v) (long long) v
+#endif
+
 #define LOAD(P, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *__m128p = (const __m128i *) &P[0]; \
     xmm0 = _mm_load_si128(&__m128p[0]); \
@@ -22,27 +31,12 @@
     xmm3 = _mm_load_si128(&__m128p[3]); \
 }
 
-#define XLOAD(x, y, xmm0, xmm1, xmm2, xmm3) { \
-    const __m128i *px = (const __m128i *) &x[0]; \
-    const __m128i *py = (const __m128i *) &y[0]; \
-    xmm0 = _mm_xor_si128(px[0], py[0]); \
-    xmm1 = _mm_xor_si128(px[1], py[1]); \
-    xmm2 = _mm_xor_si128(px[2], py[2]); \
-    xmm3 = _mm_xor_si128(px[3], py[3]); \
-}
-
 #define UNLOAD(P, xmm0, xmm1, xmm2, xmm3) { \
     __m128i *__m128p = (__m128i *) &P[0]; \
     _mm_store_si128(&__m128p[0], xmm0); \
     _mm_store_si128(&__m128p[1], xmm1); \
     _mm_store_si128(&__m128p[2], xmm2); \
     _mm_store_si128(&__m128p[3], xmm3); \
-}
-
-#define X128(x, y, z) { \
-    __m128i xmm0, xmm1, xmm2, xmm3; \
-    XLOAD(x, y, xmm0, xmm1, xmm2, xmm3); \
-    UNLOAD(  z, xmm0, xmm1, xmm2, xmm3); \
 }
 
 #define X128R(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7) { \
@@ -60,14 +54,9 @@
     xmm3 = _mm_xor_si128(xmm3, _mm_load_si128(&__m128p[3])); \
 }
 
-#ifndef __ICC
-#define _mm_cvtsi64_m64(v) (__m64) v
-#define _mm_cvtm64_si64(v) (long long) v
-#endif
-
 #define _mm_xor_64(mm0, mm1) _mm_xor_si64(mm0, _mm_cvtsi64_m64(mm1))
 
-#define EXTRACT32(row, xmm0, xmm1, xmm2, xmm3, xmm4) {\
+#define EXTRACT32(row, xmm0, xmm1, xmm2, xmm3, xmm4) { \
     register unsigned short ax; \
     __m64 mm0, mm1; \
      \
@@ -106,7 +95,7 @@
     xmm4 = _mm_set_epi64(mm1, mm0); \
 }
 
-#define EXTRACT64(row, xmm0, xmm1, xmm2, xmm3, xmm4) {\
+#define EXTRACT64(row, xmm0, xmm1, xmm2, xmm3, xmm4) { \
     __m128i tmm4; \
     register unsigned short ax; \
     register unsigned long long r0, r1; \
@@ -178,7 +167,7 @@
     xmm7 = tmm3; \
 }
 
-#define ROUND128(i, xmm0, xmm2, xmm4, xmm6, xmm1, xmm3, xmm5, xmm7) {\
+#define ROUND128(i, xmm0, xmm2, xmm4, xmm6, xmm1, xmm3, xmm5, xmm7) { \
     XLPS128M((&C[i]), xmm0, xmm2, xmm4, xmm6); \
     XLPS128R(xmm0, xmm2, xmm4, xmm6, xmm1, xmm3, xmm5, xmm7); \
 }

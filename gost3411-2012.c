@@ -59,6 +59,7 @@ onstring(const char *string)
 }
 
 const union uint512_u GOSTTestInput = {
+#ifdef __GOST3411_LITTLE_ENDIAN__
     {
         0x3736353433323130ULL,
         0x3534333231303938ULL,
@@ -69,7 +70,20 @@ const union uint512_u GOSTTestInput = {
         0x3534333231303938ULL,
         0x0032313039383736ULL
     }
+#else
+    {
+        0x3031323334353637ULL,
+        0x3839303132333435ULL,
+        0x3637383930313233ULL,
+        0x3435363738393031ULL,
+        0x3233343536373839ULL,
+        0x3031323334353637ULL,
+        0x3839303132333435ULL,
+        0x3637383930313200ULL
+    }
+#endif
 };
+
 
 static void
 testing(void)
@@ -149,7 +163,7 @@ shutdown(void)
 
 #if defined(SUPERCOP)
 int
-crypto_hash(unsigned char *out, unsigned char *in, unsigned long long inlen)
+crypto_hash(unsigned char *out, const unsigned char *in, unsigned long long inlen)
 {
     CTX = init(512);
 

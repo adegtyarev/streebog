@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Detect various compile-time options and create config.h.
+#
+# $Id$
+
+set -e
+
+LC_ALL=C
+export LC_ALL
+
+CC=${CC:-cc}
+
+AUTO_CONF_H=config.h
+AUTO_CONF_MK=auto/Makefile
+
+cat > ${AUTO_CONF_H}.t < /dev/null
+cat > ${AUTO_CONF_MK}.t < /dev/null
+
+for file in auto/header/*
+do
+    env CC=${CC} sh ${file} >> ${AUTO_CONF_H}.t
+done
+
+for file in auto/mk/*
+do
+    env CC=${CC} sh ${file} >> ${AUTO_CONF_MK}.t
+done
+
+cat <<EOF >${AUTO_CONF_MK}
+CC=${CC}
+CFLAGS=${INCLUDES} ${CFLAGS}
+SOURCES=${SOURCES}
+EOF
+
+cat ${AUTO_CONF_MK}.t >> ${AUTO_CONF_MK} && rm -f ${AUTO_CONF_MK}.t
+
+cat >>${AUTO_CONF_MK} <<"EOF" 
+
+compile:
+	$(CC) $(CFLAGS) -o gost3411 $(SOURCES)
+EOF
+
+mv ${AUTO_CONF_H}.t ${AUTO_CONF_H}

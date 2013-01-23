@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Detect running system endianness.
+#
+# $Id$
+
+TMPFILE=`mktemp -t gost3411-autotest-XXX` || exit 1
+trap "rm -f ${TMPFILE} ${TMPFILE}.c 2>/dev/null" EXIT
+
+cat <<EOF > ${TMPFILE}.c
+int main()
+{
+    int i = 0x12345678;
+    char *p;
+
+    p = (char *) &i;
+    if (*p == 0x78) return 0;
+    return 1;
+}
+EOF
+
+${CC} ${CFLAGS_AUTO} -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
+
+if [ ! -x ${TMPFILE} ]; then
+    echo "error: failed to detect endianness" 1>&2
+    exit 1
+fi
+
+${TMPFILE}
+
+if [ $? -eq 0 ]
+then
+
+    cat - <<EOF
+#ifndef __GOST3411_LITTLE_ENDIAN__
+#define __GOST3411_LITTLE_ENDIAN__
+#endif
+EOF
+
+else
+
+    cat - <<EOF
+#ifndef __GOST3411_BIG_ENDIAN__
+#define __GOST3411_BIG_ENDIAN__
+#endif
+EOF
+
+fi
