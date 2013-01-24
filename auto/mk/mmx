@@ -23,7 +23,7 @@ int main()
 }
 EOF
 
-${CC} ${CFLAGS_AUTO} -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
+${CC} -mmmx -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
 
 if [ ! -x ${TMPFILE} ]; then
     exit 0
