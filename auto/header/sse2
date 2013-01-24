@@ -13,17 +13,17 @@ cat <<EOF > ${TMPFILE}.c
 int main()
 {
     __m128i xmm0, xmm1;
-    long long r0;
-    xmm0 = _mm_cvtsi64_si128((long long) 0x12345678LL);
-    xmm1 = _mm_cvtsi64_si128((long long) 0x87654321LL);
+    unsigned int r0;
+    xmm0 = _mm_cvtsi32_si128(0x12345678);
+    xmm1 = _mm_cvtsi32_si128(0x87654321);
     xmm0 = _mm_xor_si128(xmm0, xmm1);
-    r0   = _mm_cvtsi128_si64(xmm0);
-    if (r0 == 0x95511559LL) return 0;
+    r0   = _mm_cvtsi128_si32(xmm0);
+    if (r0 == 0x95511559) return 0;
     return 1;
 }
 EOF
 
-${CC} ${CFLAGS_AUTO} -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
+${CC} -msse2 -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
 
 if [ ! -x ${TMPFILE} ]; then
     exit 0
