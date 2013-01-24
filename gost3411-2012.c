@@ -30,32 +30,32 @@ usage(void)
 static void
 onfile(FILE *file)
 {
-    char *buffer;
+    unsigned char *buffer;
     size_t len;
 
-    CTX = init(digest_size);
+    CTX = GOST3411Init(digest_size);
 
     buffer = memalloc((size_t) READ_BUFFER_SIZE + 7);
 
     while ((len = fread(buffer, (size_t) 1, (size_t) READ_BUFFER_SIZE, file)))
-        update(CTX, buffer, len);
+        GOST3411Update(CTX, buffer, len);
 
     if (ferror(file))
         err(EX_IOERR, NULL);
 
     free(buffer);
 
-    final(CTX);
+    GOST3411Final(CTX);
 }
 
 static void
-onstring(const char *string)
+onstring(const unsigned char *string)
 {
-    CTX = init(digest_size);
+    CTX = GOST3411Init(digest_size);
 
-    update(CTX, string, strlen(string));
+    GOST3411Update(CTX, string, strlen((const char *) string));
 
-    final(CTX);
+    GOST3411Final(CTX);
 }
 
 const union uint512_u GOSTTestInput = {
@@ -88,7 +88,7 @@ const union uint512_u GOSTTestInput = {
 static void
 testing(void)
 {
-    CTX = init(512);
+    CTX = GOST3411Init(512);
 
     memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
@@ -98,21 +98,21 @@ testing(void)
            CTX->buffer->QWORD[4], CTX->buffer->QWORD[3], CTX->buffer->QWORD[2],
            CTX->buffer->QWORD[1], CTX->buffer->QWORD[0]);
 
-    final(CTX);
+    GOST3411Final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
 
-    destroy(CTX);
+    GOST3411Destroy(CTX);
 
-    CTX = init(256);
+    CTX = GOST3411Init(256);
 
     memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
-    final(CTX);
+    GOST3411Final(CTX);
     printf("%s 256 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
 
     /* This guy causes double free on Linux :-? 
-    destroy(CTX);
+    GOST3411Destroy(CTX);
     */
 
     exit(EXIT_SUCCESS);
@@ -124,7 +124,7 @@ benchmark(void)
     struct rusage before, after;
     struct timeval total;
     float seconds;
-    char block[TEST_BLOCK_LEN];
+    unsigned char block[TEST_BLOCK_LEN];
     unsigned int i;
 
     printf("%s timing benchmark.\n", ALGNAME);
@@ -133,14 +133,14 @@ benchmark(void)
     fflush(stdout);
 
     for (i = 0; i < TEST_BLOCK_LEN; i++)
-        block[i] = (char) (i & 0xff);
+        block[i] = (unsigned char) (i & 0xff);
 
     getrusage(RUSAGE_SELF, &before);
 
-    CTX = init(512);
+    CTX = GOST3411Init(512);
     for (i = 0; i < TEST_BLOCK_COUNT; i++)
-        update(CTX, block, (size_t) TEST_BLOCK_LEN);
-    final(CTX);
+        GOST3411Update(CTX, block, (size_t) TEST_BLOCK_LEN);
+    GOST3411Final(CTX);
 
     getrusage(RUSAGE_SELF, &after);
     timersub(&after.ru_utime, &before.ru_utime, &total);
@@ -158,17 +158,17 @@ static void
 shutdown(void)
 {
     if (CTX != NULL)
-        destroy(CTX);
+        GOST3411Destroy(CTX);
 }
 
 #if defined(SUPERCOP)
 int
 crypto_hash(unsigned char *out, const unsigned char *in, unsigned long long inlen)
 {
-    CTX = init(512);
+    CTX = GOST3411Init(512);
 
-    update(CTX, in, (size_t) inlen);
-    final(CTX);
+    GOST3411Update(CTX, in, (size_t) inlen);
+    GOST3411Final(CTX);
 
     memcpy(out, CTX->hexdigest, 64);
 
@@ -206,7 +206,7 @@ main(int argc, char *argv[])
                 qflag = 1;
                 break;
             case 's':
-                onstring(optarg);
+                onstring((unsigned char *) optarg);
                 if (qflag)
                     printf("%s\n", CTX->hexdigest);
                 else if (rflag)

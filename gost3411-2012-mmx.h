@@ -58,11 +58,11 @@
 }
 #define XLPS32(x, y, data) { \
     unsigned int xi; \
-    uint8_t *p; \
+    unsigned char *p; \
     union uint512_u buf  __attribute__((aligned(16))); \
     __m64 mm0; \
     XTRANSPOSE(x, y, (&buf)); \
-    p = (uint8_t *) &buf; \
+    p = (unsigned char *) &buf; \
     for (xi = 0; xi < 8; xi++) \
     { \
         mm0 = _mm_cvtsi64_m64(Ax[0][Pi[*(p++)]]); \

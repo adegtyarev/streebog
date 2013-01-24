@@ -4,10 +4,10 @@ GOST R 34.11-2012 hash function with 512/256 bit digest
 About
 -----
 This is portable implementation of the GOST R 34.11-2012 hash function. The
-standard developed by the Center for Information Protection and Special
-Communications of the Federal Security Service of the Russian Federation with
-participation of the Open joint-stock company "Information Technologies and
-Communication Systems" (InfoTeCS JSC).
+standard for this hash function developed by the Center for Information
+Protection and Special Communications of the Federal Security Service of the
+Russian Federation with participation of the Open joint-stock company
+"Information Technologies and Communication Systems" (InfoTeCS JSC).
 
 Requirements
 ------------
@@ -61,11 +61,63 @@ This will recompile sources from scratch using Intel C Compiler with default
 flags. If you need to adjust these compiler flags, try to set them with CFLAGS
 knob:
 
-# make remake CFLAGS="-O3"
+# make remake CC=icc CFLAGS="-O3"
 
 API
 ---
-...
+The API to this implementation is quite straightforward and similar to other
+hash function APIs. 
+
+GOST3411Context
+    This is the hash context. There should be one GOST3411Context for each
+    object to be hashed.
+
+GOST3411Context *
+GOST3411Init(const unsigned int digest_size);
+    Allocates necessary amount of memory for hash object and return pointer to
+    a GOST3411Context of specified hash size (digest_size). Digest size can be
+    either 512 or 256.
+
+void
+GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len);
+    Hash some data in memory of len bytes size. Note that this call does not
+    modify original data in memory. If security is an issue, calling
+    application should destroy that memory block right after GOST3411Update(),
+    by e.g. memset() to zero.
+
+void
+GOST3411Final(GOST3411Context *CTX);
+    Finalizes hashing proccess and get GOST R 34.11-2012 hash in
+    CTX->hashdigest.
+
+void
+GOST3411Destroy(GOST3411Context *CTX);
+     The data in context including hash itself, buffer and internal state
+     zeroed-out. Every pointer and memory block are freed afterwards. Context
+     totally destroyed and the object can't be used anymore.
+
+Example
+-------
+    #include "gost3411-2012-core.h"
+
+    GOST3411Context *CTX;
+
+    ...
+        CTX = GOST3411Init(512);
+        ...
+        GOST3411Update(CTX, buffer, (size_t) bufsize);
+        ...
+        GOST3411Update(CTX, buffer, (size_t) bufsize);
+        ...
+        /* call GOST3411Update() for each block of data */
+        ...
+        GOST3411Final(CTX);
+        ...
+        printf("Digest = %s\n", CTX->hexdigest);
+        ...
+        GOST3411Destroy(CTX);
+    ...
+
 
 Portability notes
 -----------------

@@ -56,20 +56,30 @@ memalloc(const size_t size)
     return p;
 }
 
+
 void
-destroy(GOST3411Context *CTX)
+GOST3411Destroy(GOST3411Context *CTX)
 {
+    memset(CTX->N, 0x00, sizeof uint512_u);
+    memset(CTX->h, 0x00, sizeof uint512_u);
+    memset(CTX->hash,   0x00, sizeof uint512_u);
+    memset(CTX->Sigma,  0x00, sizeof uint512_u);
+    memset(CTX->buffer, 0x00, sizeof uint512_u);
+    memset(CTX->hexdigest, 0x00, sizeof (129));
+
     free(CTX->N);
     free(CTX->h);
     free(CTX->hash);
     free(CTX->Sigma);
     free(CTX->buffer);
     free(CTX->hexdigest);
+
+    memset(CTX, 0x00, sizeof (GOST3411Context));
     free(CTX);
 }
 
 GOST3411Context *
-init(const uint32_t digest_size)
+GOST3411Init(const unsigned int digest_size)
 {
     unsigned int i, j, b;
     Ai_t idx1, idx2;
@@ -260,7 +270,7 @@ round3(GOST3411Context *CTX)
 }
 
 void
-update(GOST3411Context *CTX, const char *data, size_t len)
+GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len)
 {
     size_t chunksize;
 
@@ -285,7 +295,7 @@ update(GOST3411Context *CTX, const char *data, size_t len)
 }
 
 void
-final(GOST3411Context *CTX)
+GOST3411Final(GOST3411Context *CTX)
 {
     int i, j;
     char *buf;

@@ -26,7 +26,6 @@
 union uint512_u
 {
     unsigned long long QWORD[8];
-    uint8_t BYTE[64];
 } uint512_u;
 
 #include "gost3411-2012-const.h"
@@ -39,12 +38,21 @@ typedef struct GOST3411Context
     union uint512_u *N;
     union uint512_u *Sigma;
     size_t bufsize;
-    uint32_t digest_size;
+    unsigned int digest_size;
     char *hexdigest;
 } GOST3411Context;
 
-void *memalloc(const size_t size);
-void final(GOST3411Context *CTX);
-GOST3411Context * init(const uint32_t digest_size);
-void destroy(GOST3411Context *CTX);
-void update(GOST3411Context *CTX, const char *data, size_t len);
+void
+*memalloc(const size_t size);
+
+GOST3411Context * 
+GOST3411Init(const unsigned int digest_size);
+
+void
+GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len);
+
+void
+GOST3411Final(GOST3411Context *CTX);
+
+void
+GOST3411Destroy(GOST3411Context *CTX);
