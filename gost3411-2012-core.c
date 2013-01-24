@@ -136,19 +136,22 @@ pad(GOST3411Context *CTX)
 static inline void
 add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
-#ifdef __GOST3411_LITTLE_ENDIAN__
-    unsigned int CF;
+#ifndef __GOST3411_BIG_ENDIAN__
+    unsigned int CF, OF;
     unsigned int i;
 
     CF = 0;
     for (i = 0; i < 8; i++)
     {
-        r->QWORD[i] = x->QWORD[i] + y->QWORD[i] + CF;
+        r->QWORD[i] = x->QWORD[i] + y->QWORD[i];
         if ( (r->QWORD[i] < y->QWORD[i]) || 
              (r->QWORD[i] < x->QWORD[i]) )
-            CF = 1;
+            OF = 1;
         else
-            CF = 0;
+            OF = 0;
+
+        r->QWORD[i] += CF;
+        CF = OF;
     }
 #else
     const unsigned char *xp, *yp;
@@ -237,7 +240,7 @@ round3(GOST3411Context *CTX)
     memcpy(CTX->buffer, &buf, sizeof uint512_u);
 
     memset(&buf, 0x00, sizeof buf);
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
     buf.QWORD[0] = CTX->bufsize << 3;
 #else
     buf.QWORD[0] = BSWAP64(CTX->bufsize << 3);
@@ -300,7 +303,7 @@ final(GOST3411Context *CTX)
     i = 7;
     while (i >= j)
     {
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
         snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->QWORD[i]);
 #else
         snprintf(buf, (size_t) 17, "%.16llx", BSWAP64(CTX->hash->QWORD[i]));

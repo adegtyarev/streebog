@@ -11,15 +11,20 @@ Communication Systems" (InfoTeCS JSC).
 
 Requirements
 ------------
+* GCC, Clang or ICC compiler supporting 64-bit integers.
+
+* GNU make (or any compatible make).
 
 Compile and install
 -------------------
-For most cases it is sufficient just to type make in top of source directory:
+The software is smart enough to detect the most suitable configuration for
+running hardware and software platform. In almost all cases it is sufficient
+just to type 'make' on top of the source directory:
 
 # make
 gcc46 -g -O2 [other compile options..]
 
-This will produce binary program file named 'gost3411'.
+This will produce binary program file named 'gost3411' - is ready to use.
 
 Usage instructions
 ------------------
@@ -39,12 +44,27 @@ Flags:
 Each file listed on the command line is processed and hash is printed for each
 one. Stdin is read as input when executed without arguments.
 
-API
----
-...
-
 Compile-time options
 --------------------
+By default, compiler set in 'CC' environment variable is used, falling back to
+'cc' unless set. You can quickly recompile source with another compiler by
+setting CC:
+
+# make CC=clang
+
+Special target called 'remake' may need to be used to overwrite recently
+compiled up-to date binary:
+
+# make remake CC=icc
+
+This will recompile sources from scratch using Intel C Compiler with default
+flags. If you need to adjust these compiler flags, try to set them with CFLAGS
+knob:
+
+# make remake CFLAGS="-O3"
+
+API
+---
 ...
 
 Portability notes
@@ -56,6 +76,7 @@ Platforms tested
 FreeBSD x86/x86_64
 Linux   x86/x86_64
 Linux   powerpc
+Darwin  x86_64
 
 Author
 ------

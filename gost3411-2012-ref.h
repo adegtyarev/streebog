@@ -23,7 +23,7 @@
     z->QWORD[7] = x->QWORD[7] ^ y->QWORD[7]; \
 }
 
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
 #define __XLPS_FOR for (_i = 0; _i <= 7; _i++)
 #define _datai _i
 #else

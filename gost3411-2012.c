@@ -4,7 +4,7 @@
  * $Id$
  */
 
-#include <gost3411-2012-core.h>
+#include "gost3411-2012-core.h"
 
 /* For benchmarking */
 #include <sys/resource.h>
@@ -59,7 +59,7 @@ onstring(const char *string)
 }
 
 const union uint512_u GOSTTestInput = {
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
     {
         0x3736353433323130ULL,
         0x3534333231303938ULL,

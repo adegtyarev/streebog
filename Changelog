@@ -19,6 +19,9 @@ Changes with version 0.09                                           22 Jan 2013
 	* Bugfix: in function g(): unload function's output directly to it's
 	  internal state, thus avoid one extra memcpy() call per plaintext block.
 
+	* Bugfix: integer overflow incorrectly handled in addition by modulo 2.
+	  This could lead to incorrect results on some files.
+
 Changes with version 0.08                                           19 Jan 2013
 
 	* Feature: boost performance on 32-bit systems by using 64-bit MMX XOR

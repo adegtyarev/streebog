@@ -28,7 +28,8 @@ CFLAGS=$(DEFS) ${DEBUG_FLAGS} $(OPTIMIZE) $(WARNING) $(DEFAULT_INCLUDES)
 all: gost3411
 
 $(CONFIGS):
-	@env CC="$(CC)" CFLAGS="$(CFLAGS)" SOURCES="${SOURCES}" sh configure
+	@env CC="$(CC)" CFLAGS="$(CFLAGS)" SOURCES="${SOURCES}" \
+		DEFAULT_INCLUDES="$(DEFAULT_INCLUDES)" sh configure
 
 config: $(CONFIGS)
 

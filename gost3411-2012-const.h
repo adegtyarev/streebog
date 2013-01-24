@@ -7,7 +7,7 @@
 static const union uint512_u buffer0    = {{ 0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL,
     0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL }};
 
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
 static const union uint512_u buffer512  = {{ 0x0000000000000200ULL, 0x0ULL,
     0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL }};
 #else
@@ -15,7 +15,7 @@ static const union uint512_u buffer512  = {{ 0x0002000000000000ULL, 0x0ULL,
     0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL, 0x0ULL }};
 #endif
 
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
 static const union uint512_u C[12] __attribute__((aligned(16))) = {
     {{
          0xdd806559f2a64507ULL,
@@ -263,7 +263,7 @@ static const union uint512_u C[12] __attribute__((aligned(16))) = {
 };
 #endif
 
-#ifdef __GOST3411_LITTLE_ENDIAN__
+#ifndef __GOST3411_BIG_ENDIAN__
 static const unsigned long long A[129] = { 
     0x8e20faa72ba0b470ULL, 0x47107ddd9b505a38ULL, 0xad08b0e0c3282d1cULL,
     0xd8045870ef14980eULL, 0x6c022c38f90a4c07ULL, 0x3601161cf205268dULL,
