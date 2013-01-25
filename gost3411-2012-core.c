@@ -116,15 +116,14 @@ GOST3411Init(const unsigned int digest_size)
         for (b = 0; b < 256; b++)
         {
             j = 64 - (i << 3) - 8;
-            idx1 = Ai[(b & 0x0F) >> 0];
-            idx2 = Ai[(b & 0xF0) >> 4];
+            idx1 = Ai[(Pi[b] & 0x0F) >> 0];
+            idx2 = Ai[(Pi[b] & 0xF0) >> 4];
             Ax[i][b] = A[j + 4 + idx1.i[0]] ^ A[j + idx2.i[0]] ^
-                       A[j + 4 + idx1.i[1]] ^ A[j + idx2.i[1]] ^
-                       A[j + 4 + idx1.i[2]] ^ A[j + idx2.i[2]] ^
-                       A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
+                           A[j + 4 + idx1.i[1]] ^ A[j + idx2.i[1]] ^
+                           A[j + 4 + idx1.i[2]] ^ A[j + idx2.i[2]] ^
+                           A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
         }
     }
-
     return CTX;
 }
 

@@ -16,7 +16,8 @@ DEBUG_FLAGS?=-g #-pg
 # Configurable options ends here.
 
 HEADERS=gost3411-2012-core.h gost3411-2012-const.h \
-	gost3411-2012-mmx.h gost3411-2012-sse2.h gost3411-2012-ref.h
+	gost3411-2012-mmx.h gost3411-2012-sse2.h gost3411-2012-sse41.h \
+	gost3411-2012-ref.h
 SOURCES=gost3411-2012.c gost3411-2012-core.c
 CONFIGS=config.h
 

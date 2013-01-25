@@ -12,7 +12,9 @@
 
 #include "config.h"
 
-#if defined   __GOST3411_HAS_SSE2__
+#if defined   __GOST3411_HAS_SSE41__
+#include "gost3411-2012-sse41.h"
+#elif defined __GOST3411_HAS_SSE2__
 #include "gost3411-2012-sse2.h"
 #elif defined __GOST3411_HAS_MMX__ 
 #include "gost3411-2012-mmx.h"

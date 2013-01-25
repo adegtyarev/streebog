@@ -14,7 +14,12 @@
 #define READ_BUFFER_SIZE 65536
 
 #define TEST_BLOCK_LEN 8192
+
+#ifdef __GOST3411_HAS_SSE2__
+#define TEST_BLOCK_COUNT 50000
+#else
 #define TEST_BLOCK_COUNT 10000
+#endif
 
 GOST3411Context *CTX;
 
