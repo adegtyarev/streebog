@@ -161,7 +161,8 @@ shutdown(void)
         GOST3411Destroy(CTX);
 }
 
-#if defined(SUPERCOP)
+#ifdef SUPERCOP
+#include "crypto_hash.h"
 int
 crypto_hash(unsigned char *out, const unsigned char *in, unsigned long long inlen)
 {
