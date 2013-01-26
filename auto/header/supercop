@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Activate SUPERCOP stuff when SUPERCOP environment variable is set.
+#
+# $Id$
+
+if [ ! -z "${SUPERCOP}" ]
+then
+
+    cat << EOF
+#ifndef SUPERCOP
+#define SUPERCOP
+#endif
+EOF
+
+fi
+
+exit 0
