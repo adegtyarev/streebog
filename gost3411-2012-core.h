@@ -31,6 +31,7 @@ union uint512_u
 } uint512_u;
 
 #include "gost3411-2012-const.h"
+#include "gost3411-2012-precalc.h"
 
 typedef struct GOST3411Context
 {

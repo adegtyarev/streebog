@@ -7,42 +7,14 @@
 #include "gost3411-2012-core.h"
 
 #define BSWAP64(x) \
-    ((((x) & 0xFF00000000000000ULL) >> 56) | \
-     (((x) & 0x00FF000000000000ULL) >> 40) | \
-     (((x) & 0x0000FF0000000000ULL) >> 24) | \
-     (((x) & 0x000000FF00000000ULL) >>  8) | \
-     (((x) & 0x00000000FF000000ULL) <<  8) | \
-     (((x) & 0x0000000000FF0000ULL) << 24) | \
-     (((x) & 0x000000000000FF00ULL) << 40) | \
-     (((x) & 0x00000000000000FFULL) << 56))
-
-/* 64-bit alignment required on 32-bit systems to produce optimized pxor
- * sequence in XLPS */
-static unsigned long long __attribute__((aligned(8))) Ax[8][256];
-
-typedef struct Ai_t
-{
-    unsigned char i[4];
-} Ai_t;
-
-static const Ai_t Ai[16] = {
-    {{ 65, 65, 65, 65}},
-    {{  3, 65, 65, 65}},
-    {{  2, 65, 65, 65}},
-    {{  3,  2, 65, 65}},
-    {{  1, 65, 65, 65}},
-    {{  3,  1, 65, 65}},
-    {{  2,  1, 65, 65}},
-    {{  3,  2,  1, 65}},
-    {{  0, 65, 65, 65}},
-    {{  3,  0, 65, 65}},
-    {{  2,  0, 65, 65}},
-    {{  3,  2,  0, 65}},
-    {{  1,  0, 65, 65}},
-    {{  3,  1,  0, 65}},
-    {{  2,  1,  0, 65}},
-    {{  3,  2,  1,  0}}
-};
+    (((x & 0xFF00000000000000ULL) >> 56) | \
+     ((x & 0x00FF000000000000ULL) >> 40) | \
+     ((x & 0x0000FF0000000000ULL) >> 24) | \
+     ((x & 0x000000FF00000000ULL) >>  8) | \
+     ((x & 0x00000000FF000000ULL) <<  8) | \
+     ((x & 0x0000000000FF0000ULL) << 24) | \
+     ((x & 0x000000000000FF00ULL) << 40) | \
+     ((x & 0x00000000000000FFULL) << 56))
 
 void *
 memalloc(const size_t size)
@@ -55,7 +27,6 @@ memalloc(const size_t size)
 
     return p;
 }
-
 
 void
 GOST3411Destroy(GOST3411Context *CTX)
@@ -81,8 +52,7 @@ GOST3411Destroy(GOST3411Context *CTX)
 GOST3411Context *
 GOST3411Init(const unsigned int digest_size)
 {
-    unsigned int i, j, b;
-    Ai_t idx1, idx2;
+    unsigned int i;
     GOST3411Context *CTX;
 
     CTX = memalloc(sizeof (GOST3411Context));
@@ -108,22 +78,9 @@ GOST3411Init(const unsigned int digest_size)
         if (digest_size == 256)
             CTX->h->QWORD[i] = 0x0101010101010101ULL;
         else
-            CTX->h->QWORD[i] = 0ULL;
+            CTX->h->QWORD[i] = 0x00ULL;
     }
 
-    for (i = 0; i < 8; i++)
-    {
-        for (b = 0; b < 256; b++)
-        {
-            j = 64 - (i << 3) - 8;
-            idx1 = Ai[(Pi[b] & 0x0F) >> 0];
-            idx2 = Ai[(Pi[b] & 0xF0) >> 4];
-            Ax[i][b] = A[j + 4 + idx1.i[0]] ^ A[j + idx2.i[0]] ^
-                           A[j + 4 + idx1.i[1]] ^ A[j + idx2.i[1]] ^
-                           A[j + 4 + idx1.i[2]] ^ A[j + idx2.i[2]] ^
-                           A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
-        }
-    }
     return CTX;
 }
 
