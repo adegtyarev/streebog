@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Detect running system endianness.
+# Detect running system endianess.
 #
 # $Id$
 
@@ -22,7 +22,7 @@ EOF
 ${CC} ${CFLAGS_AUTO} -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
 
 if [ ! -x ${TMPFILE} ]; then
-    echo "error: failed to detect endianness" 1>&2
+    echo "error: failed to detect endianess" 1>&2
     exit 1
 fi
 

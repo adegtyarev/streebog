@@ -19,12 +19,12 @@ cat > ${AUTO_CONF_MK}.t < /dev/null
 
 for file in auto/header/*
 do
-    env CC=${CC} sh ${file} >> ${AUTO_CONF_H}.t
+    env CC=${CC} sh ${file} >> ${AUTO_CONF_H}.t 2>/dev/null
 done
 
 for file in auto/mk/*
 do
-    env CC=${CC} sh ${file} >> ${AUTO_CONF_MK}.t
+    env CC=${CC} sh ${file} >> ${AUTO_CONF_MK}.t 2>/dev/null
 done
 
 cat <<EOF >${AUTO_CONF_MK}

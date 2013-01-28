@@ -1,4 +1,4 @@
-Changes with version 0.10                                           25 Jan 2013
+Changes with version 0.10                                           29 Jan 2013
 
 	* Feature: performance optimization in substitution S: perform
 	  substitution by Pi[] while generating multiplication lookup table.
