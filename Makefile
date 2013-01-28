@@ -9,14 +9,16 @@ WARNING?=-pedantic -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow \
       -Wconversion -Wno-long-long -Wextra -Wpointer-arith -Wcast-qual \
       -Winline
 
-OPTIMIZE?=-O2
+OPTIMIZE?=-O3
 
 DEBUG_FLAGS?=-g #-pg
 
 # Configurable options ends here.
 
-HEADERS=gost3411-2012-core.h gost3411-2012-const.h \
-	gost3411-2012-mmx.h gost3411-2012-sse2.h gost3411-2012-ref.h
+HEADERS=gost3411-2012-core.h \
+	gost3411-2012-const.h gost3411-2012-precalc.h \
+	gost3411-2012-mmx.h gost3411-2012-sse2.h gost3411-2012-sse41.h \
+	gost3411-2012-ref.h
 SOURCES=gost3411-2012.c gost3411-2012-core.c
 CONFIGS=config.h
 

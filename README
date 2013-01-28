@@ -24,7 +24,7 @@ just to type 'make' on top of the source directory:
 # make
 gcc46 -g -O2 [other compile options..]
 
-This will produce binary program file named 'gost3411' - is ready to use.
+This will configure and compile a binary program file named 'gost3411'.
 
 Usage instructions
 ------------------
@@ -80,14 +80,17 @@ GOST3411Init(const unsigned int digest_size);
 
 void
 GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len);
-    Hash some data in memory of len bytes size. Note that this call does not
-    modify original data in memory. If security is an issue, calling
-    application should destroy that memory block right after GOST3411Update(),
-    by e.g. memset() to zero.
+    Hash some data in memory of "len" bytes size. Address of "data" must be
+    16-byte aligned. The best performance results are achieved when len is
+    multiple of 64.
+    
+    Note that this call does not modify original data in memory. If security
+    is an issue, calling application should destroy that memory block right
+    after GOST3411Update(), by e.g. memset() to zero.
 
 void
 GOST3411Final(GOST3411Context *CTX);
-    Finalizes hashing proccess and get GOST R 34.11-2012 hash in
+    Finalizes hashing process and get GOST R 34.11-2012 hash in
     CTX->hashdigest.
 
 void
@@ -99,6 +102,8 @@ GOST3411Destroy(GOST3411Context *CTX);
 Example
 -------
     #include "gost3411-2012-core.h"
+
+    ...
 
     GOST3411Context *CTX;
 
@@ -129,6 +134,15 @@ FreeBSD x86/x86_64
 Linux   x86/x86_64
 Linux   powerpc
 Darwin  x86_64
+
+Performance
+-----------
+To measure performance of this implementation SUPERCOP toolkit has been used. 
+
+Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
+Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
+Intel(R) Xeon(R)    CPU X5650 @ 2.67GHz x86_64: 31 cycles per byte ( 84 MB/s)
+Intel(R) Xeon(R)    CPU X5675 @ 3.07GHz x86_64: 29 cycles per byte (104 MB/s)
 
 Author
 ------

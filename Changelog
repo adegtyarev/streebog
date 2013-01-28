@@ -1,3 +1,23 @@
+Changes with version 0.10                                           25 Jan 2013
+
+	* Feature: performance optimization in substitution S: perform
+	  substitution by Pi[] while generating multiplication lookup table.
+	  Lookup table arranged in a such way totally eliminates the need to do
+	  whole S-cycle in LPS.
+	
+	* Feature: use SSE4.1 instructions set in LPS if available.
+
+	* Feature: multiplication lookup table is now statically precomputed in
+	  header file and is in constant memory.
+	
+	* Bugfix: rewrite GOST3411Update() function to implement streaming mode
+	  when processing large amount of data.
+	
+	* Bugfix: rename round2() and round3() to stage2() and stage3()
+	  respectively.
+	
+	* Bugfix: in auto configuration probes: delete temporary files.
+
 Changes with version 0.09                                           22 Jan 2013
 
 	* Feature: internal data flow and representation rewritten so that whole
@@ -40,7 +60,7 @@ Changes with version 0.07                                           17 Jan 2013
 	* Bugfix: key generation function K replaced with XLPS macros to avoid
 	  inlining issues when max inline instruction limit reached.
 	
-	* Bugfix: encryption function E inlined to comression g to avoid
+	* Bugfix: encryption function E inlined to compression g to avoid
 	  compile-time inlining issues when max inline instruction limit reached.
 	
 	* Bugfix: use unsigned integers where possible.
@@ -64,7 +84,7 @@ Changes with version 0.06                                           09 Jan 2013
 	* Bugfix: improve constant table C presentation to avoid runtime
 	  conversion in key generator K.
 	
-	* Bugfix: unroll key generation loop in encryptor E.
+	* Bugfix: unroll key generation loop in E.
 
 	* Bugfix: rename union member names according to their natural meaning.
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Detect SSE2 capability in processor and compiler.
+# Detect SSE4.1 capability in processor and compiler.
 #
 # $Id$
 
@@ -8,22 +8,20 @@ TMPFILE=`mktemp -t gost3411-autotest.XXX` || exit 1
 trap "rm -f ${TMPFILE} ${TMPFILE}.c 2>/dev/null" INT TERM EXIT
 
 cat <<EOF > ${TMPFILE}.c
-#include <emmintrin.h>
+#include <smmintrin.h>
 
 int main()
 {
     __m128i xmm0, xmm1;
     unsigned int r0;
     xmm0 = _mm_cvtsi32_si128(0x12345678);
-    xmm1 = _mm_cvtsi32_si128(0x87654321);
-    xmm0 = _mm_xor_si128(xmm0, xmm1);
-    r0   = _mm_cvtsi128_si32(xmm0);
-    if (r0 == 0x95511559) return 0;
+    r0   = _mm_extract_epi8(xmm0, 0);
+    if (r0 == 0x78) return 0;
     return 1;
 }
 EOF
 
-${CC} -msse2 -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
+${CC} -msse4.1 -o ${TMPFILE} ${TMPFILE}.c 2>/dev/null
 
 if [ ! -x ${TMPFILE} ]; then
     exit 0
@@ -35,7 +33,7 @@ if [ $? -eq 0 ]
 then
 
     cat << EOF
-CFLAGS+=-msse2
+CFLAGS+=-msse4.1
 EOF
 
 fi

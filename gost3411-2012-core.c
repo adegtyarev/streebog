@@ -7,42 +7,14 @@
 #include "gost3411-2012-core.h"
 
 #define BSWAP64(x) \
-    ((((x) & 0xFF00000000000000ULL) >> 56) | \
-     (((x) & 0x00FF000000000000ULL) >> 40) | \
-     (((x) & 0x0000FF0000000000ULL) >> 24) | \
-     (((x) & 0x000000FF00000000ULL) >>  8) | \
-     (((x) & 0x00000000FF000000ULL) <<  8) | \
-     (((x) & 0x0000000000FF0000ULL) << 24) | \
-     (((x) & 0x000000000000FF00ULL) << 40) | \
-     (((x) & 0x00000000000000FFULL) << 56))
-
-/* 64-bit alignment required on 32-bit systems to produce optimized pxor
- * sequence in XLPS */
-static unsigned long long __attribute__((aligned(8))) Ax[8][256];
-
-typedef struct Ai_t
-{
-    unsigned char i[4];
-} Ai_t;
-
-static const Ai_t Ai[16] = {
-    {{ 65, 65, 65, 65}},
-    {{  3, 65, 65, 65}},
-    {{  2, 65, 65, 65}},
-    {{  3,  2, 65, 65}},
-    {{  1, 65, 65, 65}},
-    {{  3,  1, 65, 65}},
-    {{  2,  1, 65, 65}},
-    {{  3,  2,  1, 65}},
-    {{  0, 65, 65, 65}},
-    {{  3,  0, 65, 65}},
-    {{  2,  0, 65, 65}},
-    {{  3,  2,  0, 65}},
-    {{  1,  0, 65, 65}},
-    {{  3,  1,  0, 65}},
-    {{  2,  1,  0, 65}},
-    {{  3,  2,  1,  0}}
-};
+    (((x & 0xFF00000000000000ULL) >> 56) | \
+     ((x & 0x00FF000000000000ULL) >> 40) | \
+     ((x & 0x0000FF0000000000ULL) >> 24) | \
+     ((x & 0x000000FF00000000ULL) >>  8) | \
+     ((x & 0x00000000FF000000ULL) <<  8) | \
+     ((x & 0x0000000000FF0000ULL) << 24) | \
+     ((x & 0x000000000000FF00ULL) << 40) | \
+     ((x & 0x00000000000000FFULL) << 56))
 
 void *
 memalloc(const size_t size)
@@ -55,7 +27,6 @@ memalloc(const size_t size)
 
     return p;
 }
-
 
 void
 GOST3411Destroy(GOST3411Context *CTX)
@@ -81,8 +52,7 @@ GOST3411Destroy(GOST3411Context *CTX)
 GOST3411Context *
 GOST3411Init(const unsigned int digest_size)
 {
-    unsigned int i, j, b;
-    Ai_t idx1, idx2;
+    unsigned int i;
     GOST3411Context *CTX;
 
     CTX = memalloc(sizeof (GOST3411Context));
@@ -108,21 +78,7 @@ GOST3411Init(const unsigned int digest_size)
         if (digest_size == 256)
             CTX->h->QWORD[i] = 0x0101010101010101ULL;
         else
-            CTX->h->QWORD[i] = 0ULL;
-    }
-
-    for (i = 0; i < 8; i++)
-    {
-        for (b = 0; b < 256; b++)
-        {
-            j = 64 - (i << 3) - 8;
-            idx1 = Ai[(b & 0x0F) >> 0];
-            idx2 = Ai[(b & 0xF0) >> 4];
-            Ax[i][b] = A[j + 4 + idx1.i[0]] ^ A[j + idx2.i[0]] ^
-                       A[j + 4 + idx1.i[1]] ^ A[j + idx2.i[1]] ^
-                       A[j + 4 + idx1.i[2]] ^ A[j + idx2.i[2]] ^
-                       A[j + 4 + idx1.i[3]] ^ A[j + idx2.i[3]];
-        }
+            CTX->h->QWORD[i] = 0x00ULL;
     }
 
     return CTX;
@@ -183,7 +139,7 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 }
 
 static void
-g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
+g(union uint512_u *h, const union uint512_u *N, const unsigned char *m)
 {
 #ifdef __GOST3411_HAS_SSE2__
     __m128i xmm0, xmm2, xmm4, xmm6; /* XMMR0-quadruple */
@@ -217,7 +173,7 @@ g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
 
     /* Starting E() */
     Ki = data;
-    XLPS((&Ki), m, (&data));
+    XLPS((&Ki), ((const union uint512_u *) &m[0]), (&data));
 
     for (i = 0; i < 11; i++)
         ROUND(i, (&Ki), (&data));
@@ -227,21 +183,21 @@ g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
     /* E() done */
 
     X((&data), h, (&data));
-    X((&data), m, h);
+    X((&data), ((const union uint512_u *) &m[0]), h);
 #endif
 }
 
 static inline void
-round2(GOST3411Context *CTX)
+stage2(GOST3411Context *CTX, const unsigned char *data)
 {
-    g(CTX->h, CTX->N, CTX->buffer);
+    g(CTX->h, CTX->N, data);
 
     add512(CTX->N, &buffer512, CTX->N);
-    add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
+    add512(CTX->Sigma, (const union uint512_u *) data, CTX->Sigma);
 }
 
 static inline void
-round3(GOST3411Context *CTX)
+stage3(GOST3411Context *CTX)
 {
     union uint512_u buf;
 
@@ -261,11 +217,11 @@ round3(GOST3411Context *CTX)
     g(CTX->h, CTX->N, CTX->buffer);
 
     add512(CTX->N, &buf, CTX->N);
-    add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
+    add512(CTX->Sigma, (const union uint512_u *) &CTX->buffer[0], CTX->Sigma);
 
-    g(CTX->h, &buffer0, CTX->N);
+    g(CTX->h, &buffer0, (const unsigned char *) &CTX->N[0]);
 
-    g(CTX->h, &buffer0, CTX->Sigma);
+    g(CTX->h, &buffer0, (const unsigned char *) CTX->Sigma);
     memcpy(CTX->hash, CTX->h, sizeof uint512_u);
 }
 
@@ -274,21 +230,30 @@ GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len)
 {
     size_t chunksize;
 
+    while (len > 63 && CTX->bufsize == 0)
+    {
+        stage2(CTX, data);
+
+        data += 64;
+        len  -= 64;
+    }
+
     while (len)
     {
         chunksize = 64 - CTX->bufsize;
         if (chunksize > len)
             chunksize = len;
 
-        memcpy(CTX->buffer, data, chunksize);
+        memcpy(&CTX->buffer[CTX->bufsize], data, chunksize);
 
         CTX->bufsize += chunksize;
-        data += chunksize;
         len -= chunksize;
-
+        data += chunksize;
+        
         if (CTX->bufsize == 64)
         {
-            round2(CTX);
+            stage2(CTX, CTX->buffer);
+
             CTX->bufsize = 0;
         }
     }
@@ -300,7 +265,7 @@ GOST3411Final(GOST3411Context *CTX)
     int i, j;
     char *buf;
 
-    round3(CTX);
+    stage3(CTX);
     CTX->bufsize = 0;
 
     buf = memalloc((size_t) 17);

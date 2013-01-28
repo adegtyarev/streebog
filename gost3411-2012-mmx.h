@@ -59,20 +59,20 @@
 #define XLPS32(x, y, data) { \
     unsigned int xi; \
     unsigned char *p; \
-    union uint512_u buf  __attribute__((aligned(16))); \
+    ALIGN(16) union uint512_u buf; \
     __m64 mm0; \
     XTRANSPOSE(x, y, (&buf)); \
     p = (unsigned char *) &buf; \
     for (xi = 0; xi < 8; xi++) \
     { \
-        mm0 = _mm_cvtsi64_m64(Ax[0][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[1][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[2][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[3][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[4][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[5][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[6][Pi[*(p++)]]); \
-        mm0 = _mm_xor_64(mm0, Ax[7][Pi[*(p++)]]); \
+        mm0 = _mm_cvtsi64_m64(Ax[0][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[1][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[2][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[3][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[4][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[5][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[6][*(p++)]); \
+        mm0 = _mm_xor_64(mm0, Ax[7][*(p++)]); \
         data->QWORD[xi] = (unsigned long long) mm0; \
     } \
 }

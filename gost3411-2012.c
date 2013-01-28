@@ -14,7 +14,12 @@
 #define READ_BUFFER_SIZE 65536
 
 #define TEST_BLOCK_LEN 8192
+
+#ifdef __GOST3411_HAS_SSE2__
+#define TEST_BLOCK_COUNT 50000
+#else
 #define TEST_BLOCK_COUNT 10000
+#endif
 
 GOST3411Context *CTX;
 
@@ -35,7 +40,7 @@ onfile(FILE *file)
 
     CTX = GOST3411Init(digest_size);
 
-    buffer = memalloc((size_t) READ_BUFFER_SIZE + 7);
+    buffer = memalloc((size_t) READ_BUFFER_SIZE);
 
     while ((len = fread(buffer, (size_t) 1, (size_t) READ_BUFFER_SIZE, file)))
         GOST3411Update(CTX, buffer, len);
@@ -51,9 +56,16 @@ onfile(FILE *file)
 static void
 onstring(const unsigned char *string)
 {
+    unsigned char *buf __attribute__((aligned(16)));
+    size_t size;
+
     CTX = GOST3411Init(digest_size);
 
-    GOST3411Update(CTX, string, strlen((const char *) string));
+    size = strnlen((const char *) string, (size_t) 4096);
+    buf = memalloc(size);
+    memcpy(buf, string, size);
+
+    GOST3411Update(CTX, buf, size);
 
     GOST3411Final(CTX);
 }
@@ -88,15 +100,12 @@ const union uint512_u GOSTTestInput = {
 static void
 testing(void)
 {
+    printf("M1: 012345678901234567890123456789012345678901234567890123456789012\n");
+
     CTX = GOST3411Init(512);
 
     memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
-
-    printf("M1: 0x%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx%.16llx\n",
-           CTX->buffer->QWORD[7], CTX->buffer->QWORD[6], CTX->buffer->QWORD[5],
-           CTX->buffer->QWORD[4], CTX->buffer->QWORD[3], CTX->buffer->QWORD[2],
-           CTX->buffer->QWORD[1], CTX->buffer->QWORD[0]);
 
     GOST3411Final(CTX);
     printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
@@ -124,7 +133,7 @@ benchmark(void)
     struct rusage before, after;
     struct timeval total;
     float seconds;
-    unsigned char block[TEST_BLOCK_LEN];
+    unsigned char block[TEST_BLOCK_LEN] __attribute__((aligned(16)));
     unsigned int i;
 
     printf("%s timing benchmark.\n", ALGNAME);
@@ -161,7 +170,8 @@ shutdown(void)
         GOST3411Destroy(CTX);
 }
 
-#if defined(SUPERCOP)
+#ifdef SUPERCOP
+#include "crypto_hash.h"
 int
 crypto_hash(unsigned char *out, const unsigned char *in, unsigned long long inlen)
 {

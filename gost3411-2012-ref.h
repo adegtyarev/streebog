@@ -47,14 +47,14 @@
     \
     __XLPS_FOR \
     {\
-        data->QWORD[_datai]  = Ax[0][Pi[(r0 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[1][Pi[(r1 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[2][Pi[(r2 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[3][Pi[(r3 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[4][Pi[(r4 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[5][Pi[(r5 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[6][Pi[(r6 >> (_i << 3)) & 0xFF]]; \
-        data->QWORD[_datai] ^= Ax[7][Pi[(r7 >> (_i << 3)) & 0xFF]]; \
+        data->QWORD[_datai]  = Ax[0][(r0 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[1][(r1 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[2][(r2 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[3][(r3 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[4][(r4 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[5][(r5 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[6][(r6 >> (_i << 3)) & 0xFF]; \
+        data->QWORD[_datai] ^= Ax[7][(r7 >> (_i << 3)) & 0xFF]; \
     }\
 }
 
