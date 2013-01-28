@@ -139,7 +139,7 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 }
 
 static void
-g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
+g(union uint512_u *h, const union uint512_u *N, const unsigned char *m)
 {
 #ifdef __GOST3411_HAS_SSE2__
     __m128i xmm0, xmm2, xmm4, xmm6; /* XMMR0-quadruple */
@@ -173,7 +173,7 @@ g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
 
     /* Starting E() */
     Ki = data;
-    XLPS((&Ki), m, (&data));
+    XLPS((&Ki), ((const union uint512_u *) &m[0]), (&data));
 
     for (i = 0; i < 11; i++)
         ROUND(i, (&Ki), (&data));
@@ -183,21 +183,21 @@ g(union uint512_u *h, const union uint512_u *N, const union uint512_u *m)
     /* E() done */
 
     X((&data), h, (&data));
-    X((&data), m, h);
+    X((&data), ((const union uint512_u *) &m[0]), h);
 #endif
 }
 
 static inline void
-round2(GOST3411Context *CTX)
+stage2(GOST3411Context *CTX, const unsigned char *data)
 {
-    g(CTX->h, CTX->N, CTX->buffer);
+    g(CTX->h, CTX->N, data);
 
     add512(CTX->N, &buffer512, CTX->N);
-    add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
+    add512(CTX->Sigma, (const union uint512_u *) data, CTX->Sigma);
 }
 
 static inline void
-round3(GOST3411Context *CTX)
+stage3(GOST3411Context *CTX)
 {
     union uint512_u buf;
 
@@ -217,11 +217,11 @@ round3(GOST3411Context *CTX)
     g(CTX->h, CTX->N, CTX->buffer);
 
     add512(CTX->N, &buf, CTX->N);
-    add512(CTX->Sigma, CTX->buffer, CTX->Sigma);
+    add512(CTX->Sigma, (const union uint512_u *) &CTX->buffer[0], CTX->Sigma);
 
-    g(CTX->h, &buffer0, CTX->N);
+    g(CTX->h, &buffer0, (const unsigned char *) &CTX->N[0]);
 
-    g(CTX->h, &buffer0, CTX->Sigma);
+    g(CTX->h, &buffer0, (const unsigned char *) CTX->Sigma);
     memcpy(CTX->hash, CTX->h, sizeof uint512_u);
 }
 
@@ -230,21 +230,30 @@ GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len)
 {
     size_t chunksize;
 
+    while (len > 63 && CTX->bufsize == 0)
+    {
+        stage2(CTX, data);
+
+        data += 64;
+        len  -= 64;
+    }
+
     while (len)
     {
         chunksize = 64 - CTX->bufsize;
         if (chunksize > len)
             chunksize = len;
 
-        memcpy(CTX->buffer, data, chunksize);
+        memcpy(&CTX->buffer[CTX->bufsize], data, chunksize);
 
         CTX->bufsize += chunksize;
-        data += chunksize;
         len -= chunksize;
-
+        data += chunksize;
+        
         if (CTX->bufsize == 64)
         {
-            round2(CTX);
+            stage2(CTX, CTX->buffer);
+
             CTX->bufsize = 0;
         }
     }
@@ -256,7 +265,7 @@ GOST3411Final(GOST3411Context *CTX)
     int i, j;
     char *buf;
 
-    round3(CTX);
+    stage3(CTX);
     CTX->bufsize = 0;
 
     buf = memalloc((size_t) 17);

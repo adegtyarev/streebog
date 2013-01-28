@@ -59,7 +59,7 @@
 #define XLPS32(x, y, data) { \
     unsigned int xi; \
     unsigned char *p; \
-    union uint512_u buf  __attribute__((aligned(16))); \
+    ALIGN(16) union uint512_u buf; \
     __m64 mm0; \
     XTRANSPOSE(x, y, (&buf)); \
     p = (unsigned char *) &buf; \

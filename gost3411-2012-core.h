@@ -12,6 +12,12 @@
 
 #include "config.h"
 
+#if defined _MSC_VER
+#define ALIGN(x) __declspec(align(x))
+#else
+#define ALIGN(x) __attribute__ ((__aligned__(x)))
+#endif
+
 #if defined   __GOST3411_HAS_SSE41__
 #include "gost3411-2012-sse41.h"
 #elif defined __GOST3411_HAS_SSE2__
@@ -25,7 +31,7 @@
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
 
-union uint512_u
+ALIGN(16) union uint512_u
 {
     unsigned long long QWORD[8];
 } uint512_u;
@@ -33,9 +39,9 @@ union uint512_u
 #include "gost3411-2012-const.h"
 #include "gost3411-2012-precalc.h"
 
-typedef struct GOST3411Context
+ALIGN(16) typedef struct GOST3411Context
 {
-    union uint512_u *buffer;
+    unsigned char *buffer;
     union uint512_u *hash;
     union uint512_u *h;
     union uint512_u *N;
