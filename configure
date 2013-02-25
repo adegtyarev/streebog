@@ -11,8 +11,8 @@ export LC_ALL
 
 CC=${CC:-cc}
 
-AUTO_CONF_H=config.h
-AUTO_CONF_MK=auto/Makefile
+AUTO_CONF_H="gost3411-2012-config.h"
+AUTO_CONF_MK="auto/Makefile"
 
 cat > ${AUTO_CONF_H}.t < /dev/null
 cat > ${AUTO_CONF_MK}.t < /dev/null

@@ -4,6 +4,14 @@
  * $Id$
  */
 
+#include <err.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sysexits.h>
+#include <unistd.h>
+
 #include "gost3411-2012-core.h"
 
 /* For benchmarking */
@@ -21,54 +29,14 @@
 #define TEST_BLOCK_COUNT 10000
 #endif
 
-GOST3411Context *CTX;
+#define DEFAULT_DIGEST_SIZE 512
+#define ALGNAME "GOST R 34.11-2012"
 
+GOST34112012Context *CTX;
+
+unsigned char digest[64];
+unsigned char hexdigest[129];
 unsigned int digest_size = DEFAULT_DIGEST_SIZE;
-
-static void
-usage(void)
-{
-    fprintf(stderr, "usage: [-25bhqrt] [-s string] [files ...]\n");
-    exit(1);
-}
-
-static void
-onfile(FILE *file)
-{
-    unsigned char *buffer;
-    size_t len;
-
-    CTX = GOST3411Init(digest_size);
-
-    buffer = memalloc((size_t) READ_BUFFER_SIZE);
-
-    while ((len = fread(buffer, (size_t) 1, (size_t) READ_BUFFER_SIZE, file)))
-        GOST3411Update(CTX, buffer, len);
-
-    if (ferror(file))
-        err(EX_IOERR, NULL);
-
-    free(buffer);
-
-    GOST3411Final(CTX);
-}
-
-static void
-onstring(const unsigned char *string)
-{
-    unsigned char *buf __attribute__((aligned(16)));
-    size_t size;
-
-    CTX = GOST3411Init(digest_size);
-
-    size = strnlen((const char *) string, (size_t) 4096);
-    buf = memalloc(size);
-    memcpy(buf, string, size);
-
-    GOST3411Update(CTX, buf, size);
-
-    GOST3411Final(CTX);
-}
 
 const union uint512_u GOSTTestInput = {
 #ifndef __GOST3411_BIG_ENDIAN__
@@ -96,39 +64,134 @@ const union uint512_u GOSTTestInput = {
 #endif
 };
 
+static void
+usage(void)
+{
+    fprintf(stderr, "Usage: [-25bhqrte] [-s string] [files ...]\n");
+    fprintf(stderr, "\nThe program outputs GOST R 34.11-2012 hash digest in hexadecimal format.\n");
+    exit(1);
+}
+
+static void *
+memalloc(const size_t size)
+{
+    void *p;
+
+    /* Ensure p is on a 64-bit boundary. */ 
+    if (posix_memalign(&p, (size_t) 64, size))
+        err(EX_OSERR, NULL);
+
+    return p;
+}
 
 static void
-testing(void)
+reverse_order(unsigned char *in, size_t len)
+{
+    unsigned char c;
+    unsigned int i, j;
+
+    for (i = 0, j = (unsigned int) len - 1; i < j; i++, j--)
+    {
+        c = in[i];
+        in[i] = in[j];
+        in[j] = c;
+    }
+}
+
+static void
+convert_to_hex(unsigned char *in, unsigned char *out, size_t len,
+        const unsigned int eflag)
+{
+    unsigned int i;
+    char ch[3];
+
+    if (len > 64) len = 64;
+
+    memset(out, 0, 129);
+
+    /* eflag is set when little-endian output requested */
+    if (eflag) reverse_order(in, len);
+
+    for (i = 0; i < len; i++)
+    {
+        sprintf(ch, "%02x", (unsigned char) in[i]);
+        strncat((char *) &out[0], ch, 2);
+    }
+}
+
+static void
+onfile(FILE *file)
+{
+    unsigned char *buffer;
+    size_t len;
+
+    GOST34112012Init(CTX, digest_size);
+
+    buffer = memalloc((size_t) READ_BUFFER_SIZE);
+
+    while ((len = fread(buffer, (size_t) 1, (size_t) READ_BUFFER_SIZE, file)))
+        GOST34112012Update(CTX, buffer, len);
+
+    if (ferror(file))
+        err(EX_IOERR, NULL);
+
+    free(buffer);
+
+    GOST34112012Final(CTX, &digest[0]);
+}
+
+static void
+onstring(const unsigned char *string)
+{
+    unsigned char *buf __attribute__((aligned(16)));
+    size_t size;
+
+    GOST34112012Init(CTX, digest_size);
+
+    size = strnlen((const char *) string, (size_t) 4096);
+    buf = memalloc(size);
+    memcpy(buf, string, size);
+
+    GOST34112012Update(CTX, buf, size);
+
+    GOST34112012Final(CTX, &digest[0]);
+
+}
+
+static void
+testing(const unsigned int eflag)
 {
     printf("M1: 012345678901234567890123456789012345678901234567890123456789012\n");
 
-    CTX = GOST3411Init(512);
+    GOST34112012Init(CTX, 512);
 
     memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
-    GOST3411Final(CTX);
-    printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
+    GOST34112012Final(CTX, &digest[0]);
 
-    GOST3411Destroy(CTX);
+    convert_to_hex(&digest[0], &hexdigest[0], 64, eflag);
+    printf("%s 512 bit digest (M1): 0x%s\n", ALGNAME, hexdigest);
 
-    CTX = GOST3411Init(256);
+    GOST34112012Cleanup(CTX);
+
+    GOST34112012Init(CTX, 256);
 
     memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
     CTX->bufsize = 63;
 
-    GOST3411Final(CTX);
-    printf("%s 256 bit digest (M1): 0x%s\n", ALGNAME, CTX->hexdigest);
+    GOST34112012Final(CTX, &digest[0]);
 
-    /* This guy causes double free on Linux :-? 
-    GOST3411Destroy(CTX);
-    */
+    convert_to_hex(&digest[0], &hexdigest[0], 32, eflag);
+    printf("%s 256 bit digest (M1): 0x%s\n", ALGNAME, hexdigest);
+
+    GOST34112012Cleanup(CTX);
 
     exit(EXIT_SUCCESS);
 }
 
 static void
-benchmark(void)
+benchmark(const unsigned int eflag)
 {
     struct rusage before, after;
     struct timeval total;
@@ -146,16 +209,18 @@ benchmark(void)
 
     getrusage(RUSAGE_SELF, &before);
 
-    CTX = GOST3411Init(512);
+    GOST34112012Init(CTX, 512);
     for (i = 0; i < TEST_BLOCK_COUNT; i++)
-        GOST3411Update(CTX, block, (size_t) TEST_BLOCK_LEN);
-    GOST3411Final(CTX);
+        GOST34112012Update(CTX, block, (size_t) TEST_BLOCK_LEN);
+    GOST34112012Final(CTX, digest);
 
     getrusage(RUSAGE_SELF, &after);
     timersub(&after.ru_utime, &before.ru_utime, &total);
     seconds = (float) total.tv_sec + (float) total.tv_usec / 1000000;
 
-    printf("Digest = %s", CTX->hexdigest);
+    convert_to_hex(digest, hexdigest, 64, eflag);
+
+    printf("Digest = %s", hexdigest);
     printf("\nTime = %f seconds\n", seconds);
     printf("Speed = %.2f bytes/second\n",
         (float) TEST_BLOCK_LEN * (float) TEST_BLOCK_COUNT / seconds);
@@ -167,20 +232,18 @@ static void
 shutdown(void)
 {
     if (CTX != NULL)
-        GOST3411Destroy(CTX);
+        GOST34112012Cleanup(CTX);
 }
 
 #ifdef SUPERCOP
 #include "crypto_hash.h"
 int
-crypto_hash(unsigned char *out, const unsigned char *in, unsigned long long inlen)
+crypto_hash(unsigned char *out, const unsigned char *in,
+        unsigned long long inlen)
 {
-    CTX = GOST3411Init(512);
-
-    GOST3411Update(CTX, in, (size_t) inlen);
-    GOST3411Final(CTX);
-
-    memcpy(out, CTX->hexdigest, 64);
+    GOST34112012Init(CTX, 512);
+    GOST34112012Update(CTX, in, (size_t) inlen);
+    GOST34112012Final(CTX, out);
 
     return 0;
 }
@@ -189,22 +252,26 @@ int
 main(int argc, char *argv[])
 {
     int ch; 
-    char uflag, qflag, rflag, excode;
+    unsigned char uflag, qflag, rflag, eflag;
+    unsigned char excode;
     FILE *f;
 
     excode = EXIT_SUCCESS;
     atexit(shutdown);
 
+    CTX = memalloc(sizeof(GOST34112012Context));
+
     qflag = 0;
     rflag = 0;
     uflag = 0;
+    eflag = 0;
 
-    while ((ch = getopt(argc, argv, "25bhqrs:t")) != -1)
+    while ((ch = getopt(argc, argv, "25bhqrs:te")) != -1)
     {
         switch (ch)
         {
             case 'b':
-                benchmark();
+                benchmark(eflag);
                 break;
             case '2':
                 digest_size = 256;
@@ -217,20 +284,29 @@ main(int argc, char *argv[])
                 break;
             case 's':
                 onstring((unsigned char *) optarg);
+
+                if (digest_size == 256)
+                    convert_to_hex(digest, hexdigest, 32, eflag);
+                else
+                    convert_to_hex(digest, hexdigest, 64, eflag);
+
                 if (qflag)
-                    printf("%s\n", CTX->hexdigest);
+                    printf("%s\n", hexdigest);
                 else if (rflag)
-                    printf("%s \"%s\"\n", CTX->hexdigest, optarg);
+                    printf("%s \"%s\"\n", hexdigest, optarg);
                 else
                     printf("%s (\"%s\") = %s\n", ALGNAME, optarg,
-                            CTX->hexdigest);
+                            hexdigest);
                 uflag = 1;
                 break;
             case 'r':
                 rflag = 1;
                 break;
             case 't':
-                testing();
+                testing(eflag);
+                break;
+            case 'e':
+                eflag = 1;
                 break;
             case 'h':
             default:
@@ -254,23 +330,29 @@ main(int argc, char *argv[])
             onfile(f);
             fclose(f);
             uflag = 1;
-            if (qflag)
-                printf("%s\n", CTX->hexdigest);
-            else if (rflag)
-                printf("%s \"%s\"\n", CTX->hexdigest, *argv);
+
+            if (digest_size == 256)
+                convert_to_hex(digest, hexdigest, 32, eflag);
             else
-                printf("%s (%s) = %s\n", ALGNAME, *argv, CTX->hexdigest);
+                convert_to_hex(digest, hexdigest, 64, eflag);
+
+            if (qflag)
+                printf("%s\n", hexdigest);
+            else if (rflag)
+                printf("%s \"%s\"\n", hexdigest, *argv);
+            else
+                printf("%s (%s) = %s\n", ALGNAME, *argv, hexdigest);
         }
         while (*++argv);
     }
     else if (!uflag)
     {
         onfile(stdin);
-        printf("%s\n", CTX->hexdigest);
+        printf("%s\n", hexdigest);
         uflag = 1;
     }
 
-    if (! uflag)
+    if (!uflag)
         usage();
 
     return excode;

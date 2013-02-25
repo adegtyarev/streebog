@@ -5,4 +5,15 @@ M1, M2: Example messages as per standard.
 
 M3: Empty message.
 
-M4: 64-bytes long message.
+M4: 64-bytes of zeros.
+
+Results for each message are in H*.{256,512} files respectively. For example,
+512-bit hash for M1 is in H1.512. For message M4 result of 256-bit hash
+function is in H4.256. Results are presented in hexadecimal format with least
+significant byte first. Use -e switch to obtain reversed output which is used
+in standard.
+
+Hashes for M1 and M2 can be obtained from standard or RFC[1]. Results for
+messages M3 and M4 are not publicly available. I got them from trusted source.
+
+[1] http://tools.ietf.org/html/draft-dolmatov-gost34112012-00

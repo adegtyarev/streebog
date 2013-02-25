@@ -1,3 +1,29 @@
+Changes with version 0.11                                           22 Feb 2013
+
+	* Feature: command line options "-e" introduced (switch endianness). The
+	  standard does not specifies explicitly how to output the resulting hash.
+	  This implementation outputs hash in hexadecimal format in order how
+	  bytes are represented in memory - least significant first. With this
+	  option set, program outputs digest in hexadecimal format in reversed
+	  order - most significant first.
+
+	* Feature: example messages from standard are added in "examples"
+	  directory.
+
+	* Bugfix: variables, structures, functions changed their names from
+	  *GOST3411* to fully-qualified *GOST34112012*
+	
+	* Bugfix: API: GOST34112012Init() now operates on allocated memory.
+	  Previously, memory allocation for context has been done with
+	  GOST34112012Init() call - this guarantee proper alignment for context's
+	  members. As for now, alignment is done with ALIGN keyword in object
+	  declaration and GOST34112012Init() does not allocate any byte of memory.
+	
+	* Bugfix: API: GOST34112012Final() now returns digest in memory pointed by
+	  second argument. Context member "hexdigest" not used anymore thus
+	  abandoned. It is up to calling application to present digest in
+	  hexadecimal (or any) format.
+
 Changes with version 0.10                                           29 Jan 2013
 
 	* Feature: performance optimization in substitution S: perform

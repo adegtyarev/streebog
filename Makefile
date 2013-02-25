@@ -20,7 +20,7 @@ HEADERS=gost3411-2012-core.h \
 	gost3411-2012-mmx.h gost3411-2012-sse2.h gost3411-2012-sse41.h \
 	gost3411-2012-ref.h
 SOURCES=gost3411-2012.c gost3411-2012-core.c
-CONFIGS=config.h
+CONFIGS=gost3411-2012-config.h
 
 DEFAULT_INCLUDES=-I.
 
@@ -52,7 +52,8 @@ dist: clean
 	mkdir -p $(DISTNAME)
 	cp $(SOURCES) $(HEADERS) $(DISTNAME) 
 	cp configure Makefile VERSION Changelog $(DISTNAME)
-	cp -R auto $(DISTNAME)/
+	cp -R auto examples $(DISTNAME)/
+	find $(DISTNAME)/ -type d -name .svn -exec rm -r {} \;
 	-rm $(DISTNAME).tar.gz 2>/dev/null
 	tar czf $(DISTNAME).tar.gz $(DISTNAME)
 	rm -r $(DISTNAME)

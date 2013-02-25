@@ -7,85 +7,40 @@
 #include "gost3411-2012-core.h"
 
 #define BSWAP64(x) \
-    (((x & 0xFF00000000000000ULL) >> 56) | \
-     ((x & 0x00FF000000000000ULL) >> 40) | \
-     ((x & 0x0000FF0000000000ULL) >> 24) | \
-     ((x & 0x000000FF00000000ULL) >>  8) | \
-     ((x & 0x00000000FF000000ULL) <<  8) | \
-     ((x & 0x0000000000FF0000ULL) << 24) | \
-     ((x & 0x000000000000FF00ULL) << 40) | \
-     ((x & 0x00000000000000FFULL) << 56))
+    (((x & 0xFF00000000000000ULL) >> 0x38) | \
+     ((x & 0x00FF000000000000ULL) >> 0x28) | \
+     ((x & 0x0000FF0000000000ULL) >> 0x18) | \
+     ((x & 0x000000FF00000000ULL) >> 0x08) | \
+     ((x & 0x00000000FF000000ULL) << 0x08) | \
+     ((x & 0x0000000000FF0000ULL) << 0x18) | \
+     ((x & 0x000000000000FF00ULL) << 0x28) | \
+     ((x & 0x00000000000000FFULL) << 0x38))
 
-void *
-memalloc(const size_t size)
+void
+GOST34112012Cleanup(GOST34112012Context *CTX)
 {
-    void *p;
-
-    /* Ensure p is on a 64-bit boundary. */ 
-    if (posix_memalign(&p, (size_t) 64, size))
-        err(EX_OSERR, NULL);
-
-    return p;
+    memset(CTX, 0x00, sizeof (GOST34112012Context));
 }
 
 void
-GOST3411Destroy(GOST3411Context *CTX)
-{
-    memset(CTX->N, 0x00, sizeof uint512_u);
-    memset(CTX->h, 0x00, sizeof uint512_u);
-    memset(CTX->hash,   0x00, sizeof uint512_u);
-    memset(CTX->Sigma,  0x00, sizeof uint512_u);
-    memset(CTX->buffer, 0x00, sizeof uint512_u);
-    memset(CTX->hexdigest, 0x00, sizeof (129));
-
-    free(CTX->N);
-    free(CTX->h);
-    free(CTX->hash);
-    free(CTX->Sigma);
-    free(CTX->buffer);
-    free(CTX->hexdigest);
-
-    memset(CTX, 0x00, sizeof (GOST3411Context));
-    free(CTX);
-}
-
-GOST3411Context *
-GOST3411Init(const unsigned int digest_size)
+GOST34112012Init(GOST34112012Context *CTX, const unsigned int digest_size)
 {
     unsigned int i;
-    GOST3411Context *CTX;
 
-    CTX = memalloc(sizeof (GOST3411Context));
-
-    CTX->N = memalloc(sizeof uint512_u);
-    CTX->h = memalloc(sizeof uint512_u);
-    CTX->hash = memalloc(sizeof uint512_u);
-    CTX->Sigma = memalloc(sizeof uint512_u);
-    CTX->buffer = memalloc(sizeof uint512_u);
-    CTX->hexdigest = memalloc((size_t) 129);
-    CTX->bufsize = 0;
-
-    memcpy(CTX->N, &buffer0, sizeof buffer0);
-    memcpy(CTX->h, &buffer0, sizeof buffer0);
-    memcpy(CTX->hash, &buffer0, sizeof buffer0);
-    memcpy(CTX->Sigma, &buffer0, sizeof buffer0);
-    memcpy(CTX->buffer, &buffer0, sizeof buffer0);
+    memset(CTX, 0x00, sizeof(GOST34112012Context));
     CTX->digest_size = digest_size;
-    memset(CTX->hexdigest, 0, (size_t) 1);
 
     for (i = 0; i < 8; i++)
     {
         if (digest_size == 256)
-            CTX->h->QWORD[i] = 0x0101010101010101ULL;
+            CTX->h.QWORD[i] = 0x0101010101010101ULL;
         else
-            CTX->h->QWORD[i] = 0x00ULL;
+            CTX->h.QWORD[i] = 0x00ULL;
     }
-
-    return CTX;
 }
 
 static inline void
-pad(GOST3411Context *CTX)
+pad(GOST34112012Context *CTX)
 {
     unsigned char buf[64];
 
@@ -188,22 +143,22 @@ g(union uint512_u *h, const union uint512_u *N, const unsigned char *m)
 }
 
 static inline void
-stage2(GOST3411Context *CTX, const unsigned char *data)
+stage2(GOST34112012Context *CTX, const unsigned char *data)
 {
-    g(CTX->h, CTX->N, data);
+    g(&(CTX->h), &(CTX->N), data);
 
-    add512(CTX->N, &buffer512, CTX->N);
-    add512(CTX->Sigma, (const union uint512_u *) data, CTX->Sigma);
+    add512(&(CTX->N), &buffer512, &(CTX->N));
+    add512(&(CTX->Sigma), (const union uint512_u *) data, &(CTX->Sigma));
 }
 
 static inline void
-stage3(GOST3411Context *CTX)
+stage3(GOST34112012Context *CTX)
 {
-    union uint512_u buf;
+    ALIGN(16) union uint512_u buf;
 
     memset(&buf, 0x00, sizeof buf);
-    memcpy(&buf, CTX->buffer, CTX->bufsize);
-    memcpy(CTX->buffer, &buf, sizeof uint512_u);
+    memcpy(&buf, &(CTX->buffer), CTX->bufsize);
+    memcpy(&(CTX->buffer), &buf, sizeof uint512_u);
 
     memset(&buf, 0x00, sizeof buf);
 #ifndef __GOST3411_BIG_ENDIAN__
@@ -214,19 +169,20 @@ stage3(GOST3411Context *CTX)
 
     pad(CTX);
 
-    g(CTX->h, CTX->N, CTX->buffer);
+    g(&(CTX->h), &(CTX->N), (const unsigned char *) &(CTX->buffer));
 
-    add512(CTX->N, &buf, CTX->N);
-    add512(CTX->Sigma, (const union uint512_u *) &CTX->buffer[0], CTX->Sigma);
+    add512(&(CTX->N), &buf, &(CTX->N));
+    add512(&(CTX->Sigma), (const union uint512_u *) &CTX->buffer[0],
+           &(CTX->Sigma));
 
-    g(CTX->h, &buffer0, (const unsigned char *) &CTX->N[0]);
+    g(&(CTX->h), &buffer0, (const unsigned char *) &(CTX->N));
 
-    g(CTX->h, &buffer0, (const unsigned char *) CTX->Sigma);
-    memcpy(CTX->hash, CTX->h, sizeof uint512_u);
+    g(&(CTX->h), &buffer0, (const unsigned char *) &(CTX->Sigma));
+    memcpy(&(CTX->hash), &(CTX->h), sizeof uint512_u);
 }
 
 void
-GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len)
+GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t len)
 {
     size_t chunksize;
 
@@ -260,32 +216,14 @@ GOST3411Update(GOST3411Context *CTX, const unsigned char *data, size_t len)
 }
 
 void
-GOST3411Final(GOST3411Context *CTX)
+GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest)
 {
-    int i, j;
-    char *buf;
-
     stage3(CTX);
+
     CTX->bufsize = 0;
 
-    buf = memalloc((size_t) 17);
-
     if (CTX->digest_size == 256)
-        j = 4;
+        memcpy(digest, &(CTX->hash.QWORD[4]), 32);
     else
-        j = 0;
-
-    i = 7;
-    while (i >= j)
-    {
-#ifndef __GOST3411_BIG_ENDIAN__
-        snprintf(buf, (size_t) 17, "%.16llx", CTX->hash->QWORD[i]);
-#else
-        snprintf(buf, (size_t) 17, "%.16llx", BSWAP64(CTX->hash->QWORD[i]));
-#endif
-        strncat(CTX->hexdigest, buf, (size_t) 16);
-        i--;
-    }
-
-    free(buf);
+        memcpy(digest, &(CTX->hash.QWORD[0]), 64);
 }
