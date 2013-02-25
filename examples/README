@@ -1,0 +1,8 @@
+Examples for GOST R 34.11-2012 hash function
+============================================
+
+M1, M2: Example messages as per standard.
+
+M3: Empty message.
+
+M4: 64-bytes long message.
