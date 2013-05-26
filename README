@@ -24,12 +24,12 @@ just to type 'make' on top of the source directory:
 # make
 gcc46 -g -O2 [other compile options..]
 
-This will configure and compile a binary program file named 'gost3411'.
+This will configure and compile a binary program file named 'gost3411-2012'.
 
 Usage instructions
 ------------------
 
-# ./gost3411 -h
+# ./gost3411-2012 -h
 Usage: [-25bhqrte] [-s string] [files ...]
 
 The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.
@@ -152,4 +152,4 @@ Intel(R) Xeon(R)    CPU X5675 @ 3.07GHz x86_64: 29 cycles per byte (104 MB/s)
 
 Author
 ------
-Alexey V. Degtyarev <alexey@renatasystems.org>
+Alexey Degtyarev <alexey@renatasystems.org>
