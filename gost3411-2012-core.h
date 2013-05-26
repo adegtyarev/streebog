@@ -42,8 +42,8 @@ ALIGN(16) typedef struct GOST34112012Context
     unsigned int digest_size;
 } GOST34112012Context;
 
-void GOST34112012Init(GOST34112012Context *CTX, const unsigned int
-        digest_size);
+void GOST34112012Init(GOST34112012Context *CTX,
+        const unsigned int digest_size);
 
 void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
         size_t len); 
