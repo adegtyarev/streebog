@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2013, Alexey Degtyarev. 
+ * All rights reserved.
+ *
  * $Id$
  */
 

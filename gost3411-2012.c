@@ -1,4 +1,7 @@
 /* 
+ * Copyright (c) 2013, Alexey Degtyarev. 
+ * All rights reserved.
+ *
  * GOST 34.11-2012 hash function with 512/256 bits digest.
  *
  * $Id$

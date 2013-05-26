@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2013, Alexey Degtyarev. 
+# All rights reserved.
+#
 # $Id$
 
 NAME=GOST34.11-2012

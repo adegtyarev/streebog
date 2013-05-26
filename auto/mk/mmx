@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# Copyright (c) 2013, Alexey Degtyarev. 
+# All rights reserved.
+#
 # Detect MMX capability in processor and compiler.
 #
 # $Id$

@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# Copyright (c) 2013, Alexey Degtyarev.
+# All rights reserved.
+#
 # Detect various compile-time options and create config.h.
 #
 # $Id$
