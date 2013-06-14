@@ -3,7 +3,7 @@ Changes with version 0.11                                           22 Feb 2013
 	* Feature: command line options "-e" introduced (switch endianness). The
 	  standard does not specifies explicitly how to output the resulting hash.
 	  This implementation outputs hash in hexadecimal format in order how
-	  bytes are represented in memory - least significant first. With this
+	  bytes are represented in memory - least significant first.  With this
 	  option set, program outputs digest in hexadecimal format in reversed
 	  order - most significant first.
 
@@ -16,12 +16,12 @@ Changes with version 0.11                                           22 Feb 2013
 	* Bugfix: API: GOST34112012Init() now operates on allocated memory.
 	  Previously, memory allocation for context has been done with
 	  GOST34112012Init() call - this guarantee proper alignment for context's
-	  members. As for now, alignment is done with ALIGN keyword in object
+	  members.  As for now, alignment is done with ALIGN keyword in object
 	  declaration and GOST34112012Init() does not allocate any byte of memory.
 	
 	* Bugfix: API: GOST34112012Final() now returns digest in memory pointed by
-	  second argument. Context member "hexdigest" not used anymore thus
-	  abandoned. It is up to calling application to present digest in
+	  second argument.  Context member "hexdigest" not used anymore thus
+	  abandoned.  It is up to calling application to present digest in
 	  hexadecimal (or any) format.
 
 Changes with version 0.10                                           29 Jan 2013
@@ -48,7 +48,7 @@ Changes with version 0.09                                           22 Jan 2013
 
 	* Feature: internal data flow and representation rewritten so that whole
 	  internal state of compression function g() is hold in two XMM-register
-	  quadruples. This avoid copying of temporary key and internal state
+	  quadruples.  This avoid copying of temporary key and internal state
 	  between rounds in g(), thus reduce instructions count per plaintext
 	  block.
 	
@@ -56,7 +56,7 @@ Changes with version 0.09                                           22 Jan 2013
 	  greatly improved and is now about as fast as with 64-bit systems.
 	
 	* Feature: detect MMX and SSE2 capabilities on compile time and use faster
-	  code when possible. From this version onward there are at least two
+	  code when possible.  From this version onward there are at least two
 	  versions of implementation: portable (not using any extensions like MMX
 	  or SSE) and optimized one.
 
@@ -73,7 +73,7 @@ Changes with version 0.08                                           19 Jan 2013
 	* Feature: boost performance on 32-bit systems by using 64-bit MMX XOR
 	  instructions in XLPS.
 
-	* Feature: Use 128-bit SSE2 for X on both 32-bit and 64-bit systems. For
+	* Feature: Use 128-bit SSE2 for X on both 32-bit and 64-bit systems.  For
 	  latter this will decrease number of instructions in about two times when
 	  XORing 512-bit block.
 

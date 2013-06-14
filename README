@@ -3,11 +3,13 @@ GOST R 34.11-2012 hash function with 512/256 bit digest
 
 About
 -----
-This is portable implementation of the GOST R 34.11-2012 hash function. The
-standard for this hash function developed by the Center for Information
-Protection and Special Communications of the Federal Security Service of the
-Russian Federation with participation of the Open joint-stock company
-"Information Technologies and Communication Systems" (InfoTeCS JSC).
+This is portable implementation of the GOST R 34.11-2012 hash function.
+The standard for this hash function developed by the Center for
+Information Protection and Special Communications of the Federal
+Security Service of the Russian Federation with participation of the
+Open joint-stock company "Information Technologies and Communication
+Systems" (InfoTeCS JSC).
+
 
 Requirements
 ------------
@@ -15,16 +17,19 @@ Requirements
 
 * GNU make (or any compatible make).
 
+
 Compile and install
 -------------------
-The software is smart enough to detect the most suitable configuration for
-running hardware and software platform. In almost all cases it is sufficient
-just to type 'make' on top of the source directory:
+The software is smart enough to detect the most suitable configuration
+for running hardware and software platform.  In almost all cases it is
+sufficient just to type 'make' on top of the source directory:
 
 # make
 gcc46 -g -O2 [other compile options..]
 
-This will configure and compile a binary program file named 'gost3411-2012'.
+This will configure and compile a binary program file named
+'gost3411-2012'.
+
 
 Usage instructions
 ------------------
@@ -37,23 +42,26 @@ The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.
 Flags:
  -2 - 256-bit digest.
  -5 - 512-bit digest (default).
- -t - Testing mode to produce hash of example messages defined in standard.
- -b - Benchmark mode (to see how fast or slow this implementation works).
+ -t - Testing mode to produce hash of example messages defined in
+      standard.
+ -b - Benchmark mode (to see how fast or slow this implementation
+      works).
  -s - Print a digest of the given string.
- -r - Reverses the format of the output. This helps with visual diffs.
+ -r - Reverses the format of the output.  This helps with visual diffs.
  -q - Quiet mode - only the digest is printed out.
- -e - Switch endianness when printing out resulting hash. Default: least
-      significant first. With this options set all bytes in resulting hash are
-      printed in reversed order, more precisely, most significant first.
+ -e - Switch endianness when printing out resulting hash.  Default: least
+      significant first.  With this options set all bytes in resulting
+      hash are printed in reversed order, more precisely, most
+      significant first.
 
-Each file listed on the command line is processed and hash is printed for each
-one. Stdin is read as input when executed without arguments.
+Each file listed on the command line is processed and hash is printed
+for each one.  Stdin is read as input when executed without arguments.
 
 Compile-time options
 --------------------
-By default, compiler set in 'CC' environment variable is used, falling back to
-'cc' unless set. You can quickly recompile source with another compiler by
-setting CC:
+By default, compiler set in 'CC' environment variable is used, falling
+back to 'cc' unless set.  You can quickly recompile source with another
+compiler by setting CC:
 
 # make CC=clang
 
@@ -62,49 +70,63 @@ compiled up-to date binary:
 
 # make remake CC=icc
 
-This will recompile sources from scratch using Intel C Compiler with default
-flags. If you need to adjust these compiler flags, try to set them with CFLAGS
-knob:
+This will recompile sources from scratch using Intel C Compiler with
+default flags.  If you need to adjust these compiler flags, try to set
+them with CFLAGS knob:
 
 # make remake CC=icc CFLAGS="-O3"
 
 API
 ---
-The API to this implementation is quite straightforward and similar to other
-hash function APIs. 
+The API to this implementation is quite straightforward and similar to
+other hash function APIs.  Actually the CLI utility in this distribution
+just use this API as underlying engine.  You may use this API to
+implement GOST R 34.11-2012 in your application.
 
 GOST34112012Context
-    This is the hash context. There should be one GOST34112012Context for each
-    object to be hashed.
+
+    This is the hash context.  There should be one GOST34112012Context
+    for each object to be hashed.
+
 
 void
 GOST34112012Init(const unsigned int digest_size);
+
     Return initialized GOST34112012Context of specified hash size
     (digest_size). Digest size can be either 512 or 256.
 
+
 void
-GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t len);
-    Hash some data in memory of "len" bytes size. Address of "data" must be
-    16-byte aligned. The best performance results are achieved when len is
-    multiple of 64.
+GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
+    size_t len);
+
+    Hash some data in memory of "len" bytes size.  Address of "data" must
+    be 16-byte aligned.  The best performance results are achieved when
+    len is multiple of 64.
     
-    Note that this call does not modify original data in memory. If security
-    is an issue, calling application should destroy that memory block right
-    after GOST34112012Update(), by e.g. memset() to zero.
+    Note that this call does not modify original data in memory.  If
+    security is an issue, calling application should destroy that memory
+    block right after GOST34112012Update(), by e.g. memset() to zero.
+
 
 void
 GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest);
+
     Finalizes hashing process and set GOST R 34.11-2012 hash in
     memory block pointed by "digest".
 
+
 void
 GOST34112012Cleanup(GOST34112012Context *CTX);
-     The data in context including hash itself, buffer and internal state
-     zeroed-out. Context totally destroyed and the object can't be used
-     anymore. Calling application should free() memory used by this context.
 
-Example
--------
+     The data in context including hash itself, buffer and internal
+     state zeroed-out.  Context totally destroyed and the object can't be
+     used anymore.  Calling application should free() memory used by this
+     context.
+
+
+Example of usage
+----------------
     #include "gost3411-2012-core.h"
 
     ...
@@ -134,6 +156,7 @@ Portability notes
 -----------------
 ...
 
+
 Platforms tested
 ----------------
 FreeBSD x86/x86_64
@@ -141,9 +164,11 @@ Linux   x86/x86_64
 Darwin  x86/x86_64
 Linux   powerpc
 
+
 Performance
 -----------
-To measure performance of this implementation SUPERCOP toolkit has been used. 
+To measure performance of this implementation SUPERCOP toolkit has been
+used. 
 
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
