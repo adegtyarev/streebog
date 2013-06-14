@@ -55,7 +55,7 @@ clean: rmconfig
 dist: clean
 	mkdir -p $(DISTNAME)
 	cp $(SOURCES) $(HEADERS) $(DISTNAME) 
-	cp configure Makefile VERSION Changelog $(DISTNAME)
+	cp Changelog LICENSE Makefile VERSION README configure $(DISTNAME)
 	cp -R auto examples $(DISTNAME)/
 	find $(DISTNAME)/ -type d -name .svn -exec rm -r {} \;
 	-rm $(DISTNAME).tar.gz 2>/dev/null
