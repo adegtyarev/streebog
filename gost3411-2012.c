@@ -351,7 +351,14 @@ main(int argc, char *argv[])
     else if (!uflag)
     {
         onfile(stdin);
+
+        if (digest_size == 256)
+            convert_to_hex(digest, hexdigest, 32, eflag);
+        else
+            convert_to_hex(digest, hexdigest, 64, eflag);
+
         printf("%s\n", hexdigest);
+
         uflag = 1;
     }
 

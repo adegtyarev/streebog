@@ -47,10 +47,10 @@ remake: clean all
 reconfig: rmconfig config
 
 rmconfig:
-	-rm $(CONFIGS) 2>/dev/null
+	rm -f $(CONFIGS)
 
 clean: rmconfig
-	-rm gost3411-2012 *.core core auto/Makefile 2>/dev/null
+	rm -f gost3411-2012 *.core core auto/Makefile
 
 dist: clean
 	mkdir -p $(DISTNAME)
