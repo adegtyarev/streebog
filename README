@@ -57,6 +57,7 @@ Flags:
 Each file listed on the command line is processed and hash is printed
 for each one.  Stdin is read as input when executed without arguments.
 
+
 Compile-time options
 --------------------
 By default, compiler set in 'CC' environment variable is used, falling
@@ -75,6 +76,7 @@ default flags.  If you need to adjust these compiler flags, try to set
 them with CFLAGS knob:
 
 # make remake CC=icc CFLAGS="-O3"
+
 
 API
 ---
@@ -174,6 +176,7 @@ Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
 Intel(R) Xeon(R)    CPU X5650 @ 2.67GHz x86_64: 31 cycles per byte ( 84 MB/s)
 Intel(R) Xeon(R)    CPU X5675 @ 3.07GHz x86_64: 29 cycles per byte (104 MB/s)
+
 
 Author
 ------
