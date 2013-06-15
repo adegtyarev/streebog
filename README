@@ -95,7 +95,6 @@ void
 GOST34112012Init(GOST34112012Context *CTX, 
     const unsigned int digest_size);
 
-
     Return initialized GOST34112012Context of specified hash size
     (digest_size) on allocated memory block pointed by CTX.  Digest size
     can be either 512 or 256.  Address of "CTX" must be 16-byte aligned.
@@ -129,9 +128,35 @@ GOST34112012Cleanup(GOST34112012Context *CTX);
      used anymore.  Calling application should free() memory used by this
      context.
 
+The following constants may be predefined somewhere in your application
+code in order to adjust GOST R 34.11-2012 engine behavior:
+
+__GOST3411_LITTLE_ENDIAN__: define this constant on little-endian
+systems.
+
+__GOST3411_BIG_ENDIAN__: this constant will indicate big-endian system.
+
+If neither of constants defined the engine defaults to little-endian
+code.
+
+__GOST3411_HAS_MMX__: use MMX instructions to compute digest.
+
+__GOST3411_HAS_SSE2__: use SSE2 instruction set to speedup computation
+of GOST R 34.11-2012 digest.
+
+__GOST3411_HAS_SSE41__: indicate to include SSE4.1 instructions set.
+
+The best performance results achieved on SSE4.1 capable processors with
+GCC-4.8 compiler.  A slightly less performance is with SSE2 capable
+processors.  The CLI utility in this distribution tries its best to
+determine which of SSE to use.  It falls back to portable code unless
+any of extensions detected.
+
 
 Example of usage
 ----------------
+    #include <stdlib.h>
+    #include <err.h>
     #include "gost3411-2012-core.h"
 
     ...
