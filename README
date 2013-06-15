@@ -92,10 +92,12 @@ GOST34112012Context
 
 
 void
-GOST34112012Init(const unsigned int digest_size);
+GOST34112012Init(GOST34112012Context *CTX, 
+    const unsigned int digest_size);
 
     Return initialized GOST34112012Context of specified hash size
-    (digest_size). Digest size can be either 512 or 256.
+    (digest_size) on allocated memory block pointed by CTX.  Digest size
+    can be either 512 or 256.  Address of "CTX" must be 16-byte aligned.
 
 
 void
@@ -129,15 +131,20 @@ GOST34112012Cleanup(GOST34112012Context *CTX);
 
 Example of usage
 ----------------
+    #include <stdlib.h>
+    #include <err.h>
     #include "gost3411-2012-core.h"
 
     ...
 
-    GOST34112012Context CTX;
+    GOST34112012Context *CTX;
 
     unsigned char digest[64];
 
     ...
+        if (posix_memalign(&CTX, (size_t) 16, 64))
+            err(EX_OSERR, NULL);
+
         GOST34112012Init(CTX, 512);
         ...
         GOST34112012Update(CTX, buffer, (size_t) bufsize);

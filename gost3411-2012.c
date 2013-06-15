@@ -244,6 +244,8 @@ int
 crypto_hash(unsigned char *out, const unsigned char *in,
         unsigned long long inlen)
 {
+    CTX = memalloc(sizeof(GOST34112012Context));
+
     GOST34112012Init(CTX, 512);
     GOST34112012Update(CTX, in, (size_t) inlen);
     GOST34112012Final(CTX, out);
