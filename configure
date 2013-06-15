@@ -45,3 +45,10 @@ compile:
 EOF
 
 mv ${AUTO_CONF_H}.t ${AUTO_CONF_H}
+
+if [ ! -z "${SUPERCOP}" ]; then
+    cat >api.h <<EOF
+#define CRYPTO_BYTES 64
+#define CRYPTO_VERSION "`cat VERSION`"
+EOF
+fi

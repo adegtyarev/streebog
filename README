@@ -176,7 +176,8 @@ Linux   powerpc
 Performance
 -----------
 To measure performance of this implementation SUPERCOP toolkit has been
-used. 
+used.  You can set SUPERCOP environment variable to any value and then
+run `make configure' to prepare this implementation to run on SUPERCOP.
 
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
