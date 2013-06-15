@@ -166,7 +166,7 @@ Example of usage
     unsigned char digest[64];
 
     ...
-        if (posix_memalign(&CTX, (size_t) 16, 64))
+        if (posix_memalign(&CTX, (size_t) 16, sizeof(GOST34112012Context)))
             err(EX_OSERR, NULL);
 
         GOST34112012Init(CTX, 512);
