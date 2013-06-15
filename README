@@ -128,6 +128,29 @@ GOST34112012Cleanup(GOST34112012Context *CTX);
      used anymore.  Calling application should free() memory used by this
      context.
 
+The following constants may be predefined somewhere in your application
+code in order to adjust GOST R 34.11-2012 engine behavior:
+
+__GOST3411_LITTLE_ENDIAN__: define this constant on little-endian
+systems.
+
+__GOST3411_BIG_ENDIAN__: this constant will indicate big-endian system.
+
+If neither of constants defined the engine defaults to little-endian
+code.
+
+__GOST3411_HAS_MMX__: use MMX instructions to compute digest.
+
+__GOST3411_HAS_SSE2__: use SSE2 instruction set to speedup computation
+of GOST R 34.11-2012 digest.
+
+__GOST3411_HAS_SSE41__: indicate to include SSE4.1 instructions set.
+
+The best performance results achieved on SSE4.1 capable processors.
+A slightly less performance is with SSE2 capable processors.  The CLI
+utility in this distribution tries its best to determine which of SSE to
+use.  It falls back to portable code unless any of extensions detected.
+
 
 Example of usage
 ----------------
@@ -177,12 +200,12 @@ Linux   powerpc
 Performance
 -----------
 To measure performance of this implementation SUPERCOP toolkit has been
-used. 
+used.
 
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
 Intel(R) Xeon(R)    CPU X5650 @ 2.67GHz x86_64: 31 cycles per byte ( 84 MB/s)
-Intel(R) Xeon(R)    CPU X5675 @ 3.07GHz x86_64: 29 cycles per byte (104 MB/s)
+Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz x86_64: 28 cycles per byte (118 MB/s)
 
 
 Author
