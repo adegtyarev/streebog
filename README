@@ -146,10 +146,11 @@ of GOST R 34.11-2012 digest.
 
 __GOST3411_HAS_SSE41__: indicate to include SSE4.1 instructions set.
 
-The best performance results achieved on SSE4.1 capable processors.
-A slightly less performance is with SSE2 capable processors.  The CLI
-utility in this distribution tries its best to determine which of SSE to
-use.  It falls back to portable code unless any of extensions detected.
+The best performance results achieved on SSE4.1 capable processors with
+GCC-4.8 compiler.  A slightly less performance is with SSE2 capable
+processors.  The CLI utility in this distribution tries its best to
+determine which of SSE to use.  It falls back to portable code unless
+any of extensions detected.
 
 
 Example of usage
@@ -205,7 +206,7 @@ used.
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz    x86: 40 cycles per byte ( 70 MB/s)
 Intel(R) Pentium(R) CPU G6950 @ 2.80GHz x86_64: 36 cycles per byte ( 78 MB/s)
 Intel(R) Xeon(R)    CPU X5650 @ 2.67GHz x86_64: 31 cycles per byte ( 84 MB/s)
-Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz x86_64: 28 cycles per byte (118 MB/s)
+Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz x86_64: 28 cycles per byte (121 MB/s)
 
 
 Author
