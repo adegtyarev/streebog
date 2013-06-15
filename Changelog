@@ -10,6 +10,9 @@ Changes with version 0.11                                           22 Feb 2013
 	* Feature: example messages from standard are added in "examples"
 	  directory.
 
+	* Feature: set SUPERCOP environment when configuring to prepare this
+	  implementation to run on SUPERCOP toolkit.
+
 	* Bugfix: variables, structures, functions changed their names from
 	  *GOST3411* to fully-qualified *GOST34112012*
 	

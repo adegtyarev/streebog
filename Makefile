@@ -50,7 +50,7 @@ rmconfig:
 	rm -f $(CONFIGS)
 
 clean: rmconfig
-	rm -f gost3411-2012 *.core core auto/Makefile
+	rm -f gost3411-2012 *.core core auto/Makefile api.h
 
 dist: clean
 	mkdir -p $(DISTNAME)
