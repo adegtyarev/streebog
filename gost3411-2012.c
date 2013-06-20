@@ -81,6 +81,7 @@ usage(void)
     fprintf(stdout, "The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.\n");
     fprintf(stdout, "Each file listed on the command line is processed and hash is printed\n");
     fprintf(stdout, "for each one.  Stdin is read as input when executed without arguments.\n");
+    fprintf(stdout, "\n");
     fprintf(stdout, "Usage: gost3411-2012 [-25bhvqrte] [-s string] [files ...]\n");
     fprintf(stdout, "\n");
     fprintf(stdout, "Options:\n");
