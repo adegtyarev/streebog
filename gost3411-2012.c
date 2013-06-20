@@ -34,6 +34,7 @@
 
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
+#define VERSION "0.11"
 
 GOST34112012Context *CTX;
 
@@ -68,11 +69,50 @@ const union uint512_u GOSTTestInput = {
 };
 
 static void
+usage_short(void)
+{
+    fprintf(stderr, "Usage: [-25bhvqrte] [-s string] [files ...]\n");
+    exit(255);
+}
+
+static void
 usage(void)
 {
-    fprintf(stderr, "Usage: [-25bhqrte] [-s string] [files ...]\n");
-    fprintf(stderr, "\nThe program outputs GOST R 34.11-2012 hash digest in hexadecimal format.\n");
-    exit(1);
+    fprintf(stdout, "The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.\n");
+    fprintf(stdout, "Each file listed on the command line is processed and hash is printed\n");
+    fprintf(stdout, "for each one.  Stdin is read as input when executed without arguments.\n");
+    fprintf(stdout, "Usage: gost3411-2012 [-25bhvqrte] [-s string] [files ...]\n");
+    fprintf(stdout, "\n");
+    fprintf(stdout, "Options:\n");
+    fprintf(stdout, "   -2          Output 256-bit digest.\n");
+    fprintf(stdout, "   -5          Output 512-bit digest (default).\n");
+    fprintf(stdout, "   -t          Testing mode to produce hash of example\n");
+    fprintf(stdout, "               messages defined in standard.\n");
+    fprintf(stdout, "   -b          Benchmark mode (to see how fast or slow\n");
+    fprintf(stdout, "               this implementation).\n");
+    fprintf(stdout, "   -s string   Print a digest of the given string.\n");
+    fprintf(stdout, "   -t          Reverses the format of the output.\n");
+    fprintf(stdout, "               This helps with visual diffs.\n");
+    fprintf(stdout, "   -q          Quiet mode - only the digest is printed\n");
+    fprintf(stdout, "               out.\n");
+    fprintf(stdout, "   -e          Switch endianness when printing out\n");
+    fprintf(stdout, "               resulting hash.  Default: least significant\n");
+    fprintf(stdout, "               first.  With this options set all bytes in\n");
+    fprintf(stdout, "               resulting hash are printed in reversed\n");
+    fprintf(stdout, "               order, more precisely, most significant\n");
+    fprintf(stdout, "               first.\n");
+    fprintf(stdout, "\n");
+    fprintf(stdout, "Report bugs to <alexey@renatasystems.org>\n");
+    exit(0);
+}
+
+static void
+version(void)
+{
+    fprintf(stdout, "gost3411-2012 %s\n", VERSION);
+    fprintf(stdout, "\n");
+    fprintf(stdout, "Written by Alexey Degtyarev\n");
+    exit(0);
 }
 
 static void *
@@ -271,7 +311,7 @@ main(int argc, char *argv[])
     uflag = 0;
     eflag = 0;
 
-    while ((ch = getopt(argc, argv, "25bhqrs:te")) != -1)
+    while ((ch = getopt(argc, argv, "25bhvqrs:te")) != -1)
     {
         switch (ch)
         {
@@ -314,8 +354,13 @@ main(int argc, char *argv[])
                 eflag = 1;
                 break;
             case 'h':
-            default:
                 usage();
+                break;
+            case 'v':
+                version();
+                break;
+            default:
+                usage_short();
         }
     }
 
