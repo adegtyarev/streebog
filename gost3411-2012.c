@@ -102,6 +102,8 @@ usage(void)
     fprintf(stdout, "               resulting hash are printed in reversed\n");
     fprintf(stdout, "               order, more precisely, most significant\n");
     fprintf(stdout, "               first.\n");
+    fprintf(stdout, "   -v          Print version info and exit.\n");
+    fprintf(stdout, "   -h          Print this help end exit.\n");
     fprintf(stdout, "\n");
     fprintf(stdout, "Report bugs to <alexey@renatasystems.org>\n");
     exit(0);

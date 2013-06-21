@@ -16,6 +16,8 @@ To measure performance of this implementation SUPERCOP toolkit has been used.
     Intel(R) Xeon(R)    CPU X5650 @ 2.67GHz x86_64: 31 CPB ( 84 MB/s)
     Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz x86_64: 28 CPB (121 MB/s)
 
+CPB stands for Cycles Per Byte.  And MB/s is megabytes per second.
+
 [SEE ALSO]
 .BR gost3411-2012 (3),
 .BR dgst (1)
