@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Alexey Degtyarev. 
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
  * All rights reserved.
  *
  * Iteration constants defined in standard.

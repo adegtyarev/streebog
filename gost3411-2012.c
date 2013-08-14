@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2013, Alexey Degtyarev. 
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
  * All rights reserved.
  *
  * GOST 34.11-2012 hash function with 512/256 bits digest.
@@ -114,7 +114,7 @@ version(void)
 {
     fprintf(stdout, "gost3411-2012 %s\n", VERSION);
     fprintf(stdout, "\n");
-    fprintf(stdout, "Written by Alexey Degtyarev\n");
+    fprintf(stdout, "Written by Alexey Degtyarev.\n");
     exit(0);
 }
 

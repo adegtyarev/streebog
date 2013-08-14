@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2013, Alexey Degtyarev. 
+# Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
 # All rights reserved.
 #
 # Detect running system endianness.
