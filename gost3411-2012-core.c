@@ -45,16 +45,13 @@ GOST34112012Init(GOST34112012Context *CTX, const unsigned int digest_size)
 static inline void
 pad(GOST34112012Context *CTX)
 {
-    unsigned char buf[64];
-
     if (CTX->bufsize > 63)
         return;
 
-    memset(&buf, 0x00, sizeof buf);
-    memcpy(&buf, CTX->buffer, CTX->bufsize);
+    memset(CTX->buffer + CTX->bufsize,
+        0x00, sizeof(CTX->buffer) - CTX->bufsize);
 
-    buf[CTX->bufsize] = 0x01;
-    memcpy(CTX->buffer, &buf, sizeof buf);
+    CTX->buffer[CTX->bufsize] = 0x01;
 }
 
 static inline void
@@ -157,13 +154,8 @@ stage2(GOST34112012Context *CTX, const unsigned char *data)
 static inline void
 stage3(GOST34112012Context *CTX)
 {
-    ALIGN(16) union uint512_u buf;
+    ALIGN(16) union uint512_u buf = {{ 0 }};
 
-    memset(&buf, 0x00, sizeof buf);
-    memcpy(&buf, &(CTX->buffer), CTX->bufsize);
-    memcpy(&(CTX->buffer), &buf, sizeof uint512_u);
-
-    memset(&buf, 0x00, sizeof buf);
 #ifndef __GOST3411_BIG_ENDIAN__
     buf.QWORD[0] = CTX->bufsize << 3;
 #else
