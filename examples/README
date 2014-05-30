@@ -16,4 +16,4 @@ in standard.
 Hashes for M1 and M2 can be obtained from standard or RFC[1]. Results for
 messages M3 and M4 are not publicly available. I got them from trusted source.
 
-[1] http://tools.ietf.org/html/draft-dolmatov-gost34112012-00
+[1] http://tools.ietf.org/html/rfc6986
