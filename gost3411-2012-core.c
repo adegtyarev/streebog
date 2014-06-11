@@ -181,16 +181,7 @@ GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t l
 {
     size_t chunksize;
 
-    while (len > 63 && CTX->bufsize == 0)
-    {
-        stage2(CTX, data);
-
-        data += 64;
-        len  -= 64;
-    }
-
-    while (len)
-    {
+    if (CTX->bufsize) {
         chunksize = 64 - CTX->bufsize;
         if (chunksize > len)
             chunksize = len;
@@ -207,6 +198,19 @@ GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t l
 
             CTX->bufsize = 0;
         }
+    }
+
+    while (len > 63)
+    {
+        stage2(CTX, data);
+
+        data += 64;
+        len  -= 64;
+    }
+
+    if (len) {
+        memcpy(&CTX->buffer, data, len);
+        CTX->bufsize = len;
     }
 }
 
