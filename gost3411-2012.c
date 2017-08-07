@@ -92,7 +92,7 @@ usage(void)
     fprintf(stdout, "   -b          Benchmark mode (to see how fast or slow\n");
     fprintf(stdout, "               this implementation).\n");
     fprintf(stdout, "   -s string   Print a digest of the given string.\n");
-    fprintf(stdout, "   -t          Reverses the format of the output.\n");
+    fprintf(stdout, "   -r          Reverses the format of the output.\n");
     fprintf(stdout, "               This helps with visual diffs.\n");
     fprintf(stdout, "   -q          Quiet mode - only the digest is printed\n");
     fprintf(stdout, "               out.\n");
