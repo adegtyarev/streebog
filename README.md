@@ -1,11 +1,8 @@
 GOST R 34.11-2012 hash function with 512/256 bit digest
 =======================================================
 
-[![Build Status](https://travis-ci.org/adegtyarev/streebog.svg?branch=travis)](https://travis-ci.org/adegtyarev/streebog)
+[![Build Status](https://travis-ci.org/adegtyarev/streebog.svg?branch=master)](https://travis-ci.org/adegtyarev/streebog)
 
-
-About
------
 This is portable implementation of the GOST R 34.11-2012 hash function.
 The standard for this hash function developed by the Center for
 Information Protection and Special Communications of the Federal
