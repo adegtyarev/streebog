@@ -74,6 +74,7 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 
         tmp += CF;
         CF = OF;
+        r->QWORD[i] = tmp;
     }
 #else
     const unsigned char *xp, *yp;
