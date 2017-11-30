@@ -7,7 +7,7 @@
 #
 # $Id$
 
-TMPFILE=`mktemp -t gost3411-end-autotest-XXX` || exit 1
+TMPFILE=`mktemp -t gost3411-end-autotest-XXXXXX` || exit 1
 trap "rm -f ${TMPFILE} ${TMPFILE}.c 2>/dev/null" INT TERM EXIT
 
 cat <<EOF > ${TMPFILE}.c
