@@ -35,11 +35,12 @@ This will configure and compile a binary program file named
 
 Usage instructions
 ------------------
+The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.
+Each file listed on the command line is processed and hash is printed
+for each one.  Stdin is read as input when executed without arguments.
 
     # ./gost3411-2012 -h
-    Usage: [-25bhqrte] [-s string] [files ...]
-
-    The program outputs GOST R 34.11-2012 hash digest in hexadecimal format.
+    Usage: gost3411-2012 [-25bhvqrte] [-s string] [files ...]
 
     Flags:
      -2 - 256-bit digest.
@@ -55,10 +56,6 @@ Usage instructions
           significant first.  With this options set all bytes in resulting
           hash are printed in reversed order, more precisely, most
           significant first.
-
-
-Each file listed on the command line is processed and hash is printed
-for each one.  Stdin is read as input when executed without arguments.
 
 
 Compile-time options
