@@ -76,6 +76,7 @@ distclean:
 
 test: gost3411-2012
 	./gost3411-2012 -t
+	./gost3411-2012 -t | cmp auto/test.txt
 
 bench: 
 	$(MAKE) remake CC=clang && ./gost3411-2012 -b
