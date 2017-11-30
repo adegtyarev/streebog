@@ -59,19 +59,20 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
 #ifndef __GOST3411_BIG_ENDIAN__
     unsigned int CF, OF;
+    unsigned long long tmp;
     unsigned int i;
 
     CF = 0;
     for (i = 0; i < 8; i++)
     {
-        r->QWORD[i] = x->QWORD[i] + y->QWORD[i];
-        if ( (r->QWORD[i] < y->QWORD[i]) || 
-             (r->QWORD[i] < x->QWORD[i]) )
+        tmp = x->QWORD[i] + y->QWORD[i];
+        if ( (tmp < y->QWORD[i]) ||
+             (tmp < x->QWORD[i]) )
             OF = 1;
         else
             OF = 0;
 
-        r->QWORD[i] += CF;
+        tmp += CF;
         CF = OF;
     }
 #else
