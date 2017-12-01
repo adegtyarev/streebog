@@ -61,8 +61,7 @@ for each one.  Stdin is read as input when executed without arguments.
 Compile-time options
 --------------------
 By default, a compiler defined in `CC` environment variable is used, falling
-back to `cc`.  You can quickly recompile source with another compiler by
-setting `CC` variable:
+back to `cc`.  Compile the source with specified compiler:
 
     # make CC=clang
 
@@ -102,8 +101,7 @@ Return initialized `GOST34112012Context` of specified hash size
 can be either 512 or 256.  Address of `CTX` must be 16-byte aligned.
 
 ```c
-void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
-    size_t len);
+void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t len);
 ```
 
 Hash some data in memory of `len` bytes size.  Address of `data` must
