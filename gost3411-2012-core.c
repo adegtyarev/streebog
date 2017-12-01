@@ -69,8 +69,8 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
          * in a portable way is tricky a little. */
         /* Step 1: numbers cause overflow */
         tmp = x->QWORD[i] + y->QWORD[i];
-        if ( (tmp < y->QWORD[i]) ||
-             (tmp < x->QWORD[i]) )
+        /* Compare with any of two summands, no need to check both */
+        if ( (tmp < x->QWORD[i]) )
             OF = 1;
         else
             OF = 0;
