@@ -65,6 +65,9 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
     CF = 0;
     for (i = 0; i < 8; i++)
     {
+        /* Detecting integer overflow condition for three numbers
+         * in a portable way is tricky a little. */
+        /* Step 1: numbers cause overflow */
         tmp = x->QWORD[i] + y->QWORD[i];
         if ( (tmp < y->QWORD[i]) ||
              (tmp < x->QWORD[i]) )
@@ -72,7 +75,10 @@ add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
         else
             OF = 0;
 
+        /* Step 2: carry bit causes overflow */
         tmp += CF;
+        if (CF > 0 && tmp == 0)
+            OF = 1;
         CF = OF;
         r->QWORD[i] = tmp;
     }
