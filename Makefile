@@ -4,7 +4,7 @@
 #
 # $Id$
 
-NAME=GOST34.11-2012
+NAME=streebog
 VERSION=`cat VERSION`
 
 DISTNAME=$(NAME)-$(VERSION)
@@ -31,7 +31,9 @@ DEFAULT_INCLUDES=-I.
 CC?=cc
 CFLAGS=$(DEFS) ${DEBUG_FLAGS} $(OPTIMIZE) $(WARNING) $(DEFAULT_INCLUDES)
 
-all: gost3411-2012
+all: build
+
+build: gost3411-2012
 
 man: gost3411-2012.1
 
@@ -63,7 +65,7 @@ clean: rmconfig
 dist: clean man
 	mkdir -p $(DISTNAME)
 	cp $(SOURCES) $(HEADERS) $(DISTNAME) 
-	cp Changelog LICENSE Makefile VERSION README configure $(DISTNAME)
+	cp Changelog LICENSE Makefile VERSION README.md configure $(DISTNAME)
 	cp gost3411-2012.1 $(DISTNAME)
 	cp -R auto examples $(DISTNAME)/
 	find $(DISTNAME)/ -type d -name .svn -exec rm -r {} \;
