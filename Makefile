@@ -48,9 +48,9 @@ gost3411-2012: $(CONFIGS) $(SOURCES) $(HEADERS)
 
 gost3411-2012.1: gost3411-2012
 	help2man --output=$@ -v "-v" -h "-h" --no-info --source="GOST R 34.11-2012" \
-        --name='Portable implementation of GOST R 34.11-2012 hash function' \
-	--opt-include=$@.h2m \
-        ./gost3411-2012
+		--name='Portable implementation of GOST R 34.11-2012 hash function' \
+		--include=gost3411-2012.1.h2m \
+		./gost3411-2012
 
 remake: clean all
 
@@ -66,7 +66,7 @@ dist: clean man
 	mkdir -p $(DISTNAME)
 	cp $(SOURCES) $(HEADERS) $(DISTNAME) 
 	cp Changelog LICENSE Makefile VERSION README.md configure $(DISTNAME)
-	cp gost3411-2012.1 $(DISTNAME)
+	cp gost3411-2012.1 gost3411-2012.1.h2m $(DISTNAME)
 	cp -R auto examples $(DISTNAME)/
 	find $(DISTNAME)/ -type d -name .svn -exec rm -r {} \;
 	-rm $(DISTNAME).tar.gz 2>/dev/null
