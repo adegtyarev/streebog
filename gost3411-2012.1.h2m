@@ -19,7 +19,6 @@ To measure performance of this implementation SUPERCOP toolkit has been used.
 CPB stands for Cycles Per Byte.  And MB/s is megabytes per second.
 
 [SEE ALSO]
-.BR gost3411-2012 (3),
 .BR dgst (1)
 
 [AVAILABILITY]
