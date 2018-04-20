@@ -17,6 +17,8 @@ OPTIMIZE?=-O3
 
 DEBUG_FLAGS?=-g #-pg
 
+TAG?=$(shell git symbolic-ref --short -q HEAD)
+
 # Configurable options ends here.
 
 HEADERS=gost3411-2012-core.h \
@@ -34,6 +36,9 @@ CFLAGS=$(DEFS) ${DEBUG_FLAGS} $(OPTIMIZE) $(WARNING) $(DEFAULT_INCLUDES)
 all: build
 
 build: gost3411-2012
+
+build-docker: Dockerfile gost3411-2012*.* configure Makefile
+	docker build -t streebog:$(TAG) .
 
 man: gost3411-2012.1
 
