@@ -27,7 +27,6 @@ for running hardware and software platform.  In almost all cases it is
 sufficient to run `make` on top of the source directory:
 
     # make
-    gcc46 -g -O2 [other compile options..]
 
 This will configure and compile a binary program file named
 `gost3411-2012`.
