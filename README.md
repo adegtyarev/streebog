@@ -13,8 +13,8 @@ Systems" (InfoTeCS JSC).
 The standard published as [RFC 6986](https://tools.ietf.org/html/rfc6986).
 
 
-Requirements
-------------
+Build requirements
+------------------
 * GCC, Clang or ICC compiler supporting 64-bit integers.
 
 * GNU make (or any compatible make).
@@ -56,6 +56,25 @@ for each one.  Stdin is read as input when executed without arguments.
           significant first.  With this options set all bytes in resulting
           hash are printed in reversed order, more precisely, most
           significant first.
+
+
+Using with Docker
+-----------------
+There is a pre-build Docker image of this software ready to use:
+
+    $ docker run --rm adegtyarev/streebog gost3411-2012 -v
+    gost3411-2012 0.12
+
+Let's say you want to get a hash digest of LICENSE file in the current
+directory.  Here is how:
+
+    $ docker run --rm -v $PWD/LICENSE:/LICENSE:ro adegtyarev/streebog gost3411-2012 -2 /LICENSE
+    GOST R 34.11-2012 (/LICENSE) = c73c0c79b345d0aa779efab878fbe8ff248ae666ac1fdd12b137e7f41ef2da82
+
+You could also get that digest by using STDIN mode:
+
+    $ cat LICENSE |docker run --rm -i adegtyarev/streebog gost3411-2012 -2
+    c73c0c79b345d0aa779efab878fbe8ff248ae666ac1fdd12b137e7f41ef2da82
 
 
 Compile-time options
