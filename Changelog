@@ -1,4 +1,6 @@
-Changes with version 0.12
+Changes with version 0.12                                           20 Apr 2018
+
+	* Feature: Dockerfile added
 
 	* Feature: RPM specification added
 
