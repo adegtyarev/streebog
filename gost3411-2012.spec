@@ -1,7 +1,8 @@
 Name:		GOST34.11-2012
-Version:	%(cat VERSION)
+Version:	0.12
 Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
+Group:		Productivity/Security
 
 License:	BSD-2-Clause
 URL:		https://streebog.net
@@ -9,7 +10,7 @@ Source0:	https://github.com/adegtyarev/streebog/archive/%{version}.tar.gz
 
 BuildRequires:	gcc
 BuildRequires:	help2man
-ExclusiveArch:  x86_64 i586
+ExclusiveArch:	x86_64 i386 i586 i686 ppc ppc64 ppc64le aarch64 armv6l armv6hl armv7l armv7hl s390x
 
 %description
 Command line tool to create GOST R 34.11-2012 hash digest of files or streams.
@@ -35,12 +36,12 @@ install -pm 644 gost3411-2012.1 %{buildroot}%{_mandir}/man1/
 
 
 %files
+%defattr(-, root, root)
 %{_bindir}/gost3411-2012
 %{_mandir}/man1/gost3411-2012*
 
-%license LICENSE
 
-%doc README.md
+%doc LICENSE README.md
 
 
 %changelog
