@@ -1,3 +1,7 @@
+Changes with version 0.12
+
+	* Feature: RPM specification added
+
 Changes with version 0.11                                           22 Feb 2013
 
 	* Feature: command line options "-e" introduced (switch endianness). The
