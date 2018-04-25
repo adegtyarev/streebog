@@ -74,7 +74,6 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 * Wed Apr 25 2018 alexey@renatasystems.org 0.12-1
 - Add devel package
 
-
 * Mon Apr 09 2018 alexey@renatasystems.org 0.12-1
 - Initial RPM release
 
