@@ -20,6 +20,7 @@ algorithm and the hash-function calculation procedure for any sequence of
 binary symbols. The standard published as RFC 6986.
 
 %package devel
+
 Summary:	Header files for RFC-6986 cryptographic hash function
 Group:		Development/Libraries/C and C++
 Requires:  %{name}-devel = %{version}
@@ -71,11 +72,8 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 %{_includedir}/gost3411-2012/gost3411-2012-sse41.h
 
 %changelog
-* Sun Apr 22 2018 alexey@renatasystems.org 0.12
-- Updated spec for package+package-devel pair
-
-* Fri Apr 20 2018 alexey@renatasystems.org 0.12
-- Add Dockerfile
+* Wed Apr 25 2018 alexey@renatasystems.org 0.12-1
+- Add devel package
 
 * Mon Apr 09 2018 alexey@renatasystems.org 0.12-1
 - Initial RPM release
