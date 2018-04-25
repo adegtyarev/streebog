@@ -21,6 +21,7 @@ binary symbols. The standard published as RFC 6986.
 
 %package devel
 Summary:	Header files for RFC-6986 cryptographic hash function
+
 Group:		Development/Tools/Other
 Requires:  %{name}-devel = %{version}
 Requires:  %{name}
@@ -35,10 +36,8 @@ binary symbols. The standard published as RFC 6986.
 %prep
 %setup -q -n streebog-%{version}
 
-
 %build
 make %{?_smp_mflags} config build man
-
 
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -54,12 +53,10 @@ install -pm 644 gost3411-2012-ref.h %{buildroot}%{_includedir}/gost3411-2012/
 install -pm 644 gost3411-2012-sse2.h %{buildroot}%{_includedir}/gost3411-2012/
 install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 
-
 %files
 %defattr(-, root, root)
 %{_bindir}/gost3411-2012
 %{_mandir}/man1/gost3411-2012*
-
 
 %doc LICENSE README.md
 
