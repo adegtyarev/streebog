@@ -21,12 +21,12 @@ binary symbols. The standard published as RFC 6986.
 
 %package devel
 Summary:	Header files for RFC-6986 cryptographic hash function
-Group:		Development/Tools/Other
-Requires:  %{name}-devel = %{version}
-Requires:  %{name}
+Group:		Productivity/Security
+Requires:	%{name}-devel = %{version}
+Requires:	%{name}
 
 %description devel
-Header files for command line tool to create GOST R 34.11-2012 hash digest of files or streams.
+Header files for the GOST R 34.11-201.
 
 Russian cryptographic standard GOST R 34.11-2012 establishes the hash-function
 algorithm and the hash-function calculation procedure for any sequence of
