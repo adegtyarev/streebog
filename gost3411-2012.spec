@@ -20,7 +20,6 @@ algorithm and the hash-function calculation procedure for any sequence of
 binary symbols. The standard published as RFC 6986.
 
 %package devel
-
 Summary:	Header files for RFC-6986 cryptographic hash function
 Group:		Development/Libraries/C and C++
 Requires:  %{name}-devel = %{version}
