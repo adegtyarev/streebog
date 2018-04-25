@@ -23,7 +23,7 @@ binary symbols. The standard published as RFC 6986.
 Summary:	Header files for RFC-6986 cryptographic hash function
 Group:		Development/Libraries/C and C++
 Requires:  %{name}-devel = %{version}
-Requires:  %{name}
+Requires:  %{name} = %{version}
 
 %description devel
 Header files for command line tool to create GOST R 34.11-2012 hash digest of files or streams.
