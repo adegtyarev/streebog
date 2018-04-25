@@ -21,16 +21,12 @@ binary symbols. The standard published as RFC 6986.
 
 %package devel
 Summary:	Header files for RFC-6986 cryptographic hash function
-Group:		Productivity/Security
+Group:		Development/Libraries/C
 Requires:	%{name}-devel = %{version}
 Requires:	%{name}
 
 %description devel
-Header files for the GOST R 34.11-201.
-
-Russian cryptographic standard GOST R 34.11-2012 establishes the hash-function
-algorithm and the hash-function calculation procedure for any sequence of
-binary symbols. The standard published as RFC 6986.
+Header files for the GOST R 34.11-2012 hash function.
 
 %prep
 %setup -q -n streebog-%{version}
@@ -75,11 +71,9 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 %{_includedir}/gost3411-2012/gost3411-2012-sse41.h
 
 %changelog
-* Sun Apr 22 2018 alexey@renatasystems.org 0.12
-- Updated spec for package+package-devel pair
+* Wed Apr 25 2018 alexey@renatasystems.org 0.12-1
+- Add devel package
 
-* Fri Apr 20 2018 alexey@renatasystems.org 0.12
-- Add Dockerfile
 
 * Mon Apr 09 2018 alexey@renatasystems.org 0.12-1
 - Initial RPM release
