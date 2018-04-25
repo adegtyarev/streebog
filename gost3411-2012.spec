@@ -2,7 +2,7 @@ Name:		GOST34.11-2012
 Version:	0.12
 Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
-Group:		Productivity/Security
+Group:		Development/Tools/Other
 
 License:	BSD-2-Clause
 URL:		https://streebog.net
