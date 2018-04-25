@@ -2,7 +2,7 @@ Name:		GOST34.11-2012
 Version:	0.12
 Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
-Group:		Development/Tools/Other
+Group:		Productivity/Security
 
 License:	BSD-2-Clause
 URL:		https://streebog.net
@@ -21,8 +21,7 @@ binary symbols. The standard published as RFC 6986.
 
 %package devel
 Summary:	Header files for RFC-6986 cryptographic hash function
-
-Group:		Development/Tools/Other
+Group:		Development/Libraries/C and C++
 Requires:  %{name}-devel = %{version}
 Requires:  %{name}
 
