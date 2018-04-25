@@ -22,8 +22,6 @@ binary symbols. The standard published as RFC 6986.
 %package devel
 Summary:	Header files for RFC-6986 cryptographic hash function
 Group:		Development/Libraries/C
-Requires:	%{name}-devel = %{version}
-Requires:	%{name}
 
 %description devel
 Header files for the GOST R 34.11-2012 hash function.
