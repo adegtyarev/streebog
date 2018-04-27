@@ -24,7 +24,7 @@ Summary:	Header files for the RFC-6986 cryptographic hash function
 Group:		Development/Languages/C and C++
 
 %description devel
-Header files for the GOST R 34.11-2012 hash function.
+Header files for the GOST R 34.11-2012 hash digest of files or streams.
 
 Russian cryptographic standard GOST R 34.11-2012 establishes the hash-function
 algorithm and the hash-function calculation procedure for any sequence of
