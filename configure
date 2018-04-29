@@ -20,6 +20,32 @@ AUTO_CONF_MK="auto/Makefile"
 cat > ${AUTO_CONF_H}.t < /dev/null
 cat > ${AUTO_CONF_MK}.t < /dev/null
 
+if [ -z "${PLATFORM}" ]; then
+    SYSTEM=`uname -s 2>/dev/null`
+
+    RELEASE=`uname -r 2>/dev/null`
+
+    MACHINE=`uname -m 2>/dev/null`
+
+    PLATFORM="$SYSTEM:$RELEASE:$MACHINE";
+
+    case "$SYSTEM" in
+        MINGW32_* | MINGW64_* | MSYS_*)
+            PLATFORM=win32
+        ;;
+    esac
+fi
+
+export PLATFORM
+
+echo "building for $PLATFORM"
+
+case "$PLATFORM" in
+    Linux:*)
+        . auto/os/linux
+    ;;
+esac
+
 for file in auto/header/*
 do
     env CC=${CC} sh ${file} >> ${AUTO_CONF_H}.t 2>/dev/null
@@ -32,7 +58,7 @@ done
 
 cat <<EOF >${AUTO_CONF_MK}
 CC=${CC}
-CFLAGS=${INCLUDES} ${CFLAGS}
+CFLAGS=${INCLUDES} ${CFLAGS} ${CC_OS_FLAGS}
 SOURCES=${SOURCES}
 EOF
 

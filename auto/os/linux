@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# Copyright (c) 2018, Alexey Degtyarev <alexey@renatasystems.org>.
+# All rights reserved.
+#
+# Build configuration on a Linux machine
+
+CC_OS_FLAGS="-D_FILE_OFFSET_BITS=64"
