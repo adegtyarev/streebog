@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+# Copyright (c) 2013-2018, Alexey Degtyarev <alexey@renatasystems.org>. 
 # All rights reserved.
 #
 # Detect SSE2 capability in processor and compiler.
