@@ -64,7 +64,7 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 #
 #
-# - Copy LICENSE file to %%license for:
+# Copy LICENSE file to %%license for:
 # - SLE 12 SP3 and higher
 # - openSUSE Leap 42.3 and higher
 # - CentOS 7
