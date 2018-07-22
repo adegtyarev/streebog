@@ -55,7 +55,29 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 %{_bindir}/gost3411-2012
 %{_mandir}/man1/gost3411-2012*
 
+#
+# Copy LICENSE file to %%doc for:
+# - SLE 12 SP2 and lower
+# - openSUSE Leap 42.2 and lower
+# - CentOS 6
+# - Scientific Linux 6
+#
+#
+#
+# - Copy LICENSE file to %%license for:
+# - SLE 12 SP3 and higher
+# - openSUSE Leap 42.3 and higher
+# - CentOS 7
+# - Scientific Linux 7
+#
+# Fedora distros feel OK to LICENSE being both in %%doc or %%license regardless to their version.
+#
+%if ( 0%{?sle_version} <= 120200 && !0%{?is_opensuse} ) || ( 0%{?sle_version} <= 120200 && 0%{?is_opensuse} ) || 0%{?centos_version} == 600 || 0%{?scientificlinux_version} == 600
 %doc LICENSE README.md
+%else
+%doc README.md
+%license LICENSE
+%endif
 
 %files devel
 %defattr(-, root, root)
