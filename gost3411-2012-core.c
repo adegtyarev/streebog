@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+ * Copyright (c) 2013-2018, Alexey Degtyarev <alexey@renatasystems.org>. 
  * All rights reserved.
  *
  * GOST R 34.11-2012 core and API functions.
