@@ -231,6 +231,16 @@ configure` to prepare this implementation to run on SUPERCOP.
     Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz x86_64: 28 cycles per byte (121 MB/s)
 
 
+License
+-------
+
+This work is dual-licensed under BSD 2-Clause "Simplified" License and GNU
+General Public License v2.0 (or later).  You can choose between one of them if
+you use this software.
+
+`SPDX-License-Identifier: BSD-2-Clause OR GPL-2.0+`
+
+
 Author
 ------
 Alexey Degtyarev <alexey@renatasystems.org>
