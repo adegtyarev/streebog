@@ -58,34 +58,19 @@ static inline void
 add512(const union uint512_u *x, const union uint512_u *y, union uint512_u *r)
 {
 #ifndef __GOST3411_BIG_ENDIAN__
-    unsigned int CF, OF;
-    unsigned long long tmp;
+    unsigned int CF;
     unsigned int i;
 
     CF = 0;
     for (i = 0; i < 8; i++)
     {
-        /* Detecting integer overflow condition for three numbers
-         * in a portable way is tricky a little. */
+        const unsigned long long left = x->QWORD[i];
+        unsigned long long sum;
 
-        /* Step 1: numbers cause overflow */
-        tmp = x->QWORD[i] + y->QWORD[i];
-
-        /* Compare with any of two summands, no need to check both */
-        if (tmp < x->QWORD[i])
-            OF = 1;
-        else
-            OF = 0;
-
-        /* Step 2: carry bit causes overflow */
-        tmp += CF;
-
-        if (CF > 0 && tmp == 0)
-            OF = 1;
-
-        CF = OF;
-
-        r->QWORD[i] = tmp;
+        sum = left + y->QWORD[i] + CF;
+        if (sum != left)
+            CF = (sum < left);
+        r->QWORD[i] = sum;
     }
 #else
     const unsigned char *xp, *yp;
