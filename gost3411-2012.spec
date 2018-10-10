@@ -4,7 +4,7 @@ Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
 Group:		Productivity/Security
 
-License:	BSD-2-Clause
+License:	BSD-2-Clause or GPL-2.0+
 URL:		https://streebog.net
 Source0:	https://github.com/adegtyarev/streebog/archive/%{version}.tar.gz
 
@@ -80,10 +80,10 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 # openSUSE: [1] https://en.opensuse.org/openSUSE:Specfile_guidelines#License_files
 #
 %if ( 0%{?sle_version} <= 120200 && !0%{?is_opensuse} ) || ( 0%{?sle_version} <= 120200 && 0%{?is_opensuse} ) || 0%{?rhel_version} <= 600 || 0%{?centos_version} <= 600 || 0%{?scientificlinux_version} <= 600
-%doc LICENSE README.md
+%doc LICENSE LICENSE.GPL2 README.md
 %else
 %doc README.md
-%license LICENSE
+%license LICENSE LICENSE.GPL2
 %endif
 
 %files devel
