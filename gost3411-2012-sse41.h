@@ -32,10 +32,10 @@
 
 #define LOAD(P, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *__m128p = (const __m128i *) &P[0]; \
-    xmm0 = _mm_load_si128(&__m128p[0]); \
-    xmm1 = _mm_load_si128(&__m128p[1]); \
-    xmm2 = _mm_load_si128(&__m128p[2]); \
-    xmm3 = _mm_load_si128(&__m128p[3]); \
+    xmm0 = _mm_loadu_si128(&__m128p[0]); \
+    xmm1 = _mm_loadu_si128(&__m128p[1]); \
+    xmm2 = _mm_loadu_si128(&__m128p[2]); \
+    xmm3 = _mm_loadu_si128(&__m128p[3]); \
 }
 
 #define UNLOAD(P, xmm0, xmm1, xmm2, xmm3) { \
@@ -55,10 +55,10 @@
 
 #define X128M(P, xmm0, xmm1, xmm2, xmm3) { \
     const __m128i *__m128p = (const __m128i *) &P[0]; \
-    xmm0 = _mm_xor_si128(xmm0, _mm_load_si128(&__m128p[0])); \
-    xmm1 = _mm_xor_si128(xmm1, _mm_load_si128(&__m128p[1])); \
-    xmm2 = _mm_xor_si128(xmm2, _mm_load_si128(&__m128p[2])); \
-    xmm3 = _mm_xor_si128(xmm3, _mm_load_si128(&__m128p[3])); \
+    xmm0 = _mm_xor_si128(xmm0, _mm_loadu_si128(&__m128p[0])); \
+    xmm1 = _mm_xor_si128(xmm1, _mm_loadu_si128(&__m128p[1])); \
+    xmm2 = _mm_xor_si128(xmm2, _mm_loadu_si128(&__m128p[2])); \
+    xmm3 = _mm_xor_si128(xmm3, _mm_loadu_si128(&__m128p[3])); \
 }
 
 #define _mm_xor_64(mm0, mm1) _mm_xor_si64(mm0, _mm_cvtsi64_m64(mm1))
