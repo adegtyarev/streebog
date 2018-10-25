@@ -122,8 +122,8 @@ can be either 512 or 256.  Address of `CTX` must be 16-byte aligned.
 void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t len);
 ```
 
-Hash some data in memory of `len` bytes size.  Address of `data` must
-be 16-byte aligned.  The best performance results are achieved when
+Hash some data in memory of `len` bytes size.  Address of `data` does
+not need to be aligned.  The best performance results are achieved when
 len is multiple of 64.
     
 Note that this call does not modify original data in memory.  If
