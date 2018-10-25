@@ -122,9 +122,8 @@ can be either 512 or 256.  Address of `CTX` must be 16-byte aligned.
 void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t len);
 ```
 
-Hash some data in memory of `len` bytes size.  Address of `data` must
-be 16-byte aligned.  The best performance results are achieved when
-len is multiple of 64.
+Hash some `data` of `len` bytes size.  The best performance results are
+achieved when `len` is multiple of 64.
     
 Note that this call does not modify original data in memory.  If
 security is an issue, calling application should destroy that memory
@@ -163,11 +162,10 @@ of GOST R 34.11-2012 digest.
 
 * `__GOST3411_HAS_SSE41__`: indicate to include SSE4.1 instructions set.
 
-The best performance results achieved on SSE4.1 capable processors with
-GCC-4.8 compiler.  A slightly less performance is with SSE2 capable
-processors.  The CLI utility in this distribution tries its best to
-determine which of SSE to use.  It falls back to portable code unless
-any of extensions detected.
+The best performance results achieved on SSE4.1 capable processors.  A slightly
+less performance achieved on SSE2 capable processors.  The CLI utility in this
+distribution tries its best to determine which of the instruction set to use.
+It falls back to the portable code unless any of extensions detected.
 
 
 Example of usage
