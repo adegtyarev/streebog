@@ -161,7 +161,7 @@ convert_to_hex(unsigned char *in, unsigned char *out, size_t len,
     for (i = 0; i < len; i++)
     {
         sprintf(ch, "%02x", (unsigned char) in[i]);
-        strncat((char *) &out[0], ch, 2);
+        memcpy(&out[i * 2], ch, 2);
     }
 }
 
