@@ -25,7 +25,7 @@
 #include "gost3411-2012-ref.h"
 #endif
 
-ALIGN(16) union uint512_u
+ALIGN(16) typedef union uint512_u
 {
     unsigned long long QWORD[8];
 } uint512_u;
@@ -36,10 +36,10 @@ ALIGN(16) union uint512_u
 ALIGN(16) typedef struct GOST34112012Context
 {
     ALIGN(16) unsigned char buffer[64];
-    ALIGN(16) union uint512_u hash;
-    ALIGN(16) union uint512_u h;
-    ALIGN(16) union uint512_u N;
-    ALIGN(16) union uint512_u Sigma;
+    ALIGN(16) uint512_u hash;
+    ALIGN(16) uint512_u h;
+    ALIGN(16) uint512_u N;
+    ALIGN(16) uint512_u Sigma;
     size_t bufsize;
     unsigned int digest_size;
 } GOST34112012Context;
