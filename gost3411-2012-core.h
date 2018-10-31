@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
  * All rights reserved.
  *
  * $Id$
@@ -19,7 +19,7 @@
 #include "gost3411-2012-sse41.h"
 #elif defined __GOST3411_HAS_SSE2__
 #include "gost3411-2012-sse2.h"
-#elif defined __GOST3411_HAS_MMX__ 
+#elif defined __GOST3411_HAS_MMX__
 #include "gost3411-2012-mmx.h"
 #else
 #include "gost3411-2012-ref.h"
@@ -48,8 +48,8 @@ void GOST34112012Init(GOST34112012Context *CTX,
         const unsigned int digest_size);
 
 void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
-        size_t len); 
+        size_t len);
 
-void GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest); 
+void GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest);
 
 void GOST34112012Cleanup(GOST34112012Context *CTX);

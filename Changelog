@@ -21,13 +21,13 @@ Changes with version 0.11                                           22 Feb 2013
 
 	* Bugfix: variables, structures, functions changed their names from
 	  *GOST3411* to fully-qualified *GOST34112012*
-	
+
 	* Bugfix: API: GOST34112012Init() now operates on allocated memory.
 	  Previously, memory allocation for context has been done with
 	  GOST34112012Init() call - this guarantee proper alignment for context's
 	  members.  As for now, alignment is done with ALIGN keyword in object
 	  declaration and GOST34112012Init() does not allocate any byte of memory.
-	
+
 	* Bugfix: API: GOST34112012Final() now returns digest in memory pointed by
 	  second argument.  Context member "hexdigest" not used anymore thus
 	  abandoned.  It is up to calling application to present digest in
@@ -39,18 +39,18 @@ Changes with version 0.10                                           29 Jan 2013
 	  substitution by Pi[] while generating multiplication lookup table.
 	  Lookup table arranged in a such way totally eliminates the need to do
 	  whole S-cycle in LPS.
-	
+
 	* Feature: use SSE4.1 instructions set in LPS if available.
 
 	* Feature: multiplication lookup table is now statically precomputed in
 	  header file and is in constant memory.
-	
+
 	* Bugfix: rewrite GOST3411Update() function to implement streaming mode
 	  when processing large amount of data.
-	
+
 	* Bugfix: rename round2() and round3() to stage2() and stage3()
 	  respectively.
-	
+
 	* Bugfix: in auto configuration probes: delete temporary files.
 
 Changes with version 0.09                                           22 Jan 2013
@@ -60,10 +60,10 @@ Changes with version 0.09                                           22 Jan 2013
 	  quadruples.  This avoid copying of temporary key and internal state
 	  between rounds in g(), thus reduce instructions count per plaintext
 	  block.
-	
+
 	* Feature: with code optimization above, performance on 32-bit systems
 	  greatly improved and is now about as fast as with 64-bit systems.
-	
+
 	* Feature: detect MMX and SSE2 capabilities on compile time and use faster
 	  code when possible.  From this version onward there are at least two
 	  versions of implementation: portable (not using any extensions like MMX
@@ -76,7 +76,7 @@ Changes with version 0.09                                           22 Jan 2013
 
 	* Bugfix: integer overflow incorrectly handled in addition by modulo 2.
 	  This could lead to incorrect results on some files.
-	
+
 Changes with version 0.08                                           19 Jan 2013
 
 	* Feature: boost performance on 32-bit systems by using 64-bit MMX XOR
@@ -94,10 +94,10 @@ Changes with version 0.07                                           17 Jan 2013
 
 	* Bugfix: key generation function K replaced with XLPS macros to avoid
 	  inlining issues when max inline instruction limit reached.
-	
+
 	* Bugfix: encryption function E inlined to compression g to avoid
 	  compile-time inlining issues when max inline instruction limit reached.
-	
+
 	* Bugfix: use unsigned integers where possible.
 
 	* Bugfix: fix typo in update() when comparing bufsize.
@@ -105,20 +105,20 @@ Changes with version 0.07                                           17 Jan 2013
 	* Bugfix: memory allocator rewritten to use posix_memalign().
 
 Changes with version 0.06                                           09 Jan 2013
-	
+
 	* Feature: performance optimization in LPS: hint compiler to use eight
 	  registers instead of union buffer.
-	
+
 	* Feature: performance optimization in permutation P: rotate matrix by
 	  cyclic right shifting bits in source matrix columns to rows in
 	  destination matrix.
-	
+
 	* Feature: as result of previous two optimizations: replace LPS macros
 	  with improved macros XLPS.
 
 	* Bugfix: improve constant table C presentation to avoid runtime
 	  conversion in key generator K.
-	
+
 	* Bugfix: unroll key generation loop in E.
 
 	* Bugfix: rename union member names according to their natural meaning.

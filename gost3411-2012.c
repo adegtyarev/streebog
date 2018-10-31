@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+/*
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
  * All rights reserved.
  *
  * GOST 34.11-2012 hash function with 512/256 bits digest.
@@ -123,7 +123,7 @@ memalloc(const size_t size)
 {
     void *p;
 
-    /* Ensure p is on a 64-bit boundary. */ 
+    /* Ensure p is on a 64-bit boundary. */
     if (posix_memalign(&p, (size_t) 64, size))
         err(EX_OSERR, NULL);
 
@@ -274,7 +274,7 @@ benchmark(const unsigned int eflag)
     exit(EXIT_SUCCESS);
 }
 
-static void 
+static void
 shutdown(void)
 {
     if (CTX != NULL)
@@ -299,7 +299,7 @@ crypto_hash(unsigned char *out, const unsigned char *in,
 int
 main(int argc, char *argv[])
 {
-    int ch; 
+    int ch;
     unsigned char uflag, qflag, rflag, eflag;
     unsigned char excode;
     FILE *f;

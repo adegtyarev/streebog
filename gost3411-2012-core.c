@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
  * All rights reserved.
  *
  * GOST R 34.11-2012 core and API functions.
@@ -189,7 +189,7 @@ GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, size_t l
         CTX->bufsize += chunksize;
         len -= chunksize;
         data += chunksize;
-        
+
         if (CTX->bufsize == 64)
         {
             stage2(CTX, CTX->buffer);
