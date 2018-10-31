@@ -55,7 +55,7 @@ pad(GOST34112012Context *CTX)
 }
 
 static inline void
-add512(const uint512_u *x, const uint512_u *y, uint512_u *r)
+add512(const gost34112012_uint512_u *x, const gost34112012_uint512_u *y, gost34112012_uint512_u *r)
 {
 #ifndef __GOST3411_BIG_ENDIAN__
     unsigned int CF;
@@ -92,7 +92,7 @@ add512(const uint512_u *x, const uint512_u *y, uint512_u *r)
 }
 
 static void
-g(uint512_u *h, const uint512_u *N, const unsigned char *m)
+g(gost34112012_uint512_u *h, const gost34112012_uint512_u *N, const unsigned char *m)
 {
 #ifdef __GOST3411_HAS_SSE2__
     __m128i xmm0, xmm2, xmm4, xmm6; /* XMMR0-quadruple */
@@ -119,14 +119,14 @@ g(uint512_u *h, const uint512_u *N, const unsigned char *m)
     /* Restore the Floating-point status on the CPU */
     _mm_empty();
 #else
-    uint512_u Ki, data;
+    gost34112012_uint512_u Ki, data;
     unsigned int i;
 
     XLPS(h, N, (&data));
 
     /* Starting E() */
     Ki = data;
-    XLPS((&Ki), ((const uint512_u *) &m[0]), (&data));
+    XLPS((&Ki), ((const gost34112012_uint512_u *) &m[0]), (&data));
 
     for (i = 0; i < 11; i++)
         ROUND(i, (&Ki), (&data));
@@ -136,7 +136,7 @@ g(uint512_u *h, const uint512_u *N, const unsigned char *m)
     /* E() done */
 
     X((&data), h, (&data));
-    X((&data), ((const uint512_u *) &m[0]), h);
+    X((&data), ((const gost34112012_uint512_u *) &m[0]), h);
 #endif
 }
 
@@ -146,13 +146,13 @@ stage2(GOST34112012Context *CTX, const unsigned char *data)
     g(&(CTX->h), &(CTX->N), data);
 
     add512(&(CTX->N), &buffer512, &(CTX->N));
-    add512(&(CTX->Sigma), (const uint512_u *) data, &(CTX->Sigma));
+    add512(&(CTX->Sigma), (const gost34112012_uint512_u *) data, &(CTX->Sigma));
 }
 
 static inline void
 stage3(GOST34112012Context *CTX)
 {
-    ALIGN(16) uint512_u buf = {{ 0 }};
+    ALIGN(16) gost34112012_uint512_u buf = {{ 0 }};
 
 #ifndef __GOST3411_BIG_ENDIAN__
     buf.QWORD[0] = CTX->bufsize << 3;
@@ -165,13 +165,13 @@ stage3(GOST34112012Context *CTX)
     g(&(CTX->h), &(CTX->N), (const unsigned char *) &(CTX->buffer));
 
     add512(&(CTX->N), &buf, &(CTX->N));
-    add512(&(CTX->Sigma), (const uint512_u *) &CTX->buffer[0],
+    add512(&(CTX->Sigma), (const gost34112012_uint512_u *) &CTX->buffer[0],
            &(CTX->Sigma));
 
     g(&(CTX->h), &buffer0, (const unsigned char *) &(CTX->N));
 
     g(&(CTX->h), &buffer0, (const unsigned char *) &(CTX->Sigma));
-    memcpy(&(CTX->hash), &(CTX->h), sizeof (uint512_u));
+    memcpy(&(CTX->hash), &(CTX->h), sizeof (gost34112012_uint512_u));
 }
 
 void

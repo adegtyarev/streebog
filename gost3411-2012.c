@@ -42,7 +42,7 @@ unsigned char digest[64];
 unsigned char hexdigest[129];
 unsigned int digest_size = DEFAULT_DIGEST_SIZE;
 
-const uint512_u GOSTTestInput = {
+const gost34112012_uint512_u GOSTTestInput = {
 #ifndef __GOST3411_BIG_ENDIAN__
     {
         0x3736353433323130ULL,
@@ -211,7 +211,7 @@ testing(const unsigned int eflag)
 
     GOST34112012Init(CTX, 512);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof(uint512_u));
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof(gost34112012_uint512_u));
     CTX->bufsize = 63;
 
     GOST34112012Final(CTX, &digest[0]);
@@ -223,7 +223,7 @@ testing(const unsigned int eflag)
 
     GOST34112012Init(CTX, 256);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof(uint512_u));
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof(gost34112012_uint512_u));
     CTX->bufsize = 63;
 
     GOST34112012Final(CTX, &digest[0]);
