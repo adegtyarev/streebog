@@ -76,6 +76,7 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 # - SUSE Linux Enterprise 12 SP3 and higher
 # - openSUSE Leap 42.3 and higher
+# - openSUSE Tumbleweed and its derivatives
 #
 # - Mageia 5 and higher
 #
@@ -87,7 +88,7 @@ for LICENSE in spec-files:
 #
 # openSUSE: [1] https://en.opensuse.org/openSUSE:Specfile_guidelines#License_files
 #
-%if ( 0%{?sle_version} > 120200 && !0%{?is_opensuse} ) || (0%{?sle_version} > 120200 && 0%{?is_opensuse} ) || 0%{?rhel_version} > 600 || 0%{?centos_version} > 600 || 0%{?scientificlinux_version} > 600 || 0%{?fedora_version} > 18 || 0%{?mageia} > 4
+%if ( 0%{?sle_version} > 120200 && !0%{?is_opensuse} ) || (0%{?sle_version} > 120200 && 0%{?is_opensuse} ) || 0%{?suse_version} > 1500 || 0%{?rhel_version} > 600 || 0%{?centos_version} > 600 || 0%{?scientificlinux_version} > 600 || 0%{?fedora_version} > 18 || 0%{?mageia} > 4
 %doc README.md
 %license LICENSE LICENSE.GPL2
 %else
