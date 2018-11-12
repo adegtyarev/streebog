@@ -59,8 +59,9 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 # - RedHat Enterprise Linux 6 and lower
 # - CentOS 6 and lower
-# - Scientific Linux 6 and lower
 # - Fedora 18 and lower
+#
+# - Scientific Linux 6 and lower
 #
 # - SUSE Linux Enterprise 12 SP2 and lower
 # - openSUSE Leap 42.2 and lower
@@ -71,8 +72,9 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 # - RedHat Enterprise Linux 7 and higher
 # - CentOS 7 and higher
-# - Scientific Linux 7 and higher
 # - Fedora 19 and higher
+#
+# - Scientific Linux 7 and higher
 #
 # - SUSE Linux Enterprise 12 SP3 and higher
 # - openSUSE Leap 42.3 and higher
@@ -80,9 +82,7 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 # - Mageia 5 and higher
 #
-#
-# Guideline paragraphs about using %%license macro instead of %%doc
-for LICENSE in spec-files:
+# Guideline paragraphs about using %%license macro instead of %%doc for LICENSE in spec-files:
 #
 # Fedora: [0] https://fedoraproject.org/wiki/Packaging:LicensingGuidelines?rd=Packaging/LicensingGuidelines#License_Text
 #
