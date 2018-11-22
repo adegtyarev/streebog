@@ -88,6 +88,8 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 #
 # openSUSE: [1] https://en.opensuse.org/openSUSE:Specfile_guidelines#License_files
 #
+# Distribution detection codes: [2] https://en.opensuse.org/openSUSE:Build_Service_cross_distribution_howto
+#
 %if ( 0%{?sle_version} > 120200 && !0%{?is_opensuse} ) || (0%{?sle_version} > 120200 && 0%{?is_opensuse} ) || 0%{?suse_version} > 1500 || 0%{?rhel_version} > 600 || 0%{?centos_version} > 600 || 0%{?scientificlinux_version} > 600 || 0%{?fedora_version} > 18 || 0%{?mageia} > 4
 %doc README.md
 %license LICENSE LICENSE.GPL2
