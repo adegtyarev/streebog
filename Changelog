@@ -1,3 +1,15 @@
+Changes with version 0.13											11 Dec 2018
+
+	* Feature: relicense under the dual BSD/GPL-2.0+ license.
+
+	* Feature: use unaligned SSE2 instructions for loading data.
+
+	* Bugfix: improve the distribution detection in the RPM spec.
+
+	* Bugfix: avoid the 'stringop-truncation' warning.
+
+	* Bugfix: simplified version of add512()
+
 Changes with version 0.12                                           20 Apr 2018
 
 	* Feature: Dockerfile added
