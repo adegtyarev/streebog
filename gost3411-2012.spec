@@ -1,5 +1,5 @@
 Name:		GOST34.11-2012
-Version:	0.12
+Version:	0.13
 Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
 Group:		Productivity/Security
@@ -109,6 +109,9 @@ install -pm 644 gost3411-2012-sse41.h %{buildroot}%{_includedir}/gost3411-2012/
 %{_includedir}/gost3411-2012/gost3411-2012-sse41.h
 
 %changelog
+* Wed Dec 12 2018 alexey@renatasystems.org 0.13-1
+- Release 0.13
+
 * Wed Apr 25 2018 alexey@renatasystems.org 0.12-1
 - Add devel package
 

@@ -34,7 +34,7 @@
 
 #define DEFAULT_DIGEST_SIZE 512
 #define ALGNAME "GOST R 34.11-2012"
-#define VERSION "0.12"
+#define VERSION "0.13"
 
 GOST34112012Context *CTX;
 
