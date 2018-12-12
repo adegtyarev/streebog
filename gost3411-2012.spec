@@ -1,5 +1,5 @@
 Name:		GOST34.11-2012
-Version:	0.12
+Version:	0.13
 Release:	1%{?dist}
 Summary:	RFC-6986 cryptographic hash function
 Group:		Productivity/Security
