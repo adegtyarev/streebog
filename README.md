@@ -53,7 +53,7 @@ for each one.  Stdin is read as input when executed without arguments.
      -q - Quiet mode - only the digest is printed out.
      -e - Switch endianness when printing out resulting hash.  Default: least
           significant first.  With this options set all bytes in resulting
-          hash are printed in reversed order, more precisely, most
+          hash are printed in reverse order, more precisely, most
           significant first.
 
 
