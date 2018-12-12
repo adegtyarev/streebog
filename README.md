@@ -41,20 +41,23 @@ for each one.  Stdin is read as input when executed without arguments.
     # ./gost3411-2012 -h
     Usage: gost3411-2012 [-25bhvqrte] [-s string] [files ...]
 
-    Flags:
-     -2 - 256-bit digest.
-     -5 - 512-bit digest (default).
-     -t - Testing mode to produce hash of example messages defined in
-          standard.
-     -b - Benchmark mode (to see how fast or slow this implementation
-          works).
-     -s - Print a digest of the given string.
-     -r - Reverses the format of the output.  This helps with visual diffs.
-     -q - Quiet mode - only the digest is printed out.
-     -e - Switch endianness when printing out resulting hash.  Default: least
-          significant first.  With this options set all bytes in resulting
-          hash are printed in reversed order, more precisely, most
-          significant first.
+    Options:
+       -2          Output 256-bit digest.
+       -5          Output 512-bit digest (default).
+       -t          Testing mode to produce hash of example
+                   messages defined in standard.
+       -b          Benchmark mode (to see how fast or slow
+                   this implementation).
+       -s string   Print a digest of the given string.
+       -r          Reverses the format of the output.
+                   This helps with visual diffs.
+       -q          Quiet mode - only the digest is printed out.
+       -e          Switch endianness when printing out
+                   resulting hash.  Default: least significant
+                   first.  With this options set all bytes in
+                   resulting hash are printed in reverse
+                   order, more precisely, most significant
+                   first.
 
 
 Using with Docker
