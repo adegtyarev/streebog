@@ -65,7 +65,7 @@ Using with Docker
 There is a pre-build Docker image of this software ready to use:
 
     $ docker run --rm adegtyarev/streebog gost3411-2012 -v
-    gost3411-2012 0.12
+    gost3411-2012 0.13
 
 Let's say you want to get a hash digest of LICENSE file in the current
 directory.  Here is how:
