@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+# Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
 # All rights reserved.
 #
 # $Id$
@@ -69,7 +69,7 @@ clean: rmconfig
 
 dist: clean man
 	mkdir -p $(DISTNAME)
-	cp $(SOURCES) $(HEADERS) $(DISTNAME) 
+	cp $(SOURCES) $(HEADERS) $(DISTNAME)
 	cp Changelog LICENSE Makefile VERSION README.md configure $(DISTNAME)
 	cp gost3411-2012.1 gost3411-2012.1.h2m $(DISTNAME)
 	cp -R auto examples $(DISTNAME)/
@@ -78,14 +78,14 @@ dist: clean man
 	tar czf $(DISTNAME).tar.gz $(DISTNAME)
 	rm -r $(DISTNAME)
 
-distclean: 
+distclean:
 	-rm $(DISTNAME).tar.gz 2>/dev/null
 
 test: gost3411-2012
 	./gost3411-2012 -t
 	./gost3411-2012 -t | cmp auto/test.txt
 
-bench: 
+bench:
 	$(MAKE) remake CC=clang && ./gost3411-2012 -b
 	$(MAKE) remake CC=gcc46 && ./gost3411-2012 -b
 	$(MAKE) remake CC=gcc47 && ./gost3411-2012 -b

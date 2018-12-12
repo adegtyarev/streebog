@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
  * All rights reserved.
  *
  * $Id$
@@ -62,7 +62,7 @@
 #define XLPS32(x, y, data) { \
     unsigned int xi; \
     unsigned char *p; \
-    ALIGN(16) union uint512_u buf; \
+    GOST3411_ALIGN(16) gost34112012_uint512_u buf; \
     __m64 mm0; \
     XTRANSPOSE(x, y, (&buf)); \
     p = (unsigned char *) &buf; \

@@ -127,7 +127,7 @@ void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data, siz
 
 Hash some `data` of `len` bytes size.  The best performance results are
 achieved when `len` is multiple of 64.
-    
+
 Note that this call does not modify original data in memory.  If
 security is an issue, calling application should destroy that memory
 block right after `GOST34112012Update()`, by e.g. `memset()` to zero.

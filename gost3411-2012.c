@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>. 
+/*
+ * Copyright (c) 2013, Alexey Degtyarev <alexey@renatasystems.org>.
  * All rights reserved.
  *
  * GOST 34.11-2012 hash function with 512/256 bits digest.
@@ -42,7 +42,7 @@ unsigned char digest[64];
 unsigned char hexdigest[129];
 unsigned int digest_size = DEFAULT_DIGEST_SIZE;
 
-const union uint512_u GOSTTestInput = {
+const gost34112012_uint512_u GOSTTestInput = {
 #ifndef __GOST3411_BIG_ENDIAN__
     {
         0x3736353433323130ULL,
@@ -123,7 +123,7 @@ memalloc(const size_t size)
 {
     void *p;
 
-    /* Ensure p is on a 64-bit boundary. */ 
+    /* Ensure p is on a 64-bit boundary. */
     if (posix_memalign(&p, (size_t) 64, size))
         err(EX_OSERR, NULL);
 
@@ -211,7 +211,7 @@ testing(const unsigned int eflag)
 
     GOST34112012Init(CTX, 512);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof(gost34112012_uint512_u));
     CTX->bufsize = 63;
 
     GOST34112012Final(CTX, &digest[0]);
@@ -223,7 +223,7 @@ testing(const unsigned int eflag)
 
     GOST34112012Init(CTX, 256);
 
-    memcpy(CTX->buffer, &GOSTTestInput, sizeof uint512_u);
+    memcpy(CTX->buffer, &GOSTTestInput, sizeof(gost34112012_uint512_u));
     CTX->bufsize = 63;
 
     GOST34112012Final(CTX, &digest[0]);
@@ -274,7 +274,7 @@ benchmark(const unsigned int eflag)
     exit(EXIT_SUCCESS);
 }
 
-static void 
+static void
 shutdown(void)
 {
     if (CTX != NULL)
@@ -299,7 +299,7 @@ crypto_hash(unsigned char *out, const unsigned char *in,
 int
 main(int argc, char *argv[])
 {
-    int ch; 
+    int ch;
     unsigned char uflag, qflag, rflag, eflag;
     unsigned char excode;
     FILE *f;

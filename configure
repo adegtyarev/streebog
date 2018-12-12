@@ -64,7 +64,7 @@ EOF
 
 cat ${AUTO_CONF_MK}.t >> ${AUTO_CONF_MK} && rm -f ${AUTO_CONF_MK}.t
 
-cat >>${AUTO_CONF_MK} <<"EOF" 
+cat >>${AUTO_CONF_MK} <<"EOF"
 
 compile:
 	$(CC) $(CFLAGS) -o gost3411-2012 $(SOURCES)
