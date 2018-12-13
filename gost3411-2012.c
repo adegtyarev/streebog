@@ -90,7 +90,7 @@ usage(void)
     fprintf(stdout, "   -t          Testing mode to produce hash of example\n");
     fprintf(stdout, "               messages defined in standard.\n");
     fprintf(stdout, "   -b          Benchmark mode (to see how fast or slow\n");
-    fprintf(stdout, "               this implementation).\n");
+    fprintf(stdout, "               this implementation is).\n");
     fprintf(stdout, "   -s string   Print a digest of the given string.\n");
     fprintf(stdout, "   -r          Reverses the format of the output.\n");
     fprintf(stdout, "               This helps with visual diffs.\n");
