@@ -47,7 +47,7 @@ for each one.  Stdin is read as input when executed without arguments.
        -t          Testing mode to produce hash of example
                    messages defined in standard.
        -b          Benchmark mode (to see how fast or slow
-                   this implementation).
+                   this implementation is).
        -s string   Print a digest of the given string.
        -r          Reverses the format of the output.
                    This helps with visual diffs.
