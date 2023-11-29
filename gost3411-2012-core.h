@@ -5,6 +5,9 @@
  * $Id$
  */
 
+#ifndef GOST34112012CORE_H_
+#define GOST34112012CORE_H_
+
 #include <string.h>
 
 #include "gost3411-2012-config.h"
@@ -53,3 +56,5 @@ void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
 void GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest); 
 
 void GOST34112012Cleanup(GOST34112012Context *CTX);
+
+#endif // GOST34112012CORE_H_
